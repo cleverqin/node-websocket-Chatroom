@@ -48,10 +48,11 @@ HiChat.prototype = {
         });
         document.getElementById('loginBtn').addEventListener('click', function() {
             var nickName = document.getElementById('nicknameInput').value;
-            if (nickName.trim().length != 0) {
+            if (nickName.trim().length != 0&&nickName.trim()!="我") {
                 that.socket.emit('login', nickName);
             } else {
                 document.getElementById('nicknameInput').focus();
+                document.getElementById('info').textContent = '请输入昵称，昵称不能为空不能为’我';
             };
         }, false);
         document.getElementById('nicknameInput').addEventListener('keyup', function(e) {
@@ -147,6 +148,11 @@ HiChat.prototype = {
             msgDiv="<div class='msg-box'><div class=msg-content><span class='msg-arrow'></span>"+msg+"</div></div>";
         msgToDisplay.style.color = color || '#000';
         msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span>' + msgDiv;
+        if(user=="我"){
+            msgToDisplay.className="me";
+            msgToDisplay.innerHTML =  '<span class="timespan">：(' + date + ') </span>'+user + msgDiv;
+        }
+
         container.appendChild(msgToDisplay);
         container.scrollTop = container.scrollHeight;
     },
@@ -158,6 +164,10 @@ HiChat.prototype = {
             date = new Date().toTimeString().substr(0, 8);
         msgToDisplay.style.color = color || '#000';
         msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span> <br/>' + msgDiv;
+        if(user=="我"){
+            msgToDisplay.className="me";
+            msgToDisplay.innerHTML =  '<span class="timespan">：(' + date + ') </span>'+user + msgDiv;
+        }
         container.appendChild(msgToDisplay);
         container.scrollTop = container.scrollHeight;
     },

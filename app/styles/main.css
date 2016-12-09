@@ -164,6 +164,15 @@ footer {
     background: #c3c7dd;
     border-radius: 4px;
 }
+.me{
+    text-align: right;
+}
+.me .msg-content{
+    float: right;
+}
+.me .msg-arrow{
+    right: 10px;
+}
 .msg-arrow{
     display: block;
     width: 0px;
@@ -174,6 +183,10 @@ footer {
     position: absolute;
     bottom: 100%;
     left: 10px;
+}
+.me .msg-arrow{
+    left: auto;
+    right: 10px;
 }
 .chat-title{
     text-align: center;
