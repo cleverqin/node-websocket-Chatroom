@@ -8,6 +8,12 @@ var HiChat = function() {
 HiChat.prototype = {
     init: function() {
         var that = this;
+        var _pic=document.body.querySelectorAll("#nickWrapper .img-list li.checked img")[0].src;
+        var curUser={
+            nickName:"我",
+            pic:_pic
+        }
+        console.log(curUser);
         this.socket = io.connect();
         this.socket.on('connect', function() {
             document.getElementById('info').textContent = '请输入一个昵称：';
@@ -21,6 +27,7 @@ HiChat.prototype = {
             document.title = 'Chat聊天室 | ' + document.getElementById('nicknameInput').value;
             document.getElementById('loginWrapper').style.display = 'none';
             document.getElementById('messageInput').focus();
+            curUser.nickName="我";
         });
         this.socket.on('error', function(err) {
             if (document.getElementById('loginWrapper').style.display == 'none') {
@@ -29,27 +36,33 @@ HiChat.prototype = {
                 document.getElementById('info').textContent = '链接失败！';
             }
         });
-        this.socket.on('system', function(nickName,users, userCount, type) {
-            var msg = nickName + (type == 'login' ? ' 加入聊天室' : ' 离开聊天室');
-            that._displayNewMsg('系统消息 ', msg, 'red');
+        this.socket.on('system', function(user,users, userCount, type) {
+            var msg = user.nickName + (type == 'login' ? ' 加入聊天室' : ' 离开聊天室');
+            that._displayMsg(user, msg, 'red','sys');
             document.getElementById('status').innerHTML = "当前在线用户:<span class='num-tag'>"+userCount+"</span>人";
             var listDiv=document.getElementById("online-list");
             var str="";
             for (var i=0;i<users.length;i++){
-                str+="<li class='user-span'>"+users[i]+"</li>";
+                str+="<li class='user-span'><img src='"+users[i].pic+"'><div>"+users[i].nickName+"</div></li>";
             }
             listDiv.innerHTML=str;
         });
         this.socket.on('newMsg', function(user, msg, color) {
-            that._displayNewMsg(user, msg, color);
+            console.log(user);
+            that._displayMsg(user, msg, color,"msg");
         });
         this.socket.on('newImg', function(user, img, color) {
-            that._displayImage(user, img, color);
+            that._displayMsg(user,img,color,"img");
         });
         document.getElementById('loginBtn').addEventListener('click', function() {
             var nickName = document.getElementById('nicknameInput').value;
+            var pic=document.body.querySelectorAll("#nickWrapper .img-list li.checked img")[0].src;
             if (nickName.trim().length != 0&&nickName.trim()!="我") {
-                that.socket.emit('login', nickName);
+                curUser={
+                    nickName:nickName,
+                    pic:pic
+                }
+                that.socket.emit('login', curUser);
             } else {
                 document.getElementById('nicknameInput').focus();
                 document.getElementById('info').textContent = '请输入昵称，昵称不能为空不能为’我';
@@ -58,8 +71,13 @@ HiChat.prototype = {
         document.getElementById('nicknameInput').addEventListener('keyup', function(e) {
             if (e.keyCode == 13) {
                 var nickName = document.getElementById('nicknameInput').value;
+                var pic=document.body.querySelectorAll("#nickWrapper .img-list li.checked img")[0].src;
                 if (nickName.trim().length != 0) {
-                    that.socket.emit('login', nickName);
+                    curUser={
+                        nickName:nickName,
+                        pic:pic
+                    }
+                    that.socket.emit('login', curUser);
                 };
             };
         }, false);
@@ -71,7 +89,7 @@ HiChat.prototype = {
             messageInput.focus();
             if (msg.trim().length != 0) {
                 that.socket.emit('postMsg', msg, color);
-                that._displayNewMsg('我', msg, color);
+                that._displayMsg(curUser, msg, color,"msg");
                 return;
             };
         }, false);
@@ -82,7 +100,7 @@ HiChat.prototype = {
             if (e.keyCode == 13 && msg.trim().length != 0) {
                 messageInput.value = '';
                 that.socket.emit('postMsg', msg, color);
-                that._displayNewMsg('我', msg, color);
+                that._displayMsg(curUser, msg, color,"msg");
             };
         }, false);
         document.getElementById('clearBtn').addEventListener('click', function() {
@@ -94,19 +112,20 @@ HiChat.prototype = {
                     reader = new FileReader(),
                     color = document.getElementById('colorStyle').value;
                 if (!reader) {
-                    that._displayNewMsg('系统消息', '你的浏览器不支持文件读取！', 'red');
+                    that._displayMsg(curUser, '你的浏览器不支持文件读取！', 'red',"sys");
                     this.value = '';
                     return;
                 };
                 reader.onload = function(e) {
                     this.value = '';
                     that.socket.emit('img', e.target.result, color);
-                    that._displayImage('我', e.target.result, color);
+                    that._displayMsg(curUser, e.target.result, color,"img");
                 };
                 reader.readAsDataURL(file);
             };
         }, false);
         this._initialEmoji();
+        this.initSelectPic();
         document.getElementById('emoji').addEventListener('click', function(e) {
             var emojiwrapper = document.getElementById('emojiWrapper');
             emojiwrapper.style.display = 'block';
@@ -126,6 +145,7 @@ HiChat.prototype = {
                 messageInput.value = messageInput.value + '[emoji:' + target.title + ']';
             };
         }, false);
+
     },
     //初始化表情
     _initialEmoji: function() {
@@ -139,34 +159,34 @@ HiChat.prototype = {
         };
         emojiContainer.appendChild(docFragment);
     },
-    //显示消息
-    _displayNewMsg: function(user, msg, color) {
+    _displayMsg:function(user,msg,color,type) {
         var container = document.getElementById('historyMsg'),
             msgToDisplay = document.createElement('p'),
             date = new Date().toTimeString().substr(0, 8),
-            msg = this._showEmoji(msg),
+            msgDiv="",
+            userDiv="";
+        msgToDisplay.style.color = color || '#000';
+        if(type=="sys"){
+            msgDiv=msg;
+            msgToDisplay.className="sys";
+            msgToDisplay.innerHTML = "系统消息" + '<span class="timespan">(' + date + '): </span>' + msgDiv;
+        }else if(type=="img"){
+            userDiv="<div class='user-msg'><img src='"+user.pic+"' time='"+date+"' /><span>"+user.nickName+"</span></div>"
+            if(user.nickName=="我"){
+                msgToDisplay.className="me";
+                userDiv="<div class='user-msg'><span>"+user.nickName+"</span><img src='"+user.pic+"' time='"+date+"' /></div>"
+            }
+            msgDiv="<div class='msg-box'><div class=msg-content><span class='msg-arrow'></span><a href='"+msg+"' target='_blank'><img src='"+msg+"'/></a></div></div>";
+            msgToDisplay.innerHTML =userDiv+ msgDiv;
+        }else {
+            msg = this._showEmoji(msg);
             msgDiv="<div class='msg-box'><div class=msg-content><span class='msg-arrow'></span>"+msg+"</div></div>";
-        msgToDisplay.style.color = color || '#000';
-        msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span>' + msgDiv;
-        if(user=="我"){
-            msgToDisplay.className="me";
-            msgToDisplay.innerHTML =  '<span class="timespan">：(' + date + ') </span>'+user + msgDiv;
-        }
-
-        container.appendChild(msgToDisplay);
-        container.scrollTop = container.scrollHeight;
-    },
-    //显示图片信息
-    _displayImage: function(user, imgData, color) {
-        var container = document.getElementById('historyMsg'),
-            msgToDisplay = document.createElement('p'),
-            msgDiv="<div class='msg-box'><div class=msg-content><span class='msg-arrow'></span><a href='"+imgData+"' target='_blank'><img src='"+imgData+"'/></a></div></div>",
-            date = new Date().toTimeString().substr(0, 8);
-        msgToDisplay.style.color = color || '#000';
-        msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span> <br/>' + msgDiv;
-        if(user=="我"){
-            msgToDisplay.className="me";
-            msgToDisplay.innerHTML =  '<span class="timespan">：(' + date + ') </span>'+user + msgDiv;
+            userDiv="<div class='user-msg'><img src='"+user.pic+"' time='"+date+"' /><span>"+user.nickName+"</span></div>"
+            if(user.nickName=="我"){
+                msgToDisplay.className="me";
+                userDiv="<div class='user-msg'><span>"+user.nickName+"</span><img src='"+user.pic+"' time='"+date+"' /></div>"
+            }
+            msgToDisplay.innerHTML = userDiv + msgDiv;
         }
         container.appendChild(msgToDisplay);
         container.scrollTop = container.scrollHeight;
@@ -186,5 +206,13 @@ HiChat.prototype = {
             };
         };
         return result;
+    },
+    initSelectPic:function () {
+        var imglist=document.body.querySelectorAll("#nickWrapper .img-list li");
+        $(imglist).on("click",function (e) {
+            e.stopPropagation();
+            $(imglist).removeClass("checked");
+            $(this).addClass("checked");
+        })
     }
 };

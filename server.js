@@ -9,30 +9,42 @@ app.use('/', express.static(__dirname + '/app'));
 server.listen(process.env.PORT || 3000);
 io.sockets.on('connection', function(socket) {
     //创建用户链接
-    socket.on('login', function(nickname) {
-        if (users.indexOf(nickname) > -1) {
+    socket.on('login', function(user) {
+        console.log(user);
+        if (isHave(user)) {
             socket.emit('nickExisted');
         } else {
             socket.userIndex = users.length;
-            socket.nickname = nickname;
-            users.push(nickname);
+            socket.user = user;
+            users.push(user);
             socket.emit('loginSuccess');
-            io.sockets.emit('system', nickname,users, users.length, 'login');
+            io.sockets.emit('system', user,users, users.length, 'login');
         };
     });
     //用户注销链接
     socket.on('disconnect', function() {
-        if (socket.nickname != null) {
+        if (socket.user != null) {
             users.splice(socket.userIndex, 1);
-            socket.broadcast.emit('system', socket.nickname,users,users.length, 'logout');
+            socket.broadcast.emit('system', socket.user,users,users.length, 'logout');
         }
     });
     //新建消息
     socket.on('postMsg', function(msg, color) {
-        socket.broadcast.emit('newMsg', socket.nickname, msg, color);
+        socket.broadcast.emit('newMsg', socket.user, msg, color);
     });
     //新建图片信息
     socket.on('img', function(imgData, color) {
-        socket.broadcast.emit('newImg', socket.nickname, imgData, color);
+        socket.broadcast.emit('newImg', socket.user, imgData, color);
     });
+    //判断用户名是否存在
+    function isHave(user) {
+        var flag=false;
+        for(var i=0;i<users.length;i++){
+            if(users[i].nickName==user.nickName){
+                flag=true;
+                break;
+            }
+        }
+        return flag;
+    }
 });

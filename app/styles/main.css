@@ -104,8 +104,10 @@ footer {
 }
 .msg-box{
     padding-top: 12px;
+    margin-top: 30px;
+    margin-left: 60px;
 }
-.chat-box,.msg-box::after{
+.chat-box,.msg-box::after,.img-list::after{
     display: table;
     clear: both;
     content: '';
@@ -135,12 +137,24 @@ footer {
 }
 #online-list li{
     font-size: 14px;
-    color: #2569dd;
-    line-height: 2em;
+    color: #dd6565;
     border-bottom: 1px solid #eee;
-    padding: 0 10px;
+    padding:10px 5px;
     width: 80px;
-    height: 2em;
+
+}
+#online-list li img{
+    display: block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    float: left;
+}
+#online-list li div{
+    margin-left: 30px;
+    line-height: 30px;
+    padding-left: 5px;
+    height: 30px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -209,8 +223,125 @@ input[type="button"]{
     border-radius: 4px;
     color: #fff;
 }
-input[type="text"]{
-    outline: none;
-    border: none;
+p img{
+    max-width: 460px;
+}
+#historyMsg p{
+    margin: 0;
+    padding: 5px;
+}
+.user-msg{
+    position: relative;
+    display: block;
+    width: 60px;
+    height: 60px;
+    float: left;
+}
+.user-msg span{
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 100%;
+    margin-left: 10px;
+    font-size: 12px;
+    color: #806D6D;
+    width: 300px;
+}
+ .me .user-msg span{
+    right: 100%;
+    margin-right: 10px;
+    font-size: 12px;
+    color: #806D6D;
+     left: inherit;
+}
+ .me .user-msg{
+     float: right;
+ }
+ .me .msg-box{
+     margin-left: 0px;
+     margin-right: 60px;
+ }
+.user-msg img{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+.select-pic-box{
+    display: block;
+}
+/****************************************/
+.img-box{
+    display: block;
+
+}
+.img-list li img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.img-list{
+    display: block;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+.img-list li{
+    float: left;
+    display: block;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+/*******************************************/
+.login-form{
+    background: rgba(203, 211, 161, 0.73);
+    width: 450px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 0 4px #fbfbfb;
+}
+.login-form .form-group::after{
+    display: table;
+    clear: both;
+    content: '';
+}
+.login-form .form-group label{
+    display: block;
+    color: #666;
+    float: left;
+    font-weight: bold;
+    font-size: 16px;
+    width: 90px;
+    line-height: 80px;
+    height: 80px;
+    text-align: right;
+    padding-right: 10px;
+}
+.form-control{
+    margin-left: 90px;
+    text-align: left;
+}
+#nicknameInput{
     padding: 10px;
+    margin-top: 20px;
+    border-radius: 4px;
+}
+.btn-box{
+    text-align: left;
+}
+#loginBtn{
+    margin-left: 100px;
+    padding: 0.5em 2em;
+    font-size: 15px;
+}
+.img-list li:hover{
+    border: 2px solid #2e6991;
+}
+.img-list li.checked{
+    border: 2px solid #2e6991;
 }

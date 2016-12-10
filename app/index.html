@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="renderer" content="webkit">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="author" content="cleverqin">
         <meta name="description" content="Chat聊天室,使用nodejs和websocket构建的网页聊天室">
@@ -21,8 +22,7 @@
                     <div class='chat-title'>欢迎进入Chat聊天室</div>
                     <span id="status"></span>
                 </div>
-                <div id="historyMsg">
-                </div>
+                <div id="historyMsg"></div>
                 <div class="controls" >
                     <div class="items">
                         <input id="colorStyle" type="color" placeHolder='#000' title="font color" />
@@ -43,10 +43,33 @@
         <div id="loginWrapper">
             <p id="info">链接服务器...</p>
             <div id="nickWrapper">
-                <input type="text" placeHolder="请输入你的昵称" id="nicknameInput" />
-                <input type="button" value="确定" id="loginBtn" />
+                <div class='login-form'>
+                    <div class='form-group'>
+                        <label>选择头像：</label>
+                        <div class="select-pic-box form-control">
+                            <ul class="img-list">
+                                <li class="checked"><img src="content/headPic/1.jpg"></li>
+                                <li><img src="content/headPic/2.jpg"></li>
+                                <li><img src="content/headPic/3.jpg"></li>
+                                <li><img src="content/headPic/4.jpg"></li>
+                                <li><img src="content/headPic/5.jpg"></li>
+                                <li><img src="content/headPic/6.jpg"></li>
+                                <li><img src="content/headPic/7.jpg"></li>
+                                <li><img src="content/headPic/8.jpg"></li>
+                                <li><img src="content/headPic/9.jpg"></li>
+                                <li><img src="content/headPic/10.jpg"></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class='form-group'>
+                        <label>填写昵称：</label>
+                        <div class='form-control'><input type="text" placeHolder="请输入你的昵称" id="nicknameInput" /></div>
+                    </div>
+                    <div class="form-group btn-box"><input type="button" value="确定" id="loginBtn" /></div>
+                </div>
             </div>
         </div>
+        <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="scripts/client.js"></script>
     </body>
