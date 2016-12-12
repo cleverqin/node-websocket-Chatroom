@@ -11,9 +11,9 @@ HiChat.prototype = {
         var _pic=document.body.querySelectorAll("#nickWrapper .img-list li.checked img")[0].src;
         var curUser={
             nickName:"我",
-            pic:_pic
+            pic:_pic,
+            address:""
         }
-        console.log(curUser);
         this.socket = io.connect();
         this.socket.on('connect', function() {
             document.getElementById('info').textContent = '请输入一个昵称：';
@@ -43,12 +43,11 @@ HiChat.prototype = {
             var listDiv=document.getElementById("online-list");
             var str="";
             for (var i=0;i<users.length;i++){
-                str+="<li class='user-span'><img src='"+users[i].pic+"'><div>"+users[i].nickName+"</div></li>";
+                str+="<li class='user-span' title='"+users[i].address+"'><img src='"+users[i].pic+"'><div>"+users[i].nickName+"</div></li>";
             }
             listDiv.innerHTML=str;
         });
         this.socket.on('newMsg', function(user, msg, color) {
-            console.log(user);
             that._displayMsg(user, msg, color,"msg");
         });
         this.socket.on('newImg', function(user, img, color) {

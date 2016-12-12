@@ -14,6 +14,8 @@ io.sockets.on('connection', function(socket) {
         if (isHave(user)) {
             socket.emit('nickExisted');
         } else {
+            var address=socket.handshake.address.address+":"+socket.handshake.address.port;
+            user.address=address;
             socket.userIndex = users.length;
             socket.user = user;
             users.push(user);
