@@ -1,6 +1,5 @@
 html, body {
     margin: 0;
-    background-color: #efefef;
     font-family: sans-serif;
     font-size: 14px;
 }
@@ -35,7 +34,6 @@ html, body {
 }
 #historyMsg {
     height: 400px;
-    background-color: #fff;
     overflow: auto;
     padding: 2px;
 }
@@ -73,10 +71,21 @@ html, body {
     height: 90px;
     max-height: 90px;
     float:left;
+    background: transparent;
+    resize: none;
+    outline: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+#messageInput:focus{
+    box-shadow: 0 0 2px 1px rgba(98, 109, 255, 0.68);
+    border-color: rgba(98, 109, 255, 0.68);
 }
 #sendBtn {
     width: 50px;
-    height: 96px;
+    height: 90px;
     float: right;
 }
 #emojiWrapper {
@@ -84,7 +93,6 @@ html, body {
     width: 500px;
     bottom: 105px;
     position: absolute;
-    background-color: #aaa;
     box-shadow: 0 0 10px #555;
 }
 #emojiWrapper img {
@@ -115,7 +123,6 @@ footer {
 .chat-box{
     width: 650px;
     margin: 20px auto 0 auto;
-    background: #aaa77a;
     border-radius: 4px;
     box-shadow: 0px 0px 3px #ddd;
 }
@@ -133,7 +140,6 @@ footer {
     padding: 0;
     margin: 0;
     height: 580px;
-    background: #fff;
 }
 #online-list li{
     font-size: 14px;
@@ -175,8 +181,8 @@ footer {
     float: left;
     position: relative;
     padding: 10px;
-    background: #c3c7dd;
     border-radius: 4px;
+    background-color: #c3c7dd;
 }
 .me{
     text-align: right;
@@ -298,7 +304,6 @@ p img{
 }
 /*******************************************/
 .login-form{
-    background: rgba(203, 211, 161, 0.73);
     width: 450px;
     margin: 0 auto;
     padding: 20px;
@@ -344,4 +349,21 @@ p img{
 }
 .img-list li.checked{
     border: 2px solid #2e6991;
+}
+/*****************************************/
+.chat-box{
+    border: 1px solid #eee;
+    background-color: rgba(245, 175, 134, 0.85);
+}
+#online-list,.chat-box,#historyMsg{
+    border: 1px solid #eee;
+}
+#messageInput,#online-list,#historyMsg{
+    background: rgba(255, 255, 255, 0.9);
+}
+.login-form{
+    background: rgba(194, 210, 197, 0.82);
+}
+#emojiWrapper{
+    background-color: rgba(85, 85, 85, 0.58);
 }

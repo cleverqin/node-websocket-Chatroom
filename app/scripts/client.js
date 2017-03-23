@@ -1,11 +1,11 @@
 window.onload = function() {
-    var hichat = new HiChat();
+    var hichat = new MyChat();
     hichat.init();
 };
-var HiChat = function() {
+var MyChat = function() {
     this.socket = null;
 };
-HiChat.prototype = {
+MyChat.prototype = {
     init: function() {
         var that = this;
         var _pic=document.body.querySelectorAll("#nickWrapper .img-list li.checked img")[0].src;
@@ -43,7 +43,7 @@ HiChat.prototype = {
             var listDiv=document.getElementById("online-list");
             var str="";
             for (var i=0;i<users.length;i++){
-                str+="<li class='user-span' title='"+users[i].address+"'><img src='"+users[i].pic+"'><div>"+users[i].nickName+"</div></li>";
+                str+="<li class='user-span' title='"+users[i].nickName+"'><img src='"+users[i].pic+"'><div>"+users[i].nickName+"</div></li>";
             }
             listDiv.innerHTML=str;
         });
