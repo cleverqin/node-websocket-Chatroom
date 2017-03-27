@@ -17,3 +17,8 @@ chat聊天室是一个基于nodejs+websocket+express+socket.io模块构建的
 2. 使用’npm install‘安装项目依赖模块
 3. 使用’node server.js‘启动服务
 4. 最后打开浏览器访问 `http://localhost:3000`
+
+项目预览截图
+---
+<img src='http://img.blog.csdn.net/20170323134313830' width='400px'>
+<img src='http://img.blog.csdn.net/20170323134327971' width='400px'>
