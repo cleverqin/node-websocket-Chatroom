@@ -10,7 +10,6 @@ server.listen(process.env.PORT || 3000);
 io.sockets.on('connection', function(socket) {
     //创建用户链接
     socket.on('login', function(user) {
-        console.log(user);
         if (isHave(user)) {
             socket.emit('nickExisted');
         } else {

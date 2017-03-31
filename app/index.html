@@ -1,77 +1,96 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="renderer" content="webkit">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <meta name="author" content="cleverqin">
-        <meta name="description" content="Chat聊天室,使用nodejs和websocket构建的网页聊天室">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Chat聊天室</title>
-        <link rel="stylesheet" href="styles/main.css">
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    </head>
-    <body>
-        <div class='chat-box'>
-            <div class='user-box'>
-                <div class='tag'>在线用户：</div>
-                <ul id='online-list'></ul>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天面板Demo</title>
+    <link rel="stylesheet" href="styles/chatDemo.css">
+    <link href="styles/face.css" rel=stylesheet>
+</head>
+<body>
+<div class="top-Nav">
+    <div class="nav-box">
+        <div class="login-btn">登录</div>
+        <div class="online-user" id="onlineUser">
+            <img src="content/headPic/1.jpg" id="userPic">
+            <span id="userName">似水流年</span>
+        </div>
+    </div>
+</div>
+<div class="chat-box">
+        <div class="chat-box-left">
+            <div class="aside-header">
+                <div class="aside-header-txt">在线列表</div>
             </div>
-            <div class="wrapper">
-                <div class="banner">
-                    <div class='chat-title'>欢迎进入Chat聊天室</div>
-                    <span id="status"></span>
+            <div class="aside-body">
+                <ul class="online-list"></ul>
+            </div>
+        </div>
+        <div class="chat-box-right">
+            <div class="main-title-box">
+                <div class="chat-title">Chat聊天室</div>
+            </div>
+            <div class="sub-title-box">
+                <div class="sub-title">在线人数：<span class="online-num">0</span></div>
+            </div>
+            <div class="msg-content-box">
+                <ul class="chat-msg-list"></ul>
+            </div>
+            <div class="toolBar-box">
+                <div  class='faceBtn' id='faceBtn'>
+                    <span class="iconFaceBtn"></span>
                 </div>
-                <div id="historyMsg"></div>
-                <div class="controls" >
-                    <div class="items">
-                        <input id="colorStyle" type="color" placeHolder='#000' title="font color" />
-                        <input id="emoji" type="button" value="表情" title="emoji" />
-                        <label for="sendImage" class="imageLable">
-                            <input type="button" value="图片"  />
-                            <input id="sendImage" type="file" value=""/>
-                        </label>
-                        <input id="clearBtn" type="button" value="清除聊天记录" title="clear screen" />
-                    </div>
-                    <textarea id="messageInput" placeHolder="请输入消息....."></textarea>
-                    <input id="sendBtn" type="button" value="发送">
-                    <div id="emojiWrapper">
-                    </div>
+                <div class="sendPic-btn">
+                    <span class="iconPic"></span>
+                    <input type="file" accept="accept='image/gif, image/jpeg,image/png" class='imgInput' />
+                </div>
+            </div>
+            <div class="control-box">
+                <div class="control-left">
+                    <textarea class="msg-input" placeholder="请输入消息"></textarea>
+                </div>
+                <div class="control-right">
+                    <button type="button" class="send-btn">确定</button>
                 </div>
             </div>
         </div>
-        <div id="loginWrapper">
-            <p id="info">链接服务器...</p>
-            <div id="nickWrapper" >
-                <div class='login-form'>
-                    <div class='form-group'>
-                        <label>选择头像：</label>
-                        <div class="select-pic-box form-control">
-                            <ul class="img-list">
-                                <li class="checked"><img src="content/headPic/1.jpg"></li>
-                                <li><img src="content/headPic/2.jpg"></li>
-                                <li><img src="content/headPic/3.jpg"></li>
-                                <li><img src="content/headPic/4.jpg"></li>
-                                <li><img src="content/headPic/5.jpg"></li>
-                                <li><img src="content/headPic/6.jpg"></li>
-                                <li><img src="content/headPic/7.jpg"></li>
-                                <li><img src="content/headPic/8.jpg"></li>
-                                <li><img src="content/headPic/9.jpg"></li>
-                                <li><img src="content/headPic/10.jpg"></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class='form-group'>
-                        <label>填写昵称：</label>
-                        <div class='form-control'><input type="text" placeHolder="请输入你的昵称" id="nicknameInput" /></div>
-                    </div>
-                    <div class="form-group btn-box"><input type="button" value="确定" id="loginBtn" /></div>
+    </div>
+<div id="loginWrapper">
+    <div id="nickWrapper" >
+        <div class='login-form'>
+            <div class='form-group'>
+                <label>选择头像：</label>
+                <div class="select-pic-box form-control">
+                    <ul class="img-list">
+                        <li class="checked"><img src="content/headPic/1.jpg"></li>
+                        <li><img src="content/headPic/2.jpg"></li>
+                        <li><img src="content/headPic/3.jpg"></li>
+                        <li><img src="content/headPic/4.jpg"></li>
+                        <li><img src="content/headPic/5.jpg"></li>
+                        <li><img src="content/headPic/6.jpg"></li>
+                        <li><img src="content/headPic/7.jpg"></li>
+                        <li><img src="content/headPic/8.jpg"></li>
+                        <li><img src="content/headPic/9.jpg"></li>
+                        <li><img src="content/headPic/10.jpg"></li>
+                    </ul>
                 </div>
             </div>
+            <div class='form-group'>
+                <label>填写昵称：</label>
+                <div class='form-control input-control-box'>
+                    <input type="text" placeHolder="请输入你的昵称" id="nicknameInput" />
+                    <span class="error-msg-box">昵称已存在，重新输入。</span>
+                </div>
+            </div>
+            <div class="form-group btn-box">
+                <input type="button" value="确定" class="form-btn" id="loginBtn"/>
+                <input type="button" value="取消" class="form-btn" id="cancelBtn" />
+            </div>
         </div>
-        <script src="scripts/jquery-1.11.1.min.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="scripts/canvas.js"></script>
-        <script src="scripts/client.js"></script>
-    </body>
+    </div>
+</div>
+<script src="scripts/jquery-1.11.1.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="scripts/face.js"></script>
+<script src="scripts/demo.js"></script>
+</body>
 </html>

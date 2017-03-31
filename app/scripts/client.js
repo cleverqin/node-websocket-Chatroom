@@ -1,6 +1,6 @@
 window.onload = function() {
-    var hichat = new MyChat();
-    hichat.init();
+    var chat = new MyChat();
+    chat.init();
 };
 var MyChat = function() {
     this.socket = null;
