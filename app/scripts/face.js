@@ -17,8 +17,8 @@
             var faceWarp=document.createElement("div");
             facePanel.className="face-panel";
             faceWarp.className='face-warp';
-            faceWarp.append(facePanel);
-            _this.opt.el.append(faceWarp);
+            faceWarp.appendChild(facePanel);
+            _this.opt.el.appendChild(faceWarp);
             for(var i=0;i<faceJson.length;i++){
                 var face=faceJson[i];
                 var li=document.createElement("li");
@@ -31,7 +31,7 @@
                         e.stopPropagation();
                     });
                 })(face)
-                facePanel.append(li);
+                facePanel.appendChild(li);
             }
             _this.opt.el.addEventListener("click",function (e) {
                 faceWarp.style.display="block";
