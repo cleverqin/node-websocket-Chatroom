@@ -17,6 +17,7 @@ io.sockets.on('connection', function(socket) {
             user.address=address;
             socket.userIndex = users.length;
             socket.user = user;
+            user.id=socket.id;
             users.push(user);
             socket.emit('loginSuccess');
             io.sockets.emit('system', user,users, users.length, 'login');
