@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="author" content="cleverqin">
+    <meta name="description" content="Chat聊天室,使用nodejs和websocket构建的网页聊天室">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="app/favicon.ico" type="image/x-icon" />
+    <title>Chat聊天室</title>
+    <link rel="stylesheet" href="app/styles/chatDemo.css">
+    <link href="app/styles/face.css" rel=stylesheet>
+    <style>
+        #loginWrapper{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div id="content">
+    <div class="top-Nav">
+        <div class="nav-box">
+            <div class="login-btn" v-on:click="isShow=true">登录</div>
+            <div class="online-user" id="onlineUser">
+                <img v-bind:src="curUser.pic" id="userPic">
+                <span id="userName" v-text="curUser.nickName"></span>
+            </div>
+        </div>
+    </div>
+    <div class="chat-box">
+        <div class="chat-box-left">
+            <div class="aside-header">
+                <div class="aside-header-txt">在线列表</div>
+            </div>
+            <div class="aside-body">
+                <ul class="online-list">
+                    <online-item :user="item" v-for="item in onlineList"></online-item>
+                </ul>
+            </div>
+        </div>
+        <div class="chat-box-right">
+            <div class="main-title-box">
+                <div class="chat-title">Chat聊天室</div>
+            </div>
+            <div class="sub-title-box">
+                <div class="sub-title">在线人数：<span class="online-num" v-text="onlineNum"></span></div>
+            </div>
+            <div class="msg-content-box">
+                <ul class="chat-msg-list">
+                    <template v-for="item in msgList">
+                        <msg-item :msg="item" ></msg-item>
+                    </template>
+                </ul>
+            </div>
+            <div class="toolBar-box">
+                <div  class='faceBtn' id='faceBtn'>
+                    <span class="iconFaceBtn" title="选择表情"></span>
+                </div>
+                <div class="sendPic-btn">
+                    <span class="iconPic" title="发送图片" @click="sendImg"></span>
+                    <input type="file" accept="accept='image/gif, image/jpeg,image/png" class='imgInput' v-on:change="imgSelect" />
+                </div>
+            </div>
+            <div class="control-box">
+                <div class="control-left">
+                    <textarea class="msg-input" placeholder="请输入消息" v-model="msg" @keyup.enter="sendMsg"></textarea>
+                </div>
+                <div class="control-right">
+                    <button type="button" class="send-btn" v-on:click="sendMsg">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <login :show="isShow"></login>
+</div>
+<template id="loginTpl">
+    <div id="loginWrapper" v-show="show">
+        <div id="nickWrapper" >
+            <div class='login-form'>
+                <div class='form-group'>
+                    <label>选择头像：</label>
+                    <div class="select-pic-box form-control">
+                        <ul class="img-list">
+                            <li v-bind:class="{'checked':item==user.pic}" v-for="item in picList" @click="selectUserPic(item)"><img v-bind:src="item"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <label>填写昵称：</label>
+                    <div class='form-control input-control-box'>
+                        <input type="text" placeHolder="请输入你的昵称" id="nicknameInput" v-model="user.nickName"/>
+                        <span class="error-msg-box">昵称已存在，重新输入。</span>
+                    </div>
+                </div>
+                <div class="form-group btn-box">
+                    <input type="button" value="确定" class="form-btn" v-on:click="login"/>
+                    <input type="button" value="取消" class="form-btn" v-on:click="hideLogin"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="onlineItem">
+    <li class="online-item">
+        <div class="img-box"><img v-bind:src="user.pic"></div>
+        <div class="name-box" v-text="user.nickName"></div>
+    </li>
+</template>
+<template id="msgTpl">
+    <li class="user-msg" v-if="msg.type==='user'">
+        <div class="msg-box">
+            <div class="msg-box-img">
+                <img v-bind:src="msg.content.user.pic" class="user-img">
+                <div class="msg-tag-txt">{{msg.content.user.nickName}}</div>
+            </div>
+            <div class="msg-txt-box">
+                <div class="msg-txt-content"><span class="msg-arrow"></span><div v-html="msg.content.msg"></div></div>
+            </div>
+        </div>
+    </li>
+    <li class="me-msg" v-else-if="msg.type==='send'" >
+        <div class="msg-box">
+            <div class="msg-box-img">
+                <img v-bind:src="msg.content.user.pic" class="user-img">
+                <div class="msg-tag-txt">我</div>
+            </div>
+            <div class="msg-txt-box">
+                <div class="msg-txt-content"><span class="msg-arrow"></span><div v-html="msg.content.msg"></div></div>
+            </div>
+        </div>
+    </li>
+    <li class="sys-msg" v-else="msg.type==='sys'">
+        <div class="msg-box"><div v-html="msg.content.msg"></div></div>
+    </li>
+</template>
+<script src="app/scripts/vue.min.2.2.0.js"></script>
+<script src="app/scripts/face.js"></script>
+<script src="app/scripts/demo2.js"></script>
+</body>
+</html>
