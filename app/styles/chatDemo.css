@@ -496,3 +496,36 @@ body{
 .online-user:hover{
     background: #636363;
 }
+/************************************/
+.res-list{
+    list-style: none;
+    padding: 0;
+    border-top: 1px solid #9f9f9f;
+    margin: 10px 0 0 0;
+}
+.res-list li{
+    line-height: 32px;
+    height: 32px;
+    max-width: 240px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid #9f9f9f;
+    border-left: 1px solid #9f9f9f;
+    border-right: 1px solid #9f9f9f;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 15px;
+}
+.res-list li a{
+    text-decoration: none;
+    font-size: 14px;
+    color: #6d6d6d;
+}
+.res-list li a:hover{
+    color: #5598e6;
+}
+.res-link{
+    color: #5598e6;
+    text-decoration: none;
+    margin-left: 10px;
+}

@@ -128,7 +128,7 @@ window.onload=function () {
                                 type:'user',
                                 content:{
                                     user:robot,
-                                    msg:face.replaceFace(data.text)
+                                    msg:filterData(data)
                                 }
                             }
                             _this.msgList.push(msgItem);
@@ -174,4 +174,43 @@ window.onload=function () {
             app.msg+="【"+face.title+"】"
         }
     });
+    function filterData(data) {
+        switch(data.code)
+        {
+            case 100000://文本类
+                return data.text
+                break;
+            case 200000://链接类
+                return data.text+"<a href='"+data.url+"' class='res-link' target='_blank'>打开页页面</a>"
+                break;
+            case 302000://新闻类
+                var html=data.text+"<ul class='res-list'>";
+                var len=3;
+                if(data.list.length<3){
+                    len=data.list.length
+                }
+                for(var i=0;i<len;i++){
+                    var item=data.list[i];
+                    html+="<li><a href='"+item.detailurl+"' target='_blank'>"+item.article+"</a></li>"
+                }
+                html+='</li>';
+                return html;
+                break;
+            case 308000://菜谱类
+                var html=data.text+"<ul class='res-list'>";
+                var len=3;
+                if(data.list.length<3){
+                    len=data.list.length
+                }
+                for(var i=0;i<len;i++){
+                    var item=data.list[i];
+                    html+="<li><a href='"+item.detailurl+"' target='_blank'>"+item.name+"</a></li>"
+                }
+                html+='</li>';
+                return html;
+                break;
+            default:
+                return data.text
+        }
+    }
 }
