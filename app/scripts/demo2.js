@@ -2,6 +2,13 @@ window.onload=function () {
     String.prototype.Trim = function() {
         return this.replace(/(^\s*)|(\s*$)/g, "");
     }
+    var urlPre = "http://cors.itxti.net/?"
+    //发车、到站 查时刻
+    var url1 = "www.tuling123.com/openapi/api?";
+    var robot={
+        nickName:"机器人",
+        pic:"http://www.tuling123.com/resources/web/v4/img/personalCen/icon36.png"
+    }
     var face=null;
     var onlineItem = Vue.extend({
         template:"#onlineItem",
@@ -51,7 +58,6 @@ window.onload=function () {
                     document.querySelector(".login-btn").style.display="none";
                     document.getElementById("onlineUser").style.display="block";
                     this.$parent.curUser=this.user;
-                    document.title = 'Chat聊天室 | '+this.$parent.curUser.nickName;
                 }
             }
         }
@@ -66,37 +72,14 @@ window.onload=function () {
                     pic:"app/content/headPic/1.jpg"
                 },
                 msg:"",
-                onlineList:[{
-                    nickName:"似水流年",
-                    pic:"app/content/img.jpg"
-                }],
+                onlineList:[robot],
                 msgList:[
-                    {
-                        type:"user",
-                        content:{
-                            user:{
-                                nickName:"似水流年",
-                                pic:"app/content/img.jpg"
-                            },
-                            msg:"消息示例！！"
-                        }
-                    },
-                    {
-                        type:"send",
-                        content:{
-                            user:{
-                                nickName:"我",
-                                pic:"app/content/img.jpg"
-                            },
-                            msg:"这天消息来自我"
-                        }
-                    },
                     {
                         type:"sys",
                         content:{
-                            msg:"系统消息：似水流年加入了聊天室"
+                            msg:"系统消息：已连接智能聊天机器人"
                         }
-                    },
+                    }
                 ]
             }
         },
@@ -117,6 +100,7 @@ window.onload=function () {
                         }
                     }
                     this.msgList.push(msgItem);
+                    this.getMsg(this.msg);
                     this.msg="";
                     document.querySelector(".msg-input").focus();
                 }else {
@@ -125,6 +109,35 @@ window.onload=function () {
             },
             sendImg:function () {
                 document.querySelector(".imgInput").click();
+            },
+            getMsg:function (msg) {
+                var _this=this;
+                var url=urlPre+url1;
+                $.ajax({
+                    url:url,
+                    type:"get",
+                    dataType:"json",
+                    data:{
+                        key:'a36d98ad2dfa44a487c74fefff41080c',
+                        info:msg,
+                        userid:"123456"
+                    },
+                    success:function (data) {
+                        if(data.text){
+                            var msgItem={
+                                type:'user',
+                                content:{
+                                    user:robot,
+                                    msg:face.replaceFace(data.text)
+                                }
+                            }
+                            _this.msgList.push(msgItem);
+                        }
+                    },
+                    error:function (error) {
+
+                    }
+                })
             },
             imgSelect:function () {
                 var _this=this;
@@ -155,7 +168,7 @@ window.onload=function () {
             document.querySelector(".msg-content-box").scrollTop = document.querySelector(".msg-content-box").scrollHeight;
         }
     });
-     face=new Face({
+    face=new Face({
         el:document.querySelector(".faceBtn"),
         callBack:function (face,faceWarp) {
             app.msg+="【"+face.title+"】"
