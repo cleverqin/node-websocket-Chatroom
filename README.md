@@ -22,5 +22,8 @@ chat聊天室是一个基于nodejs+websocket+express+socket.io模块构建的
 
 项目预览截图
 ---
-<img src='http://img.blog.csdn.net/20170323134313830' width='400px'>
-<img src='http://img.blog.csdn.net/20170323134327971' width='400px'>
+<img src='http://git.oschina.net/cleverqin/img/raw/master/screen%20(1).png' width='400px'>
+<img src='http://git.oschina.net/cleverqin/img/raw/master/screen%20(2).png' width='400px'>
+<img src='http://git.oschina.net/cleverqin/img/raw/master/screen%20(3).png' width='400px'>
+<img src='http://git.oschina.net/cleverqin/img/raw/master/screen%20(4).png' width='400px'>
+
