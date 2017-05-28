@@ -1,12 +1,22 @@
 {
     "name": "Chat-room",
-    "description": "a web chat room！",
-    "version": "0.4.0",
-    "main": "server.js",
+    "version": "1.0.0",
+    "description": "a chat room app by socket.io",
+    "main": "app.js",
     "dependencies": {
-        "express": "3.4.x",
-        "socket.io": "0.9.x"
+        "express": "^4.15.3",
+        "socket.io": "^2.0.1"
     },
-    "author": "cleverqin",
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "imChat",
+        "socket",
+        "express",
+        "vue"
+    ],
+    "author": "@cleverqin",
     "license": "MIT"
 }

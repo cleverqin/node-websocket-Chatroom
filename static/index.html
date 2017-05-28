@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天窗口</title>
+    <link rel="stylesheet" href="css/charRoom.css">
+    <link href="css/face.css" rel=stylesheet>
+    <link href="css/animate.css" rel=stylesheet>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_lp5u2t6dhrggb9.css">
+</head>
+<body>
+<div class="bg bg-blur"></div>
+<audio src="./content/8400.mp3" id="audio"></audio>
+<template id="onlineItem">
+    <div class="chat_item " :class="room==user.id?'active':''" @click="changeRoom(user)">
+        <div class="avatar">
+            <img class="img" :src="user.pic"  alt="">
+        </div>
+        <div class="info">
+            <h3 class="nickname">
+                <span class="nickname_text" v-text="user.nickName"></span>
+            </h3>
+            <div class="least-msg" v-html="lateMsg(user)"></div>
+            <span v-text="time" style="display: none"></span>
+        </div>
+    </div>
+</template>
+<template id="msgTpl">
+    <transition name='custom-classes-transition' enter-active-class="animated fadeIn"
+                leave-active-class=" ">
+    <li class="user-msg" v-if="msg.type==='user'">
+        <div class="msg-box">
+            <div class="msg-box-img">
+                <img v-bind:src="msg.content.user.pic" class="user-img">
+                <div class="msg-tag-txt">{{msg.content.user.nickName}}<span class="msg-time">{{msg.time|ago}}</span></div>
+            </div>
+            <div class="msg-txt-box">
+                <div class="msg-txt-content"><span class="msg-arrow"></span><div v-html="msg.content.msg"></div></div>
+            </div>
+        </div>
+    </li>
+    <li class="me-msg" v-else-if="msg.type==='send'" >
+        <div class="msg-box">
+            <div class="msg-box-img">
+                <img v-bind:src="msg.content.user.pic" class="user-img">
+                <div class="msg-tag-txt"><span class="msg-time">{{msg.time|ago}}</span>{{msg.content.user.nickName}}</div>
+            </div>
+            <div class="msg-txt-box">
+                <div class="msg-txt-content"><span class="msg-arrow"></span><div v-html="msg.content.msg"></div></div>
+            </div>
+        </div>
+    </li>
+    <li class="sys-msg" v-else="msg.type==='sys'">
+        <div class="msg-box"><span v-html="msg.content.msg"></span><span class="msg-time">{{msg.time|ago}}</span></div>
+    </li>
+    </transition>
+</template>
+<template id="loginTpl">
+    <transition name='custom-classes-transition' enter-active-class="animated fadeIn"
+                leave-active-class="animated fadeOut">
+        <div id="loginWrapper" v-show="show">
+            <div id="nickWrapper" >
+                <transition name='custom-classes-transition' enter-active-class="animated fadeInDown"
+                            leave-active-class="animated fadeOutUp">
+                <div class='login-form' v-show="show" >
+                    <div class='form-group'>
+                        <label>选择头像：</label>
+                        <div class="select-pic-box form-control">
+                            <ul class="img-list">
+                                <li v-bind:class="{'checked':item==user.pic}" v-for="item in picList" @click="selectUserPic(item)"><img v-bind:src="item"></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class='form-group'>
+                        <label>填写昵称：</label>
+                        <div class='form-control input-control-box'>
+                            <input type="text" placeHolder="请输入你的昵称" id="nicknameInput" v-model="user.nickName"/>
+                            <span class="error-msg-box">昵称已存在，重新输入。</span>
+                        </div>
+                    </div>
+                    <div class="form-group btn-box">
+                        <input type="button" value="确定" class="form-btn" v-on:click="login"/>
+                        <input type="button" value="取消" class="form-btn" v-on:click="hideLogin"/>
+                    </div>
+                </div>
+                </transition>
+            </div>
+        </div>
+    </transition>
+</template>
+<div class="content" id="content">
+    <div class="chat-box" id="chatBox">
+        <div class="panel-left">
+            <div class="header-top">
+                <div class="avatar">
+                    <img class="img" src="images/img.jpg" :src="curUser.pic">
+                </div>
+                <div class="info">
+                    <h3 class="nickname">
+                        <span class="display_name ng-binding" v-text="curUser.nickName">似水流年</span>
+                        <a class="opt tool-menu" href="javascript:;"><i class="web_wechat_add"></i></a>
+                        <div class="drop-box">
+                            <ul class="dropdown_menu">
+                                <li>
+                                    <a  href="javascript:;"  title="天气查询">
+                                        <i class="menuicon_chat iconfont icon-icon53"></i>天气查询
+                                    </a>
+                                </li>
+                                <li>
+                                    <a  href="javascript:;"  title="快递查询">
+                                        <i class="menuicon_chat iconfont icon-kuaidi"></i>快递查询
+                                    </a>
+                                </li>
+                                <li>
+                                    <a  href="javascript:;"  title="列车查询">
+                                        <i class="menuicon_chat iconfont icon-train"></i>列车查询
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </h3>
+                </div>
+                <div class="login-bar-box" v-if="userStatus==0">
+                    <a href="javascript:;" class="login-link" v-on:click="isShow=true">登录</a>
+                </div>
+            </div>
+            <div class="search-bar">
+                <i class="web_wechat_search"></i>
+                <input type="text" class="searh-input" placeholder="搜索" v-model="keywords">
+            </div>
+            <div class="nav-view scroll">
+                <div class="chat_item " :class="room=='chartRoom'?'active':''" @click="changeRoom">
+                    <div class="avatar">
+                        <img class="img" src="content/logo.png"  alt="">
+                    </div>
+                    <div class="info">
+                        <h3 class="nickname">
+                            <span class="nickname_text">群聊中</span>
+                        </h3>
+                        <div class="least-msg"></div>
+                    </div>
+                </div>
+                <online-item :user="item" :room="room" :title="roomTitle" :time="time"  v-for="item in filterName()"></online-item>
+            </div>
+        </div>
+        <div class="panel-right">
+            <div class="top-title">
+                <div class="title-box">
+                    <span v-text="roomTitle"></span>
+                    <span v-if="room=='chartRoom'">（<span v-text="onlineList.length+userStatus"></span>）</span>
+                </div>
+            </div>
+            <div class="msg-wrapper">
+                <div class="msg-content scroll">
+                    <ul class="chat-msg-list">
+                        <template v-for="item in msgList">
+                            <msg-item :msg="item" ></msg-item>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="tool-bar">
+                    <a class="web_wechat_face" href="javascript:void (0)" title="表情"></a>
+                </div>
+                <div class="msg-send-box">
+                    <div class="text-area" >
+                        <textarea class="send-msg-input scroll" v-model="txt" @keyup.enter="sendMsg"></textarea>
+                    </div>
+                </div>
+                <div class="send-btn-box">
+                    <a class="btn btn_send" href="javascript:;" @click="sendMsg">发送</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <login :show="isShow"></login>
+</div>
+<script src="js/face.js"></script>
+<script src="js/vue.min.2.2.0.js"></script>
+<script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.js"></script>
+<script src="./socket.io/socket.io.js"></script>
+<script src="js/chatRoom.js"></script>
+<script src="http://api.asilu.com/bg/?callback=init"></script>
+</body>
+</html>
