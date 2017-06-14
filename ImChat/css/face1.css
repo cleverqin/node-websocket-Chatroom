@@ -1,0 +1,392 @@
+.face-warp{
+    position: absolute;
+    bottom:100%;
+    left: 0;
+    background-color: #fff;
+    width: 530px;
+    display: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    box-shadow: 0px 0 7px #ccc;
+}
+.face-warp.hide{
+    display: none;
+}
+.face-warp.show{
+    display: block;
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+.upFadeIn{
+    -webkit-animation-name:upFadeIn;
+    animation-name: upFadeIn;
+}
+@-webkit-keyframes upFadeIn {
+    0%{
+        opacity: 0;
+        -webkit-transform: translate(0 -200px);
+    }
+    100%{
+        opacity: 1;
+        -webkit-transform: translate(0 0);
+    }
+}
+@keyframes upFadeIn {
+    0%{
+        opacity: 0;
+        transform: translate(0 -200px);
+    }
+    100%{
+        opacity: 1;
+        transform: translate(0 0);
+    }
+}
+.face-warp:after{
+    position: absolute;
+    top: 100%;
+    left: 5px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid #fff;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+}
+.face-panel{
+    list-style: none;
+    padding: 10px 10px 10px 16px;
+    margin: 0;
+}
+.face-panel li{
+    float: left;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    padding: 3px;
+}
+.face-panel li:hover{
+    background-color: rgba(162,160,164,0.32);
+}
+.face-panel::after,.face-warp::after{
+    display: block;
+    content: '';
+    clear: both;
+}
+.face:after{
+    display: inline-block;
+    vertical-align: sub;
+    content: "";
+    width: 0;
+    height: 0;
+    font-size: 0;
+    padding: 10px;
+    background: url(../img/face.png) no-repeat;
+}
+.face.face0:after{
+    background-position: -6px -6px;
+}
+.face.face1:after{
+    background-position: -32px -6px;
+}
+.face.face2:after{
+    background-position: -58px -6px;
+}
+.face.face3:after{
+    background-position: -84px -6px;
+}
+.face.face4:after{
+    background-position: -110px -6px;
+}
+.face.face5:after{
+    background-position: -136px -6px;
+}
+.face.face6:after{
+    background-position: -162px -6px;
+}
+.face.face7:after{
+    background-position: -188px -6px;
+}
+.face.face8:after{
+    background-position: -214px -6px;
+}
+.face.face9:after{
+    background-position: -240px -6px;
+}
+.face.face10:after{
+    background-position: -266px -6px;
+}
+.face.face11:after{
+    background-position: -292px -6px;
+}
+.face.face12:after{
+    background-position: -318px -6px;
+}
+.face.face13:after{
+    background-position: -344px -6px;
+}
+.face.face14:after{
+    background-position: -370px -6px;
+}
+/******************************************/
+.face.face15:after{
+    background-position: -6px -32px;
+}
+.face.face16:after{
+    background-position: -32px -32px;
+}
+.face.face17:after{
+    background-position: -58px -32px;
+}
+.face.face18:after{
+    background-position: -84px -32px;
+}
+.face.face19:after{
+    background-position: -110px -32px;
+}
+.face.face20:after{
+    background-position: -136px -32px;
+}
+.face.face21:after{
+    background-position: -162px -32px;
+}
+.face.face22:after{
+    background-position: -188px -32px;
+}
+.face.face23:after{
+    background-position: -214px -32px;
+}
+.face.face24:after{
+    background-position: -240px -32px;
+}
+.face.face25:after{
+    background-position: -266px -32px;
+}
+.face.face26:after{
+    background-position: -292px -32px;
+}
+.face.face27:after{
+    background-position: -318px -32px;
+}
+.face.face28:after{
+    background-position: -344px -32px;
+}
+.face.face29:after{
+    background-position: -370px -32px;
+}
+/***********************************************************/
+/******************************************/
+.face.face30:after{
+    background-position: -6px -58px;
+}
+.face.face31:after{
+    background-position: -32px -58px;
+}
+.face.face32:after{
+    background-position: -58px -58px;
+}
+.face.face33:after{
+    background-position: -84px -58px;
+}
+.face.face34:after{
+    background-position: -110px -58px;
+}
+.face.face35:after{
+    background-position: -136px -58px;
+}
+.face.face36:after{
+    background-position: -162px -58px;
+}
+.face.face37:after{
+    background-position: -188px -58px;
+}
+.face.face38:after{
+    background-position: -214px -58px;
+}
+.face.face39:after{
+    background-position: -240px -58px;
+}
+.face.face40:after{
+    background-position: -266px -58px;
+}
+.face.face41:after{
+    background-position: -292px -58px;
+}
+.face.face42:after{
+    background-position: -318px -58px;
+}
+.face.face43:after{
+    background-position: -344px -58px;
+}
+.face.face44:after{
+    background-position: -370px -58px;
+}
+/*******************************************/
+.face.face45:after{
+    background-position: -6px -84px;
+}
+.face.face46:after{
+    background-position: -32px -84px;
+}
+.face.face47:after{
+    background-position: -58px -84px;
+}
+.face.face48:after{
+    background-position: -84px -84px;
+}
+.face.face49:after{
+    background-position: -110px -84px;
+}
+.face.face50:after{
+    background-position: -136px -84px;
+}
+.face.face51:after{
+    background-position: -162px -84px;
+}
+.face.face52:after{
+    background-position: -188px -84px;
+}
+.face.face53:after{
+    background-position: -214px -84px;
+}
+.face.face54:after{
+    background-position: -240px -84px;
+}
+.face.face55:after{
+    background-position: -266px -84px;
+}
+.face.face56:after{
+    background-position: -292px -84px;
+}
+.face.face57:after{
+    background-position: -318px -84px;
+}
+.face.face58:after{
+    background-position: -344px -84px;
+}
+.face.face59:after{
+    background-position: -370px -84px;
+}
+/******************************************/
+.face.face60:after{
+    background-position: -6px -110px;
+}
+.face.face61:after{
+    background-position: -32px -110px;
+}
+.face.face62:after{
+    background-position: -58px -110px;
+}
+.face.face63:after{
+    background-position: -84px -110px;
+}
+.face.face64:after{
+    background-position: -110px -110px;
+}
+.face.face65:after{
+    background-position: -136px -110px;
+}
+.face.face66:after{
+    background-position: -162px -110px;
+}
+.face.face67:after{
+    background-position: -188px -110px;
+}
+.face.face68:after{
+    background-position: -214px -110px;
+}
+.face.face69:after{
+    background-position: -240px -110px;
+}
+.face.face70:after{
+    background-position: -266px -110px;
+}
+.face.face71:after{
+    background-position: -292px -110px;
+}
+.face.face72:after{
+    background-position: -318px -110px;
+}
+.face.face73:after{
+    background-position: -344px -110px;
+}
+.face.face74:after{
+    background-position: -370px -110px;
+}
+/************************************/
+.face.face75:after{
+    background-position: -6px -136px;
+}
+.face.face76:after{
+    background-position: -32px -136px;
+}
+.face.face77:after{
+    background-position: -58px -136px;
+}
+.face.face78:after{
+    background-position: -84px -136px;
+}
+.face.face79:after{
+    background-position: -110px -136px;
+}
+.face.face80:after{
+    background-position: -136px -136px;
+}
+.face.face81:after{
+    background-position: -162px -136px;
+}
+.face.face82:after{
+    background-position: -188px -136px;
+}
+.face.face83:after{
+    background-position: -214px -136px;
+}
+.face.face84:after{
+    background-position: -240px -136px;
+}
+.face.face85:after{
+    background-position: -266px -136px;
+}
+.face.face86:after{
+    background-position: -292px -136px;
+}
+.face.face87:after{
+    background-position: -318px -136px;
+}
+.face.face88:after{
+    background-position: -344px -136px;
+}
+.face.face89:after{
+    background-position: -370px -136px;
+}
+/**************************************/
+.face.face90:after{
+    background-position: -6px -162px;
+}
+.face.face91:after{
+    background-position: -32px -162px;
+}
+.face.face92:after{
+    background-position: -58px -162px;
+}
+.face.face93:after{
+    background-position: -84px -162px;
+}
+.face.face94:after{
+    background-position: -110px -162px;
+}
+.face.face95:after{
+    background-position: -136px -162px;
+}
+.face.face96:after{
+    background-position: -162px -162px;
+}
+.face.face97:after{
+    background-position: -188px -162px;
+}
+.face.face98:after{
+    background-position: -214px -162px;
+}
+.face.face99:after{
+    background-position: -240px -162px;
+}
