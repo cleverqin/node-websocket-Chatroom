@@ -2,117 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="author" content="cleverqin">
-    <meta name="description" content="Chat聊天室,使用nodejs和websocket构建的网页聊天室">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="app/favicon.ico" type="image/x-icon" />
-    <title>智能机器人聊天室</title>
-    <link rel="stylesheet" href="app/styles/chatDemo.css">
-    <link href="app/styles/face.css" rel=stylesheet>
-    <style>
-        #loginWrapper{
-            display: block;
-        }
-    </style>
+    <title>聊天室</title>
+    <link rel="stylesheet" href="ImChat/css/charRoom.css">
+    <link href="ImChat/css/face1.css" rel=stylesheet>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_lp5u2t6dhrggb9.css">
+    <link rel="stylesheet" href="ImChat/css/animate.css">
 </head>
 <body>
-<div id="content">
-    <div class="top-Nav">
-        <div class="nav-box">
-            <div class="login-btn" v-on:click="isShow=true">登录</div>
-            <div class="online-user" id="onlineUser">
-                <img v-bind:src="curUser.pic" id="userPic">
-                <span id="userName" v-text="curUser.nickName"></span>
-            </div>
-        </div>
-    </div>
-    <div class="chat-box">
-        <div class="chat-box-left">
-            <div class="aside-header">
-                <div class="aside-header-txt">在线列表</div>
-            </div>
-            <div class="aside-body">
-                <ul class="online-list">
-                    <online-item :user="item" v-for="item in onlineList"></online-item>
-                </ul>
-            </div>
-        </div>
-        <div class="chat-box-right">
-            <div class="main-title-box">
-                <div class="chat-title">智能机器人聊天室</div>
-            </div>
-            <div class="sub-title-box">
-                <div class="sub-title">在线人数：<span class="online-num" v-text="onlineNum"></span></div>
-            </div>
-            <div class="msg-content-box">
-                <ul class="chat-msg-list">
-                    <template v-for="item in msgList">
-                        <msg-item :msg="item" ></msg-item>
-                    </template>
-                </ul>
-            </div>
-            <div class="toolBar-box">
-                <div  class='faceBtn' id='faceBtn'>
-                    <span class="iconFaceBtn" title="选择表情"></span>
-                </div>
-                <div class="sendPic-btn">
-                    <span class="iconPic" title="发送图片" @click="sendImg"></span>
-                    <input type="file" accept="accept='image/gif, image/jpeg,image/png" class='imgInput' v-on:change="imgSelect" />
-                </div>
-            </div>
-            <div class="control-box">
-                <div class="control-left">
-                    <textarea class="msg-input" placeholder="请输入消息" v-model="msg" @keyup.enter="sendMsg"></textarea>
-                </div>
-                <div class="control-right">
-                    <button type="button" class="send-btn" v-on:click="sendMsg">确定</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <login :show="isShow"></login>
-</div>
-<template id="loginTpl">
-    <div id="loginWrapper" v-show="show">
-        <div id="nickWrapper" >
-            <div class='login-form'>
-                <div class='form-group'>
-                    <label>选择头像：</label>
-                    <div class="select-pic-box form-control">
-                        <ul class="img-list">
-                            <li v-bind:class="{'checked':item==user.pic}" v-for="item in picList" @click="selectUserPic(item)"><img v-bind:src="item"></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class='form-group'>
-                    <label>填写昵称：</label>
-                    <div class='form-control input-control-box'>
-                        <input type="text" placeHolder="请输入你的昵称" id="nicknameInput" v-model="user.nickName"/>
-                        <span class="error-msg-box">昵称已存在，重新输入。</span>
-                    </div>
-                </div>
-                <div class="form-group btn-box">
-                    <input type="button" value="确定" class="form-btn" v-on:click="login"/>
-                    <input type="button" value="取消" class="form-btn" v-on:click="hideLogin"/>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
+<audio id="audio" src="./img/8400.mp3"></audio>
+<div class="bg bg-blur"></div>
 <template id="onlineItem">
-    <li class="online-item">
-        <div class="img-box"><img v-bind:src="user.pic"></div>
-        <div class="name-box" v-text="user.nickName"></div>
-    </li>
+    <div class="chat_item " :class="channel.id==user.id?'active':''" @click="changeChannel(user)">
+        <div class="avatar">
+            <img class="img" :src="user.pic"  alt="">
+        </div>
+        <div class="info">
+            <h3 class="nickname">
+                <span class="nickname_text" v-text="user.nickName"></span>
+                <span style="display: none">{{time}}</span>
+            </h3>
+            <div class="least-msg" v-html="getLastMsg()"></div>
+        </div>
+    </div>
 </template>
 <template id="msgTpl">
     <li class="user-msg" v-if="msg.type==='user'">
         <div class="msg-box">
             <div class="msg-box-img">
                 <img v-bind:src="msg.content.user.pic" class="user-img">
-                <div class="msg-tag-txt">{{msg.content.user.nickName}}</div>
+                <div class="msg-tag-txt">{{msg.content.user.nickName}}<span class="msg-time">{{msg.time|ago}}</span></div>
             </div>
             <div class="msg-txt-box">
                 <div class="msg-txt-content"><span class="msg-arrow"></span><div v-html="msg.content.msg"></div></div>
@@ -123,7 +41,7 @@
         <div class="msg-box">
             <div class="msg-box-img">
                 <img v-bind:src="msg.content.user.pic" class="user-img">
-                <div class="msg-tag-txt">我</div>
+                <div class="msg-tag-txt"><span class="msg-time">{{msg.time|ago}}</span>{{msg.content.user.nickName}}</div>
             </div>
             <div class="msg-txt-box">
                 <div class="msg-txt-content"><span class="msg-arrow"></span><div v-html="msg.content.msg"></div></div>
@@ -131,12 +49,131 @@
         </div>
     </li>
     <li class="sys-msg" v-else="msg.type==='sys'">
-        <div class="msg-box"><div v-html="msg.content.msg"></div></div>
+        <div class="msg-box"><span v-html="msg.content.msg"></span><span class="msg-time">{{msg.time|ago}}</span></div>
     </li>
 </template>
-<script src="app/scripts/vue.min.2.2.0.js"></script>
+<template id="myAlter">
+    <transition name='custom-classes-transition' enter-active-class="animated fadeIn"
+                leave-active-class="animated fadeOut">
+        <div class="alter-panel" v-show="show">
+            <div class="alter-mask" @click="hideAlter"></div>
+            <transition name='custom-classes-transition' enter-active-class="animated fadeInLeft"
+                        leave-active-class="animated fadeOutLeft">
+                <div class="alter-content scroll" v-show="show">
+                    <div class="search-panel search-weather" v-show="type=='weather'">
+                        <div class="search-title">天气查询</div>
+                        <div class="form-group">
+                            <input input="text" class="form-element" placeholder="请输入城市名称" v-model="city">
+                            <button type="button" class="form-btn" @click="searchWeather">查询</button>
+                        </div>
+                        <pre class="json-renderer"></pre>
+                    </div>
+                    <div class="search-panel search-express" v-show="type=='express'">
+                        <div class="search-title">快递查询</div>
+                        <div class="form-group">
+                            <select  class="form-element" v-model="com">
+                                <option value="圆通">圆通</option>
+                                <option value="顺丰">顺丰</option>
+                                <option value="申通">申通</option>
+                                <option value="中通">中通</option>
+                                <option value="韵达">韵达</option>
+                                <option value="天天">天天</option>
+                            </select>
+                            <input input="text" class="form-element" placeholder="请输入快递单号" v-model="code">
+                            <button type="button" class="form-btn" @click="searchExpress">查询</button>
+                        </div>
+                        <pre class="json-renderer"></pre>
+                    </div>
+                    <div class="search-panel search-train" v-show="type=='train'">
+                        <div class="search-title">列车查询</div>
+                        <div class="form-group">
+                            <input input="text" class="form-element" placeholder="请输入列车车次" v-model="train">
+                            <button type="button" class="form-btn" @click="searchTrain">查询</button>
+                        </div>
+                        <pre class="json-renderer"></pre>
+                    </div>
+                </div>
+            </transition>
+        </div>
+    </transition>
+</template>
+<div class="chat-box" id="chatBox">
+    <div class="panel-left">
+        <div class="header-top">
+            <div class="avatar">
+                <img class="img" src="img/img.jpg" :src="curUser.pic">
+            </div>
+            <div class="info">
+                <h3 class="nickname">
+                    <span class="display_name ng-binding" v-text="curUser.nickName">似水流年</span>
+                    <a class="opt tool-menu" href="javascript:;" @click.stop="showMenu=!showMenu"><i class="web_wechat_add"></i></a>
+                    <transition name='custom-classes-transition' enter-active-class="animate scaleFadeIn"
+                                leave-active-class="animate scaleFadeOut">
+                        <div class="drop-box" v-show="showMenu" style="display: none">
+                            <ul class="dropdown_menu">
+                                <li @click="type='weather'">
+                                    <a  href="javascript:;"  title="天气查询" @click="show=true" >
+                                        <i class="menuicon_chat iconfont icon-icon53"></i>天气查询
+                                    </a>
+                                </li>
+                                <li @click="type='express'">
+                                    <a  href="javascript:;"  title="快递查询" @click="show=true" >
+                                        <i class="menuicon_chat iconfont icon-kuaidi"></i>快递查询
+                                    </a>
+                                </li>
+                                <li @click="type='train'">
+                                    <a  href="javascript:;"  title="列车查询" @click="show=true">
+                                        <i class="menuicon_chat iconfont icon-train"></i>列车查询
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </transition>
+                </h3>
+            </div>
+        </div>
+        <div class="search-bar">
+            <i class="web_wechat_search"></i>
+            <input type="text" class="searh-input" placeholder="搜索" v-model="keywords">
+        </div>
+        <div class="nav-view scroll">
+            <online-item :user="item" :channel="channel" :time="time" v-for="item in filterName()"></online-item>
+        </div>
+    </div>
+    <div class="panel-right">
+        <div class="top-title">
+            <div class="title-box" v-text="channel.nickName"></div>
+        </div>
+        <div class="msg-wrapper">
+            <div class="msg-content scroll" ref="list">
+                <ul class="chat-msg-list">
+                    <template v-for="item in msgList">
+                        <msg-item :msg="item" ></msg-item>
+                    </template>
+                </ul>
+            </div>
+        </div>
+        <div class="box-footer">
+            <div class="tool-bar">
+                <a class="web_wechat_face" href="javascript:void (0)" title="表情"></a>
+            </div>
+            <div class="msg-send-box">
+                <div class="text-area" >
+                    <textarea class="send-msg-input scroll" v-model="txt" @keyup.enter="sendMsg"></textarea>
+                </div>
+            </div>
+            <div class="send-btn-box">
+                <a class="btn btn_send" href="javascript:;" @click="sendMsg">发送</a>
+            </div>
+        </div>
+    </div>
+    <ui-alter :show="show" :type="type"></ui-alter>
+</div>
+<script src="ImChat/js/face.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
 <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.js"></script>
-<script src="app/scripts/face.js"></script>
-<script src="app/scripts/demo2.js"></script>
+<script src="ImChat/js/jquery.json-viewer.js"></script>
+<script src="ImChat/js/chatRoom.js"></script>
+<script src="http://api.asilu.com/bg/?callback=init"></script>
 </body>
 </html>

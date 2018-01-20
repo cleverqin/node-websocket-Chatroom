@@ -127,8 +127,7 @@ window.onload=function () {
             },
             getMsg:function (msg) {
                 var _this=this;
-                var url=urlPre+url1;
-                this.$http.get(url,{params:{
+                this.$http.get('http://www.tuling123.com/openapi/api',{params:{
                     key:'a36d98ad2dfa44a487c74fefff41080c',
                     info:msg,
                     userid:"123456"

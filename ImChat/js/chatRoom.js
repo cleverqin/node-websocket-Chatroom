@@ -11,7 +11,7 @@
     })
     var API={
         robot:{
-            url:'http://cors.itxti.net/?www.tuling123.com/openapi/api?',
+            url:'http://www.tuling123.com/openapi/api',
             type:'get',
             dataType:"json"
         },
@@ -146,7 +146,7 @@
                 curUser:{
                     id:'1',
                     nickName:"似水流年",
-                    pic:"img/img.jpg"
+                    pic:"http://q.qlogo.cn/headimg_dl?dst_uin=705597001&spec=100"
                 },
                 show:false,
                 showMenu:false,
@@ -157,7 +157,7 @@
                 onlineList:[robot,{
                     id:'b11',
                     nickName:"温柔的荆棘",
-                    pic:"img/10.jpg"
+                    pic:"http://cleverqin.oschina.io/site/IM/img/10.jpg"
                 }],
                 msgList:[],
                 channel:{}
