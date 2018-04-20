@@ -1,0 +1,703 @@
+/***聊天窗口气泡***/
+html,body{
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+body{
+    padding: 0;
+    margin: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+/***********对话气泡样式*************/
+.ui-thread-item{
+    margin: 8px auto;
+}
+.ui-thread-item:after,.ui-thread-content:after{
+    display: table;
+    content: "";
+    clear: both;
+}
+.ui-thread-avatar{
+    width: 40px;
+    height: 40px;
+    float: left;
+}
+.ui-thread-avatar img{
+    display: block;
+    border: none;
+    width: 100%;
+    height: 100%;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px; ;
+}
+.ui-thread-content{
+    margin: 0 55px;
+}
+.ui-thread-info{
+    line-height: 25px;
+    height: 25px;
+    font-size: 12px;
+    color: #8c8c8c;
+}
+.ui-thread-info span{
+    margin: 0 10px;
+}
+.ui-thread-body{
+    float: left;
+    position: relative;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 14px;
+    line-height: 20px;
+    color: #5f5f5f;
+    word-wrap: break-word;
+    max-width: 100%;
+}
+.ui-thread-body:after{
+    display: block;
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 0 solid transparent;
+    border-right: 10px solid #fff;
+    border-bottom: 16px solid transparent;
+    position: absolute;
+    top: 5px;
+    left: -10px;
+}
+.ui-thread-right .ui-thread-avatar,.ui-thread-right .ui-thread-body{
+    float: right;
+}
+.ui-thread-right .ui-thread-info{
+    text-align: right;
+}
+.ui-thread-right .ui-thread-body{
+    background-color: #b2e281
+}
+.ui-thread-right .ui-thread-body:after{
+    border-left: 10px solid #b2e281;
+    border-right: none;
+    top: 5px;
+    left: 100%;
+}
+/**************聊天窗口样式****************/
+.ui-chat-box{
+    width: 700px;
+    height: 540px;
+    margin:auto;
+    overflow: hidden;
+    border-radius: 4px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.ui-chat-left{
+    position: relative;
+    width: 200px;
+    height: 100%;
+    float: left;
+    background: #2e3238;
+}
+.ui-chat-right{
+    position: relative;
+    background-color: #eee;
+    height: 100%;
+    overflow: hidden;
+}
+/********************************/
+.ui-topInfo{
+    position: relative;
+    padding: 10px 0;
+    line-height: 25px;
+    margin: 0 20px;
+    border-bottom: 1px solid #d6d6d6;
+    background-color: #eee;
+    text-align: center;
+    font-size: 14px;
+}
+.ui-messageWarp{
+    height: 300px;
+    padding: 10px 20px;
+    overflow-y: auto;
+}
+.ui-toolBar{
+    margin-right: 20px;
+    padding-left: 15px;
+    border-top: 1px solid #d6d6d6;
+    height: 40px;
+}
+.ui-sendFrom{
+    margin: 0 20px;
+}
+.ui-chatInput{
+    width: 100%;
+    height: 84px;
+    resize: none;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #333;
+    font-size: 14px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+.ui-chatInput:focus{
+    background: #e6e6e6;
+}
+.ui-sendBox{
+    text-align: right;
+}
+.ui-chatSendBtn{
+    display: inline-block;
+    border: 1px solid #c1c1c1;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    padding: 3px 30px;
+    font-size: 14px;
+    text-decoration: none;
+    background-color: #fff;
+    color: #222;
+}
+/***********图标************/
+[class*="ui-chatIcon-"]:after, [class^=ui-chatIcon-]:after{
+    content: "";
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background: url(../images/5af37c4a880a95586cd41c5b251d5562@1x.png) no-repeat;
+    -webkit-background-size: 487px 462px;
+    background-size: 487px 462px;
+    vertical-align: middle;
+    position: relative;
+}
+.ui-chatIcon-face:after{
+    background-position: -404px -398px;
+}
+.ui-chatIcon-face{
+    display: inline-block;
+    padding: 5px;
+    position: relative;
+}
+.ui-chatIcon-dropDwon:after{
+    background-position: -434px -398px;
+}
+.ui-chatIcon-dropDwon{
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    right: 0;
+    top:5px;
+    cursor: pointer;
+}
+.ui-chatIcon-search:after{
+    background-position: -60px -432px;
+}
+.ui-chatIcon-search{
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.ui-chatIcon-notice:after{
+    background-position: -170px -400px;
+}
+.ui-chatIcon-noticeClose:after{
+    background-position: -137px -400px;
+}
+.ui-chatIcon-logout:after{
+    background-position: -102px -400px;
+}
+.ui-chatIcon-link:after{
+    background-position: -271px -400px;
+}
+/*************用户信息样式***************/
+.ui-top-userInfo{
+    position: relative;
+    padding: 18px;
+}
+.ui-userAvatar{
+    width: 40px;
+    height: 40px;
+    border-right: 4px;
+    float: left;
+}
+.ui-userAvatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.ui-userInfo{
+    padding: 5px 0;
+    margin-left: 50px;
+    position: relative;
+}
+.ui-userInfo h3{
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-wrap: normal;
+    color: #fff;
+    font-size: 16px;
+    vertical-align: top;
+    line-height: 30px;
+    text-decoration: none;
+    margin: 0;
+}
+/**********查找用户***********/
+.ui-chatSearch{
+    margin: 0 18px 10px;
+    position: relative;
+}
+.ui-chatInputSearch{
+    display: block;
+    width: 100%;
+    height: 32px;
+    line-height: 32px;
+    border: 0;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    background-color: #565b63;
+    color: #fff;
+    padding-left: 30px;
+    padding-right: 10px;
+    font-size: 12px;
+    outline: none;
+    box-sizing: border-box;
+}
+/*********在线用户列表**********/
+.ui-chatUsers{
+    position: absolute;
+    top: 120px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+}
+.ui-itemUser{
+    padding: 10px 18px;
+    border-bottom: 1px solid #4c4c4c;
+    cursor: pointer;
+}
+.ui-itemUser.active,.ui-itemUser:hover{
+    background: #3a3f45;
+}
+.ui-itemUser:after{
+    display: block;
+    content: "";
+    clear: both;
+}
+.ui-itemUser-avatar{
+    width: 40px;
+    height: 40px;
+    float: left;
+}
+.ui-itemUser-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.ui-itemUser-info{
+    margin-left: 50px;
+}
+.ui-itemUser-title{
+    height: 20px;
+    line-height: 20px;
+    margin: 0;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 400;
+}
+.ui-itemUser-text{
+    line-height: 20px;
+    margin: 0;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-wrap: normal;
+    max-height: 20px;
+}
+/********************************************/
+/*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
+.ui-scroll::-webkit-scrollbar{
+    width: 5px;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0);
+}
+/*定义滚动条的轨道，内阴影及圆角*/
+.ui-scroll::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 6px rgba(240, 240, 240, 0);
+    border-radius: 10px;
+    background-color: rgba(0, 89, 255, 0);
+}
+/*定义滑块，内阴影及圆角*/
+.ui-scroll:hover::-webkit-scrollbar-thumb{
+    /*width: 10px;*/
+    height: 20px;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(236, 236, 236, 0.3);
+    background-color: rgba(203, 203, 203, 0.54);
+    transition: all 0.5s;
+}
+/*************下拉菜单****************/
+.dropdown_menu{
+    list-style: none;
+    background-color: #fff;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #d6d6d6;
+    box-shadow: 2px 3px 10px rgba(0,0,0,.1);
+    -moz-box-shadow: rgba(0,0,0,.1) 2px 3px 10px;
+    -webkit-box-shadow: rgba(0,0,0,.1) 2px 3px 10px;
+    min-width: 125px;
+    padding: 0;
+    margin: 0;
+}
+.drop-box{
+    width: 180px;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 99;
+    display: block;
+}
+.dropdown_menu li i {
+    margin-right: 8px;
+    display: inline-block;
+    vertical-align: middle;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+}
+.dropdown_menu li a {
+    display: block;
+    text-decoration: none;
+    color: #000;
+    font-size: 14px;
+    padding: 8px;
+    border-bottom: 1px solid #f1f1f1;
+    text-align: left;
+    font-weight: normal;
+}
+.dropdown_menu li a:hover{
+    background-color: #f5f5f5;
+}
+/*******************表情弹窗***********************/
+.face-warp a{
+    display: block;
+    float: left;
+    text-align: center;
+    margin: -1px 0 0 -1px;
+    border: 1px solid #e8e8e8;
+    color: #9ABBC8;
+    text-decoration: none;
+    padding: 4px;
+}
+.face-warp a:hover{
+    z-index:2;
+    position:relative;
+    border:1px solid #0095cd;
+}
+.face-warp a img{
+    display: block;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+.face-warp{
+    width: 434px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 7px;
+}
+.face-warp:after{
+    display: table;
+    clear: both;
+    content: '';
+}
+
+.warpBox{
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 10px;
+    display: block;
+    box-shadow: 0 0 7px #ccc;
+    border-radius: 7px;
+    z-index: 99;
+}
+.warpBox:after{
+    display: block;
+    position: absolute;
+    content: '';
+    width: 14px;
+    height: 14px;
+    top: 100%;
+    left: 10px;
+    margin-top: -7px;
+    background-color: #fff;
+    box-shadow:1px 1px 2px #ccc;
+    overflow:hidden;
+    pointer-events:none;
+    -webkit-transform:rotate(45deg);
+    -mz-transform:rotate(45deg);
+    transform:rotate(45deg);
+    z-index: -1;
+}
+/****************动画********************/
+@keyframes scaleFadeIn {
+    0%{
+        opacity: 0;
+        transform:translateY(-40px);
+    }
+    100%{
+        opacity: 1;
+        transform:translateY(0);
+    }
+}
+@keyframes scaleFadeOut {
+    0%{
+        opacity: 1;
+        transform:translateY(0);
+    }
+    100%{
+        opacity: 0;
+        transform:translateY(-40px);
+    }
+}
+@keyframes fadeIn {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+@keyframes fadeOut {
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+}
+.animate{
+    animation-duration: 0.5s;
+}
+.animate.scaleFadeIn{
+    animation-name: scaleFadeIn;
+}
+.animate.fadeIn{
+    animation-name: fadeIn;
+}
+.animate.fadeOut{
+    animation-name: fadeOut;
+}
+.animate.scaleFadeOut{
+    animation-name: scaleFadeOut;
+}
+/*************机器人回复信息样式**************/
+.res-list{
+    margin: 0;
+    padding: 0;
+}
+.res-list li{
+    line-height: 25px;
+    height: 25px;
+    max-width: 240px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 0 10px;
+}
+.res-list li a{
+    text-decoration: none;
+    font-size: 14px;
+    color: #6d6d6d;
+}
+.res-list li a:hover{
+    color: #5598e6;
+}
+.res-link{
+    color: #5598e6;
+    text-decoration: none;
+    margin-left: 10px;
+}
+/***************登录窗口样式*****************/
+.ui-login-group:after{
+    display: table;
+    content: "";
+    clear: both;
+}
+.ui-avatar{
+    float: left;
+    width: 80px;
+    height: 80px;
+    position: relative;
+}
+.ui-selectAvatar{
+    position: absolute;
+    width: 360px;
+    padding: 10px;
+    background: #F2F6FC;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px #eee;
+    top: 95px;
+    left: -15px;
+    z-index: 99;
+}
+.ui-selectAvatar:after{
+    display: block;
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    bottom: 100%;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #F2F6FC;
+    left: 40px;
+}
+.ui-avatarItem{
+    float: left;
+    margin: 5px;
+    width: 80px;
+    height: 80px;
+    position: relative;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.ui-avatarItem.active{
+    border: 2px solid #4db3ff;
+}
+.ui-avatarItem.active:after{
+    display: block;
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #4db3ff;
+    content: '✔';
+    color: #fff;
+    bottom: 0;
+    right: 0;
+    text-align: right;
+    line-height: 18px;
+    font-size: 12px;
+    border-radius: 10px 0 0 0;
+}
+.ui-login-banner{
+    position: relative;
+    height: 160px;
+    background: url("../images/a1 (10).jpg") no-repeat center;
+    background-size: cover;
+    border-radius: 4px 4px 0 0;
+}
+.ui-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.ui-form-element{
+    margin-left: 90px;
+}
+.ui-form-element .ui-input{
+    font-size: 14px;
+    display: block;
+    line-height: 40px;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #C0C4CC;
+    box-sizing: border-box;
+    margin: -1px;
+    width: 220px;
+}
+.ui-form-element .ui-input:first-child{
+    border-radius:4px 4px 0 0;
+}
+.ui-form-element .ui-input{
+    border-radius:0 0 4px 4px;
+}
+.ui-login-group{
+    display: inline-block;
+}
+.ui-login-form{
+    text-align: center;
+    padding: 15px 30px;
+}
+.ui-login-box{
+    width: 400px;
+    border-radius: 4px;
+    background: #ffffff;
+    position: fixed;
+    left: 50%;
+    margin-left: -200px;
+    top: 100px;
+}
+.ui-loginBtn{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: block;
+    width: 100%;
+    line-height: 30px;
+    font-size: 12px;
+    background: #4db3ff;
+    color: #ffffff;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.ui-small{
+    position: absolute;
+    right: 10px;
+    top: 0;
+    width: 30px;
+    height: 28px;
+    border-radius: 0 0 4px 4px;
+    cursor: pointer;
+}
+.ui-small:hover{
+    background: rgba(104, 104, 104, 0.45);
+}
+.ui-small:after{
+    position: relative;
+    content: "";
+    display: block;
+    margin: 0 6px;
+    background: #eee;
+    height: 2px;
+    top: 14px;
+    border-radius: 1px;
+}
+.ui-chatError{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    line-height: 25px;
+    font-size: 12px;
+    padding: 0 15px;
+    background-color: #fef0f0;
+    color: #f56c6c;
+    border-radius: 0 0 4px 4px ;
+}

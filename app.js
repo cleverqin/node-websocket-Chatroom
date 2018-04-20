@@ -3,59 +3,57 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     users = [];
-
+let kit={
+    isHaveUser(user){
+        var flag=false;
+        users.forEach(function (item) {
+            if(item.name==user.name){
+                flag=true;
+            }
+        })
+        return flag;
+    },
+    delUser(id){
+        users.forEach(function (item,index) {
+            if(item.id==id){
+                users.splice(index, 1);
+            }
+        })
+    }
+}
 app.use('/', express.static(__dirname + '/static'));
-server.listen(process.env.PORT || 3000);
-console.log("服务器启动成功端口：3000")
-
 io.sockets.on('connection', function(socket) {
     //创建用户链接
     socket.on('login', function(user) {
-        if (isHave(user)) {
-            socket.emit('nickExisted');
+        if (kit.isHaveUser(user)) {
+            console.log("登录失败！",user)
+            socket.emit('loginFail',"登录失败,昵称已存在!");
         } else {
-            var address="未知";
-            user.address=address;
             socket.user = user;
             user.id=socket.id;
-            users.push(user);
+            console.log("登录成功！",user)
             socket.emit('loginSuccess',user,users);
-            socket.broadcast.emit('system', user,users,'login');
+            users.push(user)
+            socket.broadcast.emit('system', user,'join');
         };
     });
     //用户注销链接
     socket.on('disconnect', function() {
-        if (socket.user != null) {
-            console.log(users);
-            users.forEach(function (item,index) {
-                if(item.id==socket.id){
-                    users.splice(index, 1);
-                }
-            })
-            socket.broadcast.emit('system', socket.user,users, 'logout');
-            console.log(users);
+        if (socket.user!= null) {
+            kit.delUser(socket.id);
+            console.log("用户退出！",socket.user)
+            socket.broadcast.emit('system', socket.user, 'logout');
         }
     });
-    //新建消息
-    socket.on('postMsg', function(msg) {
-        console.log(socket.user);
-        socket.broadcast.emit('newMsg', socket.user, msg);
+    //群发消息
+    socket.on('groupMessage', function(msg) {
+        socket.broadcast.emit('groupMessage', socket.user, msg);
     });
     //发送私信
-    socket.on('privateMsg', function(id,msg) {
-        console.log(socket.user);
-        console.log(msg);
-        socket.broadcast.to(id).emit('personMsg',socket.user,msg);
+    socket.on('message', function(id,msg) {
+        socket.broadcast.to(id).emit('message',socket.user,msg);
     });
-    //判断用户名是否存在
-    function isHave(user) {
-        var flag=false;
-        for(var i=0;i<users.length;i++){
-            if(users[i].nickName==user.nickName){
-                flag=true;
-                break;
-            }
-        }
-        return flag;
-    }
+});
+server.listen(3000,function () {
+    console.log("服务器已启动在：3000端口","http://localhost:3000`")
 });

@@ -2,185 +2,135 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>聊天窗口</title>
-    <link rel="stylesheet" href="css/charRoom.css">
-    <link href="css/face.css" rel=stylesheet>
-    <link href="css/animate.css" rel=stylesheet>
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_lp5u2t6dhrggb9.css">
+    <title>会话聊天</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <link rel="stylesheet" href="css/thread.css">
 </head>
 <body>
-<div class="bg bg-blur"></div>
-<audio src="./content/8400.mp3" id="audio"></audio>
-<template id="onlineItem">
-    <div class="chat_item " :class="room==user.id?'active':''" @click="changeRoom(user)">
-        <div class="avatar">
-            <img class="img" :src="user.pic"  alt="">
+<div id="app"></div>
+<template id="tpl">
+    <section>
+        <audio src="./images/8400.mp3" ref="audio"></audio>
+        <div class="ui-chat-box" v-show="isLogin">
+            <div class="ui-chat-left">
+                <div class="ui-top-userInfo">
+                    <div class="ui-userAvatar">
+                        <img :src="user.avatarUrl" alt="">
+                    </div>
+                    <div class="ui-userInfo">
+                        <h3>{{user.name}}</h3>
+                        <span class="ui-chatIcon-dropDwon" @click.stop="showMenu=!showMenu"></span>
+                        <transition name='custom-classes-transition' enter-active-class="animate scaleFadeIn"
+                                    leave-active-class="animate scaleFadeOut">
+                            <div class="drop-box" v-show="showMenu">
+                                <ul class="dropdown_menu">
+                                    <li @click="isVoice=!isVoice">
+                                        <a  href="javascript:;"  title="消息音" >
+                                            <i :class="isVoice?'ui-chatIcon-notice':'ui-chatIcon-noticeClose'"></i>消息音
+                                        </a>
+                                    </li>
+                                    <li >
+                                        <a  href="javascript:;"  title="关于">
+                                            <i class="ui-chatIcon-link"></i>关于
+                                        </a>
+                                    </li>
+                                    <li >
+                                        <a  href="javascript:;"  title="退出">
+                                            <i class="ui-chatIcon-logout"></i>退出
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </transition>
+                    </div>
+                </div>
+                <div class="ui-chatSearch">
+                    <span class="ui-chatIcon-search"></span>
+                    <input type="text" class="ui-chatInputSearch" v-model="keywords" placeholder="搜索">
+                </div>
+                <div class="ui-chatUsers ui-scroll">
+                    <ui-user :user="item" @change-channel="changeChannel" :channel="channel" :key="item.id" v-for="(item,index) in filterName()"></ui-user>
+                </div>
+            </div>
+            <div class="ui-chat-right">
+                <div class="ui-topInfo">{{channelUser.name}}</div>
+                <div class="ui-messageWarp ui-scroll" ref="list">
+                    <ui-message :message="item" :key="item.channel+index" v-for="(item,index) in messageList"></ui-message>
+                </div>
+                <div class="ui-toolBar">
+                    <ui-face @select-face="selectFace" class="ui-chatIcon-face"></ui-face>
+                </div>
+                <div class="ui-sendFrom">
+                    <textarea class="ui-chatInput" v-model="text" @keyup.enter="send"></textarea>
+                    <div class="ui-sendBox">
+                        <a class="ui-chatSendBtn" href="javascript:" @click="send">发送</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="info">
-            <h3 class="nickname">
-                <span class="nickname_text" v-text="user.nickName"></span>
-            </h3>
-            <div class="least-msg" v-html="lateMsg(user)"></div>
-            <span v-text="time" style="display: none"></span>
+        <ui-login v-show="!isLogin" @user-login="userLogin"></ui-login>
+    </section>
+</template>
+<template id="message">
+    <div class="ui-thread-item" :class="{'ui-thread-right':message.type=='send'}">
+        <div class="ui-thread-avatar">
+            <img :src="message.user.avatarUrl" alt="">
+        </div>
+        <div class="ui-thread-content">
+            <div class="ui-thread-info" v-if="message.type=='send'"><span>{{message.time | time}}</span>{{message.user.name}}</div>
+            <div class="ui-thread-info" v-else>{{message.user.name}}<span>{{message.time | time}}</span></div>
+            <div class="ui-thread-body" v-html="filterText(message.text)"></div>
         </div>
     </div>
 </template>
-<template id="msgTpl">
-    <transition name='custom-classes-transition' enter-active-class="animated fadeIn"
-                leave-active-class=" ">
-    <li class="user-msg" v-if="msg.type==='user'">
-        <div class="msg-box">
-            <div class="msg-box-img">
-                <img v-bind:src="msg.content.user.pic" class="user-img">
-                <div class="msg-tag-txt">{{msg.content.user.nickName}}<span class="msg-time">{{msg.time|ago}}</span></div>
-            </div>
-            <div class="msg-txt-box">
-                <div class="msg-txt-content"><span class="msg-arrow"></span><div v-html="msg.content.msg"></div></div>
-            </div>
+<template id="user">
+    <div class="ui-itemUser" :class="{active:user.id==channel}" @click="change(user.id)">
+        <div class="ui-itemUser-avatar">
+            <img :src="user.avatarUrl" alt="" class="img">
         </div>
-    </li>
-    <li class="me-msg" v-else-if="msg.type==='send'" >
-        <div class="msg-box">
-            <div class="msg-box-img">
-                <img v-bind:src="msg.content.user.pic" class="user-img">
-                <div class="msg-tag-txt"><span class="msg-time">{{msg.time|ago}}</span>{{msg.content.user.nickName}}</div>
-            </div>
-            <div class="msg-txt-box">
-                <div class="msg-txt-content"><span class="msg-arrow"></span><div v-html="msg.content.msg"></div></div>
-            </div>
-        </div>
-    </li>
-    <li class="sys-msg" v-else="msg.type==='sys'">
-        <div class="msg-box"><span v-html="msg.content.msg"></span><span class="msg-time">{{msg.time|ago}}</span></div>
-    </li>
-    </transition>
-</template>
-<template id="loginTpl">
-    <transition name='custom-classes-transition' enter-active-class="animated fadeIn"
-                leave-active-class="animated fadeOut">
-        <div id="loginWrapper" v-show="show">
-            <div id="nickWrapper" >
-                <transition name='custom-classes-transition' enter-active-class="animated fadeInDown"
-                            leave-active-class="animated fadeOutUp">
-                <div class='login-form' v-show="show" >
-                    <div class='form-group'>
-                        <label>选择头像：</label>
-                        <div class="select-pic-box form-control">
-                            <ul class="img-list">
-                                <li v-bind:class="{'checked':item==user.pic}" v-for="item in picList" @click="selectUserPic(item)"><img v-bind:src="item"></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class='form-group'>
-                        <label>填写昵称：</label>
-                        <div class='form-control input-control-box'>
-                            <input type="text" placeHolder="请输入你的昵称" id="nicknameInput" v-model="user.nickName"/>
-                            <span class="error-msg-box">昵称已存在，重新输入。</span>
-                        </div>
-                    </div>
-                    <div class="form-group btn-box">
-                        <input type="button" value="确定" class="form-btn" v-on:click="login"/>
-                        <input type="button" value="取消" class="form-btn" v-on:click="hideLogin"/>
-                    </div>
-                </div>
-                </transition>
-            </div>
-        </div>
-    </transition>
-</template>
-<div class="content" id="content">
-    <div class="chat-box" id="chatBox">
-        <div class="panel-left">
-            <div class="header-top">
-                <div class="avatar">
-                    <img class="img" src="images/img.jpg" :src="curUser.pic">
-                </div>
-                <div class="info">
-                    <h3 class="nickname">
-                        <span class="display_name ng-binding" v-text="curUser.nickName">似水流年</span>
-                        <a class="opt tool-menu" href="javascript:;"><i class="web_wechat_add"></i></a>
-                        <div class="drop-box">
-                            <ul class="dropdown_menu">
-                                <li>
-                                    <a  href="javascript:;"  title="天气查询">
-                                        <i class="menuicon_chat iconfont icon-icon53"></i>天气查询
-                                    </a>
-                                </li>
-                                <li>
-                                    <a  href="javascript:;"  title="快递查询">
-                                        <i class="menuicon_chat iconfont icon-kuaidi"></i>快递查询
-                                    </a>
-                                </li>
-                                <li>
-                                    <a  href="javascript:;"  title="列车查询">
-                                        <i class="menuicon_chat iconfont icon-train"></i>列车查询
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </h3>
-                </div>
-                <div class="login-bar-box" v-if="userStatus==0">
-                    <a href="javascript:;" class="login-link" v-on:click="isShow=true">登录</a>
-                </div>
-            </div>
-            <div class="search-bar">
-                <i class="web_wechat_search"></i>
-                <input type="text" class="searh-input" placeholder="搜索" v-model="keywords">
-            </div>
-            <div class="nav-view scroll">
-                <div class="chat_item " :class="room=='chartRoom'?'active':''" @click="changeRoom">
-                    <div class="avatar">
-                        <img class="img" src="content/logo.png"  alt="">
-                    </div>
-                    <div class="info">
-                        <h3 class="nickname">
-                            <span class="nickname_text">群聊中</span>
-                        </h3>
-                        <div class="least-msg"></div>
-                    </div>
-                </div>
-                <online-item :user="item" :room="room" :title="roomTitle" :time="time"  v-for="item in filterName()"></online-item>
-            </div>
-        </div>
-        <div class="panel-right">
-            <div class="top-title">
-                <div class="title-box">
-                    <span v-text="roomTitle"></span>
-                    <span v-if="room=='chartRoom'">（<span v-text="onlineList.length+userStatus"></span>）</span>
-                </div>
-            </div>
-            <div class="msg-wrapper">
-                <div class="msg-content scroll">
-                    <ul class="chat-msg-list">
-                        <template v-for="item in msgList">
-                            <msg-item :msg="item" ></msg-item>
-                        </template>
-                    </ul>
-                </div>
-            </div>
-            <div class="box-footer">
-                <div class="tool-bar">
-                    <a class="web_wechat_face" href="javascript:void (0)" title="表情"></a>
-                </div>
-                <div class="msg-send-box">
-                    <div class="text-area" >
-                        <textarea class="send-msg-input scroll" v-model="txt" @keyup.enter="sendMsg"></textarea>
-                    </div>
-                </div>
-                <div class="send-btn-box">
-                    <a class="btn btn_send" href="javascript:;" @click="sendMsg">发送</a>
-                </div>
-            </div>
+        <div class="ui-itemUser-info">
+            <h3 class="ui-itemUser-title"><span class="nickname_text">{{user.name}}</span></h3>
+            <div class="ui-itemUser-text" v-html="filterText(lastMsg)"></div>
         </div>
     </div>
-    <login :show="isShow"></login>
-</div>
-<script src="js/face.js"></script>
-<script src="js/vue.min.2.2.0.js"></script>
-<script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.js"></script>
+</template>
+<template id="login">
+    <div class="ui-login-box">
+        <div class="ui-login-banner">
+            <span class="ui-small"></span>
+        </div>
+        <div class="ui-login-form">
+            <div class="ui-login-group">
+                <div class="ui-avatar">
+                    <img :src="avatarUrl" alt="" @click.stop="isShow=!isShow">
+                    <transition name='custom-classes-transition' enter-active-class="animate scaleFadeIn"
+                                leave-active-class="animate scaleFadeOut">
+                        <div class="ui-selectAvatar" v-show="isShow">
+                            <div class="ui-avatarItem" v-for="item in imgList" :class="{active:item==avatarUrl}" @click="avatarUrl=item">
+                                <img :src="item" alt="" >
+                            </div>
+                        </div>
+                    </transition>
+                </div>
+                <div class="ui-form-element">
+                    <input type="text" class="ui-input" placeholder="用户名" v-model="name">
+                    <input type="text" class="ui-input" placeholder="密码">
+                    <button type="button" class="ui-loginBtn" @click="userLogin">登录</button>
+                </div>
+            </div>
+        </div>
+        <transition name='custom-classes-transition' enter-active-class="animate fadeIn"
+                    leave-active-class="animate fadeOut">
+            <div class="ui-chatError" v-show="errorMsg!=''">{{errorMsg}}</div>
+        </transition>
+    </div>
+</template>
+<script src="./js/vue.min.2.2.0.js"></script>
+<script src="./js/vue-resource.js"></script>
+<script src="./js/vue-plugins.js"></script>
 <script src="./socket.io/socket.io.js"></script>
-<script src="js/chatRoom.js"></script>
-<script src="http://api.asilu.com/bg/?callback=init"></script>
+<script src="./js/chat.js"></script>
 </body>
 </html>

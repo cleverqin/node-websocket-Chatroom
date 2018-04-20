@@ -1,132 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>会话聊天</title>
-    <meta name="description" content="">
-    <meta name="keywords" content="">
-    <meta name="author" content="">
-    <link rel="stylesheet" href="static/css/thread.css">
-</head>
-<body>
-<div id="app"></div>
-<template id="tpl">
-    <section>
-        <div class="ui-chat-box" v-show="isLogin">
-            <div class="ui-chat-left">
-                <div class="ui-top-userInfo">
-                    <div class="ui-userAvatar">
-                        <img :src="user.avatarUrl" alt="">
-                    </div>
-                    <div class="ui-userInfo">
-                        <h3>{{user.name}}</h3>
-                        <span class="ui-chatIcon-dropDwon" @click.stop="showMenu=!showMenu"></span>
-                        <transition name='custom-classes-transition' enter-active-class="animate scaleFadeIn"
-                                    leave-active-class="animate scaleFadeOut">
-                            <div class="drop-box" v-show="showMenu">
-                                <ul class="dropdown_menu">
-                                    <li>
-                                        <a  href="javascript:;"  title="消息音" >
-                                            <i class="ui-chatIcon-notice"></i>消息音
-                                        </a>
-                                    </li>
-                                    <li >
-                                        <a  href="javascript:;"  title="关于">
-                                            <i class="ui-chatIcon-link"></i>关于
-                                        </a>
-                                    </li>
-                                    <li @click="userLogin">
-                                        <a  href="javascript:;"  title="退出">
-                                            <i class="ui-chatIcon-logout"></i>退出
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </transition>
-                    </div>
-                </div>
-                <div class="ui-chatSearch">
-                    <span class="ui-chatIcon-search"></span>
-                    <input type="text" class="ui-chatInputSearch" v-model="keywords" placeholder="搜索">
-                </div>
-                <div class="ui-chatUsers ui-scroll">
-                    <ui-user :user="item" @change-channel="changeChannel" :channel="channel" :key="item.id" v-for="(item,index) in filterName()"></ui-user>
-                </div>
-            </div>
-            <div class="ui-chat-right">
-                <div class="ui-topInfo">{{channelUser.name}}</div>
-                <div class="ui-messageWarp ui-scroll" ref="list">
-                    <ui-message :message="item" :key="item.channel+index" v-for="(item,index) in messageList"></ui-message>
-                </div>
-                <div class="ui-toolBar">
-                    <ui-face @select-face="selectFace" class="ui-chatIcon-face"></ui-face>
-                </div>
-                <div class="ui-sendFrom">
-                    <textarea class="ui-chatInput" v-model="text" @keyup.enter="send"></textarea>
-                    <div class="ui-sendBox">
-                        <a class="ui-chatSendBtn" href="javascript:" @click="send">发送</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <ui-login v-show="!isLogin" @user-login="userLogin"></ui-login>
-    </section>
-</template>
-<template id="message">
-    <div class="ui-thread-item" :class="{'ui-thread-right':message.type=='send'}">
-        <div class="ui-thread-avatar">
-            <img :src="message.user.avatarUrl" alt="">
-        </div>
-        <div class="ui-thread-content">
-            <div class="ui-thread-info" v-if="message.type=='send'"><span>{{message.time | time}}</span>{{message.user.name}}</div>
-            <div class="ui-thread-info" v-else>{{message.user.name}}<span>{{message.time | time}}</span></div>
-            <div class="ui-thread-body" v-html="filterText(message.text)"></div>
-        </div>
-    </div>
-</template>
-<template id="user">
-    <div class="ui-itemUser" :class="{active:user.id==channel}" @click="change(user.id)">
-        <div class="ui-itemUser-avatar">
-            <img :src="user.avatarUrl" alt="" class="img">
-        </div>
-        <div class="ui-itemUser-info">
-            <h3 class="ui-itemUser-title"><span class="nickname_text">{{user.name}}</span></h3>
-            <div class="ui-itemUser-text" v-html="filterText(lastMsg)"></div>
-        </div>
-    </div>
-</template>
-<template id="login">
-    <div class="ui-login-box">
-        <div class="ui-login-banner">
-            <span class="ui-small"></span>
-        </div>
-        <div class="ui-login-form">
-            <div class="ui-login-group">
-                <div class="ui-avatar">
-                    <img :src="avatarUrl" alt="" @click.stop="isShow=!isShow">
-                    <transition name='custom-classes-transition' enter-active-class="animate scaleFadeIn"
-                                leave-active-class="animate scaleFadeOut">
-                        <div class="ui-selectAvatar" v-show="isShow">
-                            <div class="ui-avatarItem" v-for="item in imgList" :class="{active:item==avatarUrl}" @click="avatarUrl=item">
-                                <img :src="item" alt="" >
-                            </div>
-                        </div>
-                    </transition>
-                </div>
-                <div class="ui-form-element">
-                    <input type="text" class="ui-input" placeholder="用户名" v-model="name">
-                    <input type="text" class="ui-input" placeholder="密码">
-                    <button type="button" class="ui-loginBtn" @click="userLogin">登录</button>
-                </div>
-            </div>
-        </div>
-        <div class="ui-chatError">请输入用户名！</div>
-    </div>
-</template>
-<script src="static/js/vue.min.2.2.0.js"></script>
-<script src="static/js/vue-resource.js"></script>
-<script src="static/js/vue-plugins.js"></script>
-<script>
+(function () {
+    var socket=io.connect();
     var message=Vue.extend({
         props: ['message'],
         template:"#message",
@@ -192,7 +65,8 @@
                 avatarUrl:images[0],
                 imgList:images,
                 name:"",
-                isShow:false
+                isShow:false,
+                errorMsg:""
             }
         },
         created:function () {
@@ -200,10 +74,42 @@
             document.addEventListener("click",function (e) {
                 _this.isShow=false;
             })
+            _this.initSocketEvent();
         },
         methods:{
             userLogin:function () {
-                this.$emit("user-login",this.avatarUrl)
+                this.name=this.name.replace(/(^\s*)|(\s*$)/g, "");
+                if(this.name!=""){
+                    socket.emit("login",{
+                        name:this.name,
+                        avatarUrl:this.avatarUrl
+                    })
+                }else {
+                    this.showError("请输入用户昵称！")
+                }
+            },
+            initSocketEvent:function () {
+                var _this=this;
+                socket.on("loginSuccess",function (user,users) {
+                    _this.$emit("user-login",{
+                        user:user,
+                        users:users
+                    })
+                })
+                socket.on("loginFail",function (msg) {
+                    _this.showError(msg)
+                })
+            },
+            showError:function (err) {
+                console.log(err)
+                var _this=this;
+                if(this.interval){
+                    clearTimeout(_this.interval)
+                }
+                this.errorMsg=err;
+                this.interval=setTimeout(function () {
+                    _this.errorMsg="";
+                },3000)
             }
         }
     })
@@ -220,24 +126,20 @@
                 user:{
                     id:"705597001",
                     name:"似水流年",
-                    avatarUrl:"static/images/img.jpg"
+                    avatarUrl:"./images/img.jpg"
                 },
                 users:[{
                     id:"group",
                     name:"群聊天室",
-                    avatarUrl:"static/images/group-icon.png",
-                    messages:[]
-                },{
-                    id:"a1101",
-                    name:"熊本熊",
-                    avatarUrl:"static/images/10.jpg",
+                    avatarUrl:"./images/group-icon.png",
                     messages:[]
                 }],
                 channel:"group",
                 text:"",
                 keywords:"",
                 showMenu:false,
-                isLogin:false
+                isLogin:false,
+                isVoice:true
             }
         },
         created:function () {
@@ -246,6 +148,9 @@
                 _this.showMenu=false;
             })
             _this.initBg()
+        },
+        mounted:function () {
+            this.audio=this.$refs.audio;
         },
         computed:{
             messageList:function () {
@@ -292,14 +197,19 @@
                     }
                 })
                 this.$nextTick(function () {
-                    _this.scrollFooter();
+                    if(_this.channel==channel){
+                        _this.scrollFooter();
+                    }
                 })
+                if(channel!="group"&&type!="send"&&_this.isVoice){
+                    _this.audio.play();
+                }
             },
             send:function () {
                 this.text=this.text.replace(/(^\s*)|(\s*$)/g, "");
                 if(this.text!=''){
                     this.sendMessage(this.channel,this.text,this.user,'send')
-                    this.getMessage(this.channel,this.text,this.channelUser)
+                    this.getMessage(this.channel,this.text,this.user)
                     this.text="";
                 }
             },
@@ -319,16 +229,11 @@
             },
             getMessage:function (channel,text,user) {
                 var _this=this;
-                this.$http.get("http://www.tuling123.com/openapi/api",{params:{
-                    key:'a36d98ad2dfa44a487c74fefff41080c',
-                    info:text,
-                    userid:"123456"
-                }}).then(function (response) {
-                    var data=response.body;
-                    if(data.text){
-                        _this.sendMessage(channel,_this.filterData(data),user,"user")
-                    }
-                })
+                if(channel=="group"){
+                    socket.emit("groupMessage",text)
+                }else {
+                    socket.emit("message",channel,text)
+                }
             },
             filterData:function (data) {
                 switch(data.code) {
@@ -382,7 +287,7 @@
                 this.$http.jsonp("https://api.asilu.com/bg")
                     .then(function (data) {
                         var images=data.body.images;
-                        document.body.style.backgroundImage="url('static/images/a1 (10).jpg')";
+                        document.body.style.backgroundImage="url('./images/a1 (10).jpg')";
                         setInterval(function () {
                             var index=parseInt(Math.random()*images.length);
                             var img=new Image();
@@ -393,12 +298,38 @@
                         },30000)
                     })
             },
-            userLogin:function (avatarUrl) {
-                this.user.avatarUrl=avatarUrl;
+            userLogin:function (params) {
+                this.initSocketEvent(params)
                 this.isLogin=!this.isLogin;
+            },
+            initSocketEvent:function (params) {
+                var _this=this;
+                this.user=params.user;
+                params.users.forEach(function (item) {
+                    item.messages=[]
+                    _this.users.push(item)
+                })
+                socket.on("message",function (user,text) {
+                    _this.sendMessage(user.id,text,user,"user")
+                })
+                socket.on("groupMessage",function (user,text) {
+                    _this.sendMessage("group",text,user,"user")
+                })
+                socket.on('system',function (user,type) {
+                    if(type=="join"){
+                        user.messages=[]
+                        _this.users.push(user)
+                    }
+                    if(type=="logout"){
+                        _this.channel="group";
+                        _this.users.forEach(function (item,index) {
+                            if(item.id==user.id){
+                                _this.users.splice(index, 1);
+                            }
+                        })
+                    }
+                })
             }
         }
     })
-</script>
-</body>
-</html>
+})()
