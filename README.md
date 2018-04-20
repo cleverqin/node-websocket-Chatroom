@@ -1,5 +1,5 @@
 Chat聊天室
-===
+---
  
 chat聊天室是一个基于nodejs+express+socket.io模块构建的
 网页聊天室工具。前端使用Vue作为前端框架。服务端使用express搭建web服务，使用socket.io
