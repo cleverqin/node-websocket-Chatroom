@@ -287,7 +287,20 @@ body{
 .ui-itemUser{
     padding: 10px 18px;
     border-bottom: 1px solid #4c4c4c;
+    position: relative;
     cursor: pointer;
+}
+.ui-chatBadge{
+    position: absolute;
+    background-color: #f56c6c;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 12px;
+    padding: 3px 6px;
+    text-align: center;
+    white-space: nowrap;
+    right: 10px;
 }
 .ui-itemUser.active,.ui-itemUser:hover{
     background: #3a3f45;

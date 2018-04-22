@@ -86,6 +86,7 @@
 </template>
 <template id="user">
     <div class="ui-itemUser" :class="{active:user.id==channel}" @click="change(user.id)">
+        <span class="ui-chatBadge">{{noReaderNum}}</span>
         <div class="ui-itemUser-avatar">
             <img :src="user.avatarUrl" alt="" class="img">
         </div>
@@ -164,6 +165,18 @@
                     str=_this.user.messages[_this.user.messages.length-1].text;
                 }
                 return str;
+            },
+            noReaderNum:function () {
+                var num=0;
+                var _this=this;
+                if(_this.user.messages&&_this.user.messages.length>0){
+                  _this.user.messages.forEach(function (item) {
+                    if(!item.isReader){
+                      num++;
+                    }
+                  })
+                }
+                return num;
             }
         },
         methods:{
@@ -281,6 +294,7 @@
                     user:user,
                     type:type,
                     text:text,
+                    isReader:false,
                     time:new Date().getTime()
                 };
                 this.users.forEach(function (item,index) {
