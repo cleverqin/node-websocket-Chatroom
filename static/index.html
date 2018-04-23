@@ -87,6 +87,7 @@
 </template>
 <template id="user">
     <div class="ui-itemUser" :class="{active:user.id==channel}" @click="change(user.id)">
+        <span class="ui-chatBadge" v-if="user.unRead" v-show="user.unRead!=0">{{user.unRead}}</span>
         <div class="ui-itemUser-avatar">
             <img :src="user.avatarUrl" alt="" class="img">
         </div>

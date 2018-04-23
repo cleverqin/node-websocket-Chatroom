@@ -193,6 +193,14 @@
                         if(!item.messages){
                             _this.$set(_this.users[index],"messages",[])
                         }
+                        if((type!='send'&&channel!=_this.channel)){
+                            if(_this.users[index].unRead){
+                                _this.users[index].unRead+=1;
+                            }else {
+                                _this.users[index].unRead=1;
+                            }
+
+                        }
                         item.messages.push(message)
                     }
                 })
@@ -220,6 +228,7 @@
             changeChannel:function (id) {
                 var _this=this;
                 this.channel=id;
+                _this.setMessageReader(id);
                 this.$nextTick(function () {
                     _this.scrollFooter();
                 })
@@ -327,6 +336,14 @@
                                 _this.users.splice(index, 1);
                             }
                         })
+                    }
+                })
+            },
+            setMessageReader:function (id) {
+                var _this=this;
+                this.users.forEach(function (item,index) {
+                    if(item.id==id){
+                        _this.users[index].unRead=0
                     }
                 })
             }

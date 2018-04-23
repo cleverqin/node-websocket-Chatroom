@@ -12,7 +12,7 @@
 <div id="app"></div>
 <template id="tpl">
     <section>
-        <div class="ui-chat-box" v-show="isLogin">
+        <div class="ui-chat-box" v-if="isLogin">
             <div class="ui-chat-left">
                 <div class="ui-top-userInfo">
                     <div class="ui-userAvatar">
@@ -86,7 +86,7 @@
 </template>
 <template id="user">
     <div class="ui-itemUser" :class="{active:user.id==channel}" @click="change(user.id)">
-        <span class="ui-chatBadge">{{noReaderNum}}</span>
+        <span class="ui-chatBadge" v-if="user.unRead" v-show="user.unRead!=0">{{user.unRead}}</span>
         <div class="ui-itemUser-avatar">
             <img :src="user.avatarUrl" alt="" class="img">
         </div>
@@ -121,7 +121,10 @@
                 </div>
             </div>
         </div>
-        <div class="ui-chatError">请输入用户名！</div>
+        <transition name='custom-classes-transition' enter-active-class="animate fadeIn"
+                    leave-active-class="animate fadeOut">
+            <div class="ui-chatError" v-show="errorMsg!=''">{{errorMsg}}</div>
+        </transition>
     </div>
 </template>
 <script src="static/js/vue.min.2.2.0.js"></script>
@@ -165,18 +168,6 @@
                     str=_this.user.messages[_this.user.messages.length-1].text;
                 }
                 return str;
-            },
-            noReaderNum:function () {
-                var num=0;
-                var _this=this;
-                if(_this.user.messages&&_this.user.messages.length>0){
-                  _this.user.messages.forEach(function (item) {
-                    if(!item.isReader){
-                      num++;
-                    }
-                  })
-                }
-                return num;
             }
         },
         methods:{
@@ -205,7 +196,8 @@
                 avatarUrl:images[0],
                 imgList:images,
                 name:"",
-                isShow:false
+                isShow:false,
+                errorMsg:""
             }
         },
         created:function () {
@@ -216,7 +208,22 @@
         },
         methods:{
             userLogin:function () {
-                this.$emit("user-login",this.avatarUrl)
+                this.name=this.name.replace(/(^\s*)|(\s*$)/g, "");
+                if(this.name!=""){
+                    this.$emit("user-login",this.avatarUrl)
+                }else {
+                    this.showError("请输入用户昵称！")
+                }
+            },
+            showError:function (err) {
+                var _this=this;
+                if(this.interval){
+                    clearTimeout(_this.interval)
+                }
+                this.errorMsg=err;
+                this.interval=setTimeout(function () {
+                    _this.errorMsg="";
+                },3000)
             }
         }
     })
@@ -250,7 +257,7 @@
                 text:"",
                 keywords:"",
                 showMenu:false,
-                isLogin:false
+                isLogin:true
             }
         },
         created:function () {
@@ -294,13 +301,20 @@
                     user:user,
                     type:type,
                     text:text,
-                    isReader:false,
                     time:new Date().getTime()
                 };
                 this.users.forEach(function (item,index) {
                     if(item.id==channel){
                         if(!item.messages){
                             _this.$set(_this.users[index],"messages",[])
+                        }
+                        if((type!='send'&&channel!=_this.channel)){
+                            if(_this.users[index].unRead){
+                                _this.users[index].unRead+=1;
+                            }else {
+                                _this.users[index].unRead=1;
+                            }
+
                         }
                         item.messages.push(message)
                     }
@@ -327,6 +341,7 @@
                 this.$nextTick(function () {
                     _this.scrollFooter();
                 })
+                _this.setMessageReader(id);
             },
             selectFace:function (text) {
                 this.text+=text.phrase;
@@ -410,6 +425,14 @@
             userLogin:function (avatarUrl) {
                 this.user.avatarUrl=avatarUrl;
                 this.isLogin=!this.isLogin;
+            },
+            setMessageReader:function (id) {
+                var _this=this;
+                this.users.forEach(function (item,index) {
+                    if(item.id==id){
+                        _this.users[index].unRead=0
+                    }
+                })
             }
         }
     })
