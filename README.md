@@ -1,6 +1,6 @@
 Chat聊天室
 ---
- 
+
 chat聊天室是一个基于nodejs+express+socket.io模块构建的
 网页聊天室工具。前端使用Vue作为前端框架。服务端使用express搭建web服务，使用socket.io
 来创建服务端socket服务，实现了一些基本的聊天功能。
@@ -34,8 +34,14 @@ chat聊天室是一个基于nodejs+express+socket.io模块构建的
 
 项目预览截图
 ---
-<img src='http://cleverqin.oschina.io/img/screen%20(1).png' width='400px'>
-<img src='http://cleverqin.oschina.io/img/screen%20(2).png' width='400px'>
-<img src='http://cleverqin.oschina.io/img/screen%20(3).png' width='400px'>
-<img src='http://cleverqin.oschina.io/img/screen%20(4).png' width='400px'>
+<img src='./static/images/screenshot/screen_005.png' width='400px'>
 
+<img src='./static/images/screenshot/screen_006.png' width='400px'>
+
+<img src='./static/images/screenshot/screen_001.png' width='400px'>
+
+<img src='./static/images/screenshot/screen_002.png' width='400px'>
+
+<img src='./static/images/screenshot/screen_003.jpg' width='400px'>
+
+<img src='./static/images/screenshot/screen_004.png' width='400px'>
