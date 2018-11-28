@@ -38,14 +38,13 @@ WebChat聊天室是一个基于nodejs+express+socket.io模块构建的
 
 项目预览截图
 ---
-<img src='./static/images/screenshot/screen_005.png' width='400px'>
+<img src='./static/images/screenshot/screen_01.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_006.png' width='400px'>
+<img src='./static/images/screenshot/screen_02.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_001.png' width='400px'>
+<img src='./static/images/screenshot/screen_03.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_002.png' width='400px'>
+<img src='./static/images/screenshot/screen_04.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_003.jpg' width='400px'>
+<img src='./static/images/screenshot/screen_05.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_004.png' width='400px'>
