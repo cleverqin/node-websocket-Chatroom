@@ -1,7 +1,7 @@
-Chat聊天室
+WebChat聊天室
 ---
 
-chat聊天室是一个基于nodejs+express+socket.io模块构建的
+WebChat聊天室是一个基于nodejs+express+socket.io模块构建的
 网页聊天室工具。前端使用Vue作为前端框架。服务端使用express搭建web服务，使用socket.io
 来创建服务端socket服务，实现了一些基本的聊天功能。
 
@@ -18,6 +18,10 @@ chat聊天室是一个基于nodejs+express+socket.io模块构建的
 [✔]支持在线用户的私聊
 
 [✔]支持消息声音提示
+
+[✔]支持消息显示设置
+
+[✔]未读消息条数显示
 
 相关技术站点
 ---

@@ -1,137 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>会话聊天</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>欢迎登陆WebChat聊天室</title>
     <meta name="description" content="">
     <meta name="keywords" content="">
-    <meta name="author" content="">
-    <link rel="stylesheet" href="css/thread.css">
+    <meta name="author" content="cleverqin">
+    <link rel="icon" sizes="any" mask href="./images/logo.png">
+    <link rel="stylesheet" href="./css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/webChat.css">
 </head>
 <body>
-<div id="app"></div>
-<template id="tpl">
-    <section>
-        <audio src="./images/8400.mp3" ref="audio"></audio>
-        <div class="ui-chat-box" v-show="isLogin">
-            <div class="ui-chat-left">
-                <div class="ui-top-userInfo">
-                    <div class="ui-userAvatar">
-                        <img :src="user.avatarUrl" alt="">
-                    </div>
-                    <div class="ui-userInfo">
-                        <h3>{{user.name}}</h3>
-                        <span class="ui-chatIcon-dropDwon" @click.stop="showMenu=!showMenu"></span>
-                        <transition name='custom-classes-transition' enter-active-class="animate scaleFadeIn"
-                                    leave-active-class="animate scaleFadeOut">
-                            <div class="drop-box" v-show="showMenu">
-                                <ul class="dropdown_menu">
-                                    <li @click="isVoice=!isVoice">
-                                        <a  href="javascript:;"  title="消息音" >
-                                            <i :class="isVoice?'ui-chatIcon-notice':'ui-chatIcon-noticeClose'"></i>消息音
-                                        </a>
-                                    </li>
-                                    <li >
-                                        <a  href="javascript:;"  title="关于">
-                                            <i class="ui-chatIcon-link"></i>关于
-                                        </a>
-                                    </li>
-                                    <li >
-                                        <a  href="javascript:;"  title="退出">
-                                            <i class="ui-chatIcon-logout"></i>退出
-                                        </a>
-                                    </li>
-                                </ul>
+<div id="webChatBox"></div>
+<script id="webChat" type="text/html">
+    <div id="app" v-cloak>
+        <div class="ui-webChat-box" v-if="isLogin">
+            <audio src="./images/8400.mp3" ref="audio"></audio>
+            <div class="ui-webChat-menuBox">
+                <div class="ui-userCard">
+                    <img :src="loginUser.avatarUrl" alt="" :title="loginUser.name">
+                    <div class="ui-userName">{{loginUser.name}}</div>
+                </div>
+                <div class="ui-tabBtn-box">
+                    <div class="ui-tabBtn-item" title="会话" @click="tab='chat'" :class="{active:tab=='chat'}"><span class="fa fa-comments"></span></div>
+                    <div class="ui-tabBtn-item" title="设置" @click="tab='setting'" :class="{active:tab=='setting'}"><span class="fa fa-cog"></span></div>
+                    <div class="ui-tabBtn-item" title="关于" @click="tab='tool'" :class="{active:tab=='tool'}"><span class="fa fa-info-circle"></span></div>
+                </div>
+            </div>
+            <div class="ui-webChat-content">
+                <div class="ui-webChat-item ui-webChat-thread" v-show="tab=='chat'">
+                    <div class="ui-users-box">
+                        <div class="ui-user-search">
+                            <span class="fa fa-search ui-icon-search"></span>
+                            <input type="text" placeholder="搜索" v-model="keyWord">
+                        </div>
+                        <div class="ui-user-list ui-scroll">
+                            <div class="ui-user-item" v-for="item in searchUser()" :class="{active:item.id==channelId}" @click="changeChannel(item.id)">
+                                <img :src="item.avatarUrl" alt="">
+                                <div class="ui-infoBox">
+                                    <span class="ui-infoTime" v-if="getLastMsg(item.id).time" v-show="setting.isShowTime">{{getLastMsg(item.id).time| time}}</span>
+                                    <span class="ui-unReader-info" v-if="getUnReaderNum(item.id)>0">{{getUnReaderNum(item.id)}}</span>
+                                    <div class="ui-name">{{item.name}}</div>
+                                    <div class="ui-txt">{{getLastMsg(item.id).content}}</div>
+                                </div>
                             </div>
-                        </transition>
+                        </div>
+                    </div>
+                    <div class="ui-messages-box">
+                        <div class="ui-channel-header">{{channel.name}} <span v-if="channelId=='group'">（{{users.length}}）</span>  </div>
+                        <div class="ui-messages-content">
+                            <div class="ui-message-list ui-scroll" ref="list">
+                                <div class="ui-thread-item" v-for="item in messages" :class="{'ui-thread-right':item.from.id==loginUser.id}">
+                                    <div class="ui-thread-avatar">
+                                        <img :src="item.from.avatarUrl" alt="">
+                                    </div>
+                                    <div class="ui-thread-content">
+                                        <div class="ui-thread-info" v-if="item.type=='send'" v-show="setting.isShowName"><span v-show="setting.isShowTime">{{item.time | time}}</span>{{item.from.name}}</div>
+                                        <div class="ui-thread-info" v-if="item.type=='receive'" v-show="setting.isShowName">{{item.from.name}}<span v-show="setting.isShowTime">{{item.time | time}}</span></div>
+                                        <div class="ui-thread-body" v-html="$parseExpression(item.content)"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-message-form">
+                                <div class="ui-toolBox">
+                                    <a href="javascript:" class="ui-toolBtn">
+                                        <ui-expression @picker-expression="picker"></ui-expression>
+                                    </a>
+                                </div>
+                                <div class="ui-message-textBox">
+                                    <textarea class="ui-message-text ui-scroll" v-model="text" placeholder="请输入要说的话......" @keyup.enter="send"></textarea>
+                                </div>
+                                <div class="ui-sendBtn-box">
+                                    <a href="javascript:;" class="ui-sendBtn" @click="send">发送</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="ui-chatSearch">
-                    <span class="ui-chatIcon-search"></span>
-                    <input type="text" class="ui-chatInputSearch" v-model="keywords" placeholder="搜索">
+                <div class="ui-webChat-item ui-webChat-setting" v-show="tab=='setting'">
+                    <div class="ui-settingBox">
+                        <h2>设置</h2>
+                        <ul class="ui-setting-list">
+                            <li><input type="checkbox" v-model="setting.isVoice"><span>消息提示音</span></li>
+                            <li><input type="checkbox" v-model="setting.isShowTime"><span>显示消息时间</span></li>
+                            <li><input type="checkbox" v-model="setting.isShowName"><span>显示用户名称</span></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="ui-chatUsers ui-scroll">
-                    <ui-user :user="item" @change-channel="changeChannel" :channel="channel" :key="item.id" v-for="(item,index) in filterName()"></ui-user>
-                </div>
-            </div>
-            <div class="ui-chat-right">
-                <div class="ui-topInfo">{{channelUser.name}}</div>
-                <div class="ui-messageWarp ui-scroll" ref="list">
-                    <ui-message :message="item" :key="item.channel+index" v-for="(item,index) in messageList"></ui-message>
-                </div>
-                <div class="ui-toolBar">
-                    <ui-face @select-face="selectFace" class="ui-chatIcon-face"></ui-face>
-                </div>
-                <div class="ui-sendFrom">
-                    <textarea class="ui-chatInput" v-model="text" @keyup.enter="send"></textarea>
-                    <div class="ui-sendBox">
-                        <a class="ui-chatSendBtn" href="javascript:" @click="send">发送</a>
+                <div class="ui-webChat-item ui-webChat-tool" v-show="tab=='tool'">
+                    <div class="ui-settingBox">
+                        <h2>关于</h2>
+                        <ul class="ui-tool-list">
+                            <li><span class="ui-info-txt">版本：v1.0.0</span></li>
+                            <li><span class="ui-info-txt">协议：MIT</span></li>
+                            <li><span class="ui-info-txt">源码地址：https://github.com/cleverqin/node-websocket-Chatroom</span></li>
+                            <li><span class="ui-info-txt">联系我：705597001@qq.com</span></li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <ui-login v-show="!isLogin" @user-login="userLogin"></ui-login>
-    </section>
-</template>
-<template id="message">
-    <div class="ui-thread-item" :class="{'ui-thread-right':message.type=='send'}">
-        <div class="ui-thread-avatar">
-            <img :src="message.user.avatarUrl" alt="">
-        </div>
-        <div class="ui-thread-content">
-            <div class="ui-thread-info" v-if="message.type=='send'"><span>{{message.time | time}}</span>{{message.user.name}}</div>
-            <div class="ui-thread-info" v-else>{{message.user.name}}<span>{{message.time | time}}</span></div>
-            <div class="ui-thread-body" v-html="filterText(message.text)"></div>
-        </div>
+        <ui-login v-if="!isLogin" @user-login="userLogin"></ui-login>
     </div>
-</template>
-<template id="user">
-    <div class="ui-itemUser" :class="{active:user.id==channel}" @click="change(user.id)">
-        <span class="ui-chatBadge" v-if="user.unRead" v-show="user.unRead!=0">{{user.unRead}}</span>
-        <div class="ui-itemUser-avatar">
-            <img :src="user.avatarUrl" alt="" class="img">
-        </div>
-        <div class="ui-itemUser-info">
-            <h3 class="ui-itemUser-title"><span class="nickname_text">{{user.name}}</span></h3>
-            <div class="ui-itemUser-text" v-html="filterText(lastMsg)"></div>
-        </div>
+</script>
+<script id="tpl" type="text/html">
+    <div class="ui-expression-box" @click.stop="isShow=!isShow">
+        <transition name="custom-classes-transition" enter-active-class="animate scaleFadeIn" leave-active-class="animate scaleFadeOut">
+            <div class="ui-expression-wrap" v-show="isShow">
+                <div class="ui-expression-body">
+                    <a href="javascript:" class="ui-expression" v-for="item in expressions" @click.stop="pickerExpression(item)">
+                        <img :src="baseUrl+item.url" alt="表情" :title="item.title">
+                    </a>
+                </div>
+            </div>
+        </transition>
     </div>
-</template>
-<template id="login">
-    <div class="ui-login-box">
-        <div class="ui-login-banner">
-            <span class="ui-small"></span>
+</script>
+<script id="imLogin" type="text/html">
+    <div class="im-login-box">
+        <div class="im-login-banner">
+            <span class="im-small"></span>
         </div>
-        <div class="ui-login-form">
-            <div class="ui-login-group">
-                <div class="ui-avatar">
+        <div class="im-login-form">
+            <div class="im-login-group">
+                <div class="im-avatar">
                     <img :src="avatarUrl" alt="" @click.stop="isShow=!isShow">
                     <transition name='custom-classes-transition' enter-active-class="animate scaleFadeIn"
                                 leave-active-class="animate scaleFadeOut">
-                        <div class="ui-selectAvatar" v-show="isShow">
-                            <div class="ui-avatarItem" v-for="item in imgList" :class="{active:item==avatarUrl}" @click="avatarUrl=item">
+                        <div class="im-selectAvatar"  style="display: none" v-show="isShow">
+                            <div class="im-avatarItem" v-for="item in images" :class="{active:item==avatarUrl}" @click="avatarUrl=item">
                                 <img :src="item" alt="" >
                             </div>
                         </div>
                     </transition>
                 </div>
-                <div class="ui-form-element">
-                    <input type="text" class="ui-input" placeholder="用户名" v-model="name">
-                    <input type="text" class="ui-input" placeholder="密码">
-                    <button type="button" class="ui-loginBtn" @click="userLogin">登录</button>
+                <div class="im-form-element">
+                    <input type="text" class="im-input" placeholder="用户名" v-model="name">
+                    <input type="text" class="im-input" placeholder="密码">
+                    <button type="button" class="im-loginBtn" @click="userLogin">登录</button>
                 </div>
             </div>
         </div>
-        <transition name='custom-classes-transition' enter-active-class="animate fadeIn"
-                    leave-active-class="animate fadeOut">
-            <div class="ui-chatError" v-show="errorMsg!=''">{{errorMsg}}</div>
-        </transition>
+        <div class="im-login-errorBox" v-show="errorMsg!=''">{{errorMsg}}</div>
     </div>
-</template>
+</script>
 <script src="./js/vue.min.2.2.0.js"></script>
 <script src="./js/vue-resource.js"></script>
-<script src="./js/vue-plugins.js"></script>
 <script src="./socket.io/socket.io.js"></script>
-<script src="./js/chat.js"></script>
+<script src="./js/index.js"></script>
 </body>
 </html>

@@ -1,0 +1,749 @@
+/***********对话气泡样式*************/
+.ui-thread-item{
+    margin: 8px auto;
+}
+.ui-thread-item:after,.ui-thread-content:after{
+    display: table;
+    content: "";
+    clear: both;
+}
+.ui-thread-avatar{
+    width: 40px;
+    height: 40px;
+    float: left;
+}
+.ui-thread-avatar img{
+    display: block;
+    border: none;
+    width: 100%;
+    height: 100%;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px; ;
+}
+.ui-thread-content{
+    margin: 0 55px;
+}
+.ui-thread-content img{
+    vertical-align: bottom;
+    margin: 2px;
+}
+.ui-thread-info{
+    line-height: 25px;
+    height: 25px;
+    font-size: 12px;
+    color: #8c8c8c;
+}
+.ui-thread-info span{
+    margin: 0 10px;
+}
+.ui-thread-body{
+    float: left;
+    position: relative;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 14px;
+    line-height: 20px;
+    color: #5f5f5f;
+    word-wrap: break-word;
+    max-width: 100%;
+    min-height: 20px;
+}
+.ui-thread-body:after{
+    display: block;
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 0 solid transparent;
+    border-right: 10px solid #fff;
+    border-bottom: 16px solid transparent;
+    position: absolute;
+    top: 5px;
+    left: -10px;
+}
+.ui-thread-right .ui-thread-avatar,.ui-thread-right .ui-thread-body{
+    float: right;
+}
+.ui-thread-right .ui-thread-info{
+    text-align: right;
+}
+.ui-thread-right .ui-thread-body{
+    background-color: #b2e281
+}
+.ui-thread-right .ui-thread-body:after{
+    border-left: 10px solid #b2e281;
+    border-right: none;
+    top: 5px;
+    left: 100%;
+}
+/********************重置默认样式***************************/
+html,body{
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+}
+body{
+    background-image: url("../images/a1 (10).jpg");
+    background-position: center center;
+    background-size: cover;
+}
+#app{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    justify-content: center;
+}
+[v-cloak]{
+    display: none;
+}
+.ui-webChat-box{
+    width: 700px;
+    height: 600px;
+    position: relative;
+    background: #f2f2f2;
+    margin: 0 auto;
+}
+.ui-webChat-box:after{
+    display: block;
+    content: "";
+    clear: both;
+}
+.ui-webChat-menuBox{
+    width: 60px;
+    height: 100%;
+    background: #26292e;
+    float: left;
+}
+.ui-webChat-content{
+    margin-left: 60px;
+    height: 100%;
+    background: #ffffff;
+}
+.ui-webChat-item{
+    width: 100%;
+    height: 100%;
+}
+/************用户列表及搜索样式表**************/
+.ui-users-box{
+    float: left;
+    width: 220px;
+    height: 100%;
+    position: relative;
+    background: #ffffff;
+    border-right: 1px solid #d1d1d1;
+}
+.ui-user-search input{
+    outline: none;
+    border: none;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    background: #f2f2f2;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding-left: 26px;
+    padding-right: 10px;
+}
+.ui-user-search{
+    padding: 10px;
+    position: relative;
+}
+.ui-icon-search{
+    position: absolute;
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    color: #bfb8b8;
+    padding: 0 5px;
+}
+.ui-user-list{
+    position: absolute;
+    top: 50px;
+    bottom: 10px;
+    width: 100%;
+    overflow-y: auto;
+}
+/********用户卡片样式*************/
+.ui-user-item{
+    padding: 10px;
+    position:relative;
+    cursor: pointer;
+}
+.ui-user-item>img{
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    float: left;
+}
+.ui-infoBox{
+    margin-left: 55px;
+    position: relative;
+}
+.ui-infoTime{
+    position: absolute;
+    right: 0;
+    top: 0;
+    line-height: 20px;
+    font-size: 12px;
+    color: #909399;
+    height: 20px;
+}
+.ui-unReader-info{
+    position: absolute;
+    right: -8px;
+    top: -10px;
+    font-size: 12px;
+    height: 18px;
+    line-height: 16px;
+    padding: 0 6px;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: 10px;
+    background: #f56c6c;
+    color: #ffffff;
+    transform: scale(0.7);
+}
+.ui-infoBox .ui-name{
+    font-size: 14px;
+    color: #666666;
+    line-height: 20px;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+}
+.ui-txt{
+    font-size: 12px;
+    color: #9a9a9a;
+    line-height: 20px;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ui-user-item:after{
+    content: "";
+    display: block;
+    clear: both;
+}
+.ui-user-item:hover{
+    background: rgba(255, 255, 255, 0.6);
+}
+.ui-user-item.active{
+    background: #f2f2f2;
+}
+.ui-user-item.active:after,.ui-user-item:hover:after{
+    display: block;
+    content: "";
+    top: 5px;
+    right: 0;
+    bottom:5px;
+    width: 2px;
+    background: #b2e281;
+    position: absolute;
+}
+/***************聊天窗口-消息样式**********************/
+.ui-messages-box{
+    background: #eeeeee;
+    height: 100%;
+    margin-left: 221px;
+    position: relative;
+}
+.ui-channel-header{
+    margin: 0 10px;
+    height: 36px;
+    line-height: 36px;
+    font-size: 14px;
+    border-bottom: 1px solid #d1d1d1;
+    text-align: center;
+    color: #606266;
+}
+.ui-messages-content{
+    position: absolute;
+    top: 37px;
+    bottom: 0;
+    width: 100%;
+}
+.ui-message-list{
+    position: absolute;
+    width:100%;
+    top: 0;
+    bottom: 143px;
+    overflow-y: auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+.ui-message-form{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+.ui-toolBox{
+    height: 35px;
+    border-top: 1px solid #d1d1d1;
+    margin: 0 10px;
+}
+.ui-toolBtn{
+    width: 30px;
+    height: 30px;
+    float: left;
+    padding-top: 5px;
+    background: url(../images/icon.png) no-repeat -335px center;
+}
+.ui-message-textBox{
+    margin: 0 10px;
+}
+.ui-message-text{
+    display: block;
+    background: transparent;
+    width: 100%;
+    height: 60px;
+    outline: none;
+    resize: none;
+    margin: 0;
+    padding:  5px 10px;
+    border: none;
+    box-sizing: border-box;
+}
+.ui-sendBtn-box{
+    text-align: right;
+    margin: 0 10px;
+    padding-bottom:15px;
+    padding-top: 5px;
+}
+.ui-sendBtn{
+    display: inline-block;
+    border: 1px solid #c1c1c1;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    padding: 3px 30px;
+    font-size: 14px;
+    text-decoration: none;
+    background-color: #fff;
+    color: #222;
+}
+/*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
+.ui-scroll::-webkit-scrollbar{
+    width: 5px;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0);
+}
+/*定义滚动条的轨道，内阴影及圆角*/
+.ui-scroll::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 6px rgba(240, 240, 240, 0);
+    border-radius: 10px;
+    background-color: rgba(0, 89, 255, 0);
+}
+/*定义滑块，内阴影及圆角*/
+.ui-scroll:hover::-webkit-scrollbar-thumb{
+    /*width: 10px;*/
+    height: 20px;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(236, 236, 236, 0.3);
+    background-color: rgba(203, 203, 203, 0.54);
+    transition: all 0.5s;
+}
+/***********************************/
+.ui-tabBox{
+    width: 60px;
+    height: 100%;
+    float: left;
+}
+.ui-userCard{
+    padding: 10px;
+}
+.ui-userCard img{
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+}
+.ui-userName{
+    font-size: 14px;
+    color: #f2f2f2;
+    line-height: 40px;
+    margin-left: 45px;
+    height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: none;
+}
+.ui-tabBtn-item{
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 30px;
+    height: 30px;
+    color: #f2f2f2;
+    cursor: pointer;
+    text-align: center;
+}
+.ui-tabBtn-item span{
+    font-size: 18px;
+    vertical-align: middle;
+}
+.ui-tabBtn-item:hover,.ui-tabBtn-item.active{
+    color: #b2e281;
+}
+/*************************************/
+.ui-expression-box{
+    position: relative;
+    width: 30px;
+    height: 30px;
+}
+.ui-expression-wrap{
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    margin-bottom: 10px;
+    margin-left: -50px;
+}
+.ui-expression-body a{
+    display: block;
+    width: 30px;
+    height: 30px;
+    float: left;
+    box-sizing: border-box;
+    line-height: 26px;
+    text-align: center;
+    border: 1px solid #e8e8e8;
+    margin: -1px 0 0 -1px;
+}
+.ui-expression-body a:hover{
+    z-index:2;
+    position:relative;
+    border:1px solid #0095cd;
+}
+.ui-expression-body a img{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+.ui-expression-body:after{
+    content: "";
+    clear: both;
+    display: table;
+}
+.ui-expression-body {
+    width: 435px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 0 7px #ccc;
+}
+/*************************************/
+@keyframes scaleFadeIn {
+    0%{
+        opacity: 0;
+        transform:translateY(-40px);
+    }
+    100%{
+        opacity: 1;
+        transform:translateY(0);
+    }
+}
+@keyframes scaleFadeOut {
+    0%{
+        opacity: 1;
+        transform:translateY(0);
+    }
+    100%{
+        opacity: 0;
+        transform:translateY(-40px);
+    }
+}
+@keyframes fadeIn {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+@keyframes fadeOut {
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+}
+.animate{
+    animation-duration: 0.5s;
+}
+.animate.scaleFadeIn{
+    animation-name: scaleFadeIn;
+}
+.animate.fadeIn{
+    animation-name: fadeIn;
+}
+.animate.fadeOut{
+    animation-name: fadeOut;
+}
+.animate.scaleFadeOut{
+    animation-name: scaleFadeOut;
+}
+/***************************************/
+.ui-settingBox{
+    margin: 0 15px;
+    width: 400px;
+}
+.ui-settingBox h2{
+    margin: 0;
+    font-size: 14px;
+    line-height: 35px;
+    color: #6a737d;
+    font-weight: bold;
+}
+.ui-setting-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.ui-setting-list li{
+    font-size: 14px;
+    line-height: 40px;
+    color: #6a737d;
+    border-bottom: 1px dashed #d1d1d1;
+    padding-left: 10px;
+}
+.ui-setting-list li span{
+    margin-left: 10px;
+}
+.ui-setting-list li input[type='checkbox']{
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+}
+/***************************************************/
+/***************登录窗口样式*****************/
+.im-login-group:after{
+    display: table;
+    content: "";
+    clear: both;
+}
+.im-avatar{
+    float: left;
+    width: 70px;
+    height: 70px;
+    position: relative;
+}
+.im-selectAvatar{
+    position: absolute;
+    width: 360px;
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 4px;
+    top: 80px;
+    left: -15px;
+    border: 1px solid #d1d1d1;
+}
+.im-selectAvatar:before{
+    display: block;
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    bottom: 100%;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #d1d1d1;
+    left: 40px;
+    margin-bottom: 0px;
+}
+.im-selectAvatar:after{
+    display: block;
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    bottom: 100%;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ffffff;
+    left: 40px;
+    margin-bottom: -1px;
+}
+.im-avatarItem{
+    float: left;
+    margin: 5px;
+    width: 50px;
+    height: 50px;
+    position: relative;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.im-avatarItem.active{
+    border: 2px solid #4db3ff;
+}
+.im-avatarItem.active:after{
+    display: block;
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #4db3ff;
+    content: '✔';
+    color: #fff;
+    bottom: 0;
+    right: 0;
+    text-align: right;
+    line-height: 18px;
+    font-size: 12px;
+    border-radius: 10px 0 0 0;
+}
+.im-login-banner{
+    position: relative;
+    height: 160px;
+    background: url("../images/a1 (10).jpg") no-repeat center;
+    background-size: cover;
+    border-radius: 4px 4px 0 0;
+}
+.im-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.im-form-element{
+    margin-left: 80px;
+}
+.im-form-element .im-input{
+    font-size: 14px;
+    display: block;
+    line-height: 35px;
+    height: 35px;
+    padding: 0 10px;
+    border: 1px solid #C0C4CC;
+    box-sizing: border-box;
+    margin: -1px;
+    width: 220px;
+}
+.im-form-element .im-input:first-child{
+    border-radius:4px 4px 0 0;
+}
+.im-form-element .im-input{
+    border-radius:0 0 4px 4px;
+}
+.im-login-group{
+    display: inline-block;
+}
+.im-login-form{
+    text-align: center;
+    padding: 15px 0;
+}
+.im-login-box{
+    width: 380px;
+    border-radius: 4px;
+    background: #ffffff;
+    margin: 0 auto;
+    position: relative;
+}
+.im-loginBtn{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: block;
+    width: 100%;
+    line-height: 30px;
+    font-size: 12px;
+    background: #4db3ff;
+    color: #ffffff;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.im-small{
+    position: absolute;
+    right: 10px;
+    top: 0;
+    width: 30px;
+    height: 28px;
+    border-radius: 0 0 4px 4px;
+    cursor: pointer;
+}
+.im-small:hover{
+    background: rgba(104, 104, 104, 0.45);
+}
+.im-small:after{
+    position: relative;
+    content: "";
+    display: block;
+    margin: 0 6px;
+    background: #eee;
+    height: 2px;
+    top: 14px;
+    border-radius: 1px;
+}
+.im-login-errorBox{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    line-height: 25px;
+    font-size: 12px;
+    padding: 0 15px;
+    background-color: rgba(254, 240, 240, 0.61);
+    color: #f56c6c;
+    border-radius: 0 0 4px 4px;
+}
+.github-corner {
+    border-bottom: 0;
+    position: fixed;
+    right: 0;
+    text-decoration: none;
+    top: 0;
+    z-index: 1
+}
+
+.github-corner:hover .octo-arm {
+    animation: a .56s ease-in-out
+}
+
+.github-corner svg {
+    color: #fff;
+    fill: #2ea6da;
+    height: 80px;
+    width: 80px
+}
+@keyframes a {
+    0%, to {
+        transform: rotate(0)
+    }
+    20%, 60% {
+        transform: rotate(-25deg)
+    }
+    40%, 80% {
+        transform: rotate(10deg)
+    }
+}
+.ui-webChat-tool .ui-settingBox{
+    width: 460px;
+}
+.ui-tool-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.ui-tool-list li{
+    padding: 0 10px;
+    border-bottom: 1px dotted #d1d1d1;
+    line-height: 30px;
+}
+.ui-info-txt{
+    margin-left: 0;
+    font-size: 12px;
+    color: #9f9f9f;
+}
+/******************************************************************/
