@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>欢迎使用iChat聊天室</title>
+  <meta name="description" content="使用vue编写的iChat聊天室的案例">
+  <meta name="keywords" content="iChat，socket，Vue，nodejs">
+  <meta name="author" content="cleverqin">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link rel="icon" sizes="any" mask href="./images/logo.png">
+  <script>
+      function browserRedirect() {
+          var sUserAgent = navigator.userAgent.toLowerCase();
+          var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+          var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+          var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+          var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+          var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+          var bIsAndroid = sUserAgent.match(/android/i) == "android";
+          var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+          var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+          if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+              console.log('在移动端浏览');
+          } else {
+              console.log('在pc端浏览');
+              window.location.href='../'
+          }
+      }
+      browserRedirect();
+  </script>
+  <link rel="stylesheet" href="./css/font-awesome.min.css">
+  <link rel="stylesheet" href="./css/iChat.css">
+</head>
+<body>
+<div id="bid"></div>
+<template id="iChat">
+  <section id="app">
+    <login v-show="!isLogin" @login="userLogin"></login>
+    <div class="ui-imChat" v-show="isLogin">
+      <div class="ui-iChat-panelBox" v-show="tab=='menu'">
+        <div class="ui-panelBody">
+          <div class="ui-panel-item" v-show="menu=='chat'">
+            <div class="ui-item-header">
+              <div class="ui-imgBox">
+                <img :src="loginUser.avatarUrl" alt="图片">
+              </div>
+              <div class="ui-searchInputBox">
+                <input type="text" placeholder="搜索" v-model="keyWord">
+              </div>
+            </div>
+            <div class="ui-user-list">
+              <div class="ui-user-item" v-for="item in searchUser()" :class="{active:item.id==channelId}" @click="changeChannel(item.id)">
+                <img :src="item.avatarUrl" alt="">
+                <div class="ui-infoBox">
+                  <span class="ui-infoTime" v-if="getLastMsg(item.id).time" v-show="setting.isShowTime">{{getLastMsg(item.id).time| time}}</span>
+                  <span class="ui-unReader-info" v-if="getUnReaderNum(item.id)>0">{{getUnReaderNum(item.id)}}</span>
+                  <div class="ui-name">{{item.name}}</div>
+                  <div class="ui-txt">{{getLastMsg(item.id).content}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ui-panel-item ui-menu-setting" v-show="menu=='setting'">
+            <div class="ui-user-banner">
+              <img :src="loginUser.avatarUrl" alt="图片" class="ui-loginAvatar">
+            </div>
+            <ul class="ui-setting-list">
+              <li><span>用户：</span>{{loginUser.name}}</li>
+              <li>
+                <span>消息提示音</span>
+                <div class='switch-wrap'>
+                  <input type='checkbox' id= 'switch' v-model="setting.isVoice">
+                  <label for='switch'></label>
+                </div>
+              </li>
+              <li>
+                <span>显示用户名称</span>
+                <div class='switch-wrap'>
+                  <input type='checkbox' id= 'switch1' v-model="setting.isShowName">
+                  <label for='switch1'></label>
+                </div>
+              </li>
+              <li>
+                <span>显示消息时间</span>
+                <div class='switch-wrap'>
+                  <input type='checkbox' id= 'switch2' v-model="setting.isShowTime">
+                  <label for='switch2'></label>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="ui-panel-footer">
+          <div class="ui-bar-item" :class="{active:menu=='chat'}" @click="menu='chat'">
+            <span class="fa fa-comments ui-baIcon"></span>
+            会话
+          </div>
+          <div class="ui-bar-item" :class="{active:menu=='setting'}" @click="menu='setting'">
+            <span class="fa fa-cog ui-baIcon"></span>
+            设置
+          </div>
+        </div>
+      </div>
+      <div class="ui-iChat-box" style="display: none" v-show="tab=='chat'">
+        <audio src="./images/8400.mp3" ref="audio"></audio>
+        <div class="ui-iChat-header">
+          <div class="ui-back fa fa-angle-left " @click="tab='menu'"></div>
+          {{channel.name}}
+        </div>
+        <div class="ui-iChat-body" ref="list" @click="isPicker=false">
+          <div class="ui-message-list">
+            <div class="ui-bubble-item" v-for="item in messages" :class="{'ui-bubble-right':loginUser.id==item.from.id}">
+              <div class="ui-avatarBox">
+                <img :src="item.from.avatarUrl" alt="">
+              </div>
+              <div class="ui-bubble-content">
+                <div class="ui-bubble-info" v-if="loginUser.id==item.from.id" v-show="setting.isShowName"> <span v-show="setting.isShowTime">{{item.time | time}}</span>{{item.from.name}}</div>
+                <div class="ui-bubble-info" v-else v-show="setting.isShowName">{{item.from.name}} <span v-show="setting.isShowTime">{{item.time | time}}</span></div>
+                <div class="ui-bubble-body" v-html="$parseExpression(item.content)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ui-iChat-footer">
+          <div class="ui-iChat-form">
+            <span class="ui-expressionBtn" @click="isPicker=!isPicker">
+              <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="703"><path d="M506.282667 803.925333c1.002667 0 2.069333-0.042667 3.114667-0.042667 170.261333-2.005333 238.528-150.869333 239.189333-152.341333L274.112 651.306667C276.949333 657.6 346.069333 803.925333 506.282667 803.925333z" p-id="704"></path><path d="M326.805333 478.506667c27.029333 0 48.789333-21.866667 48.789333-48.810667s-21.781333-48.789333-48.789333-48.789333c-26.922667-0.042667-48.746667 21.824-48.746667 48.789333C278.058667 456.618667 299.84 478.506667 326.805333 478.506667z" p-id="705"></path><path d="M697.749333 429.717333m-48.810667 0a2.288 2.288 0 1 0 97.621333 0 2.288 2.288 0 1 0-97.621333 0Z" p-id="706"></path><path d="M512 0C229.696 0 0 229.696 0 512c0 282.325333 229.696 512 512 512 282.325333 0 512-229.674667 512-512C1024 229.696 794.325333 0 512 0zM512 981.098667C253.333333 981.098667 42.88 770.666667 42.88 512S253.333333 42.88 512 42.88 981.077333 253.333333 981.077333 512 770.666667 981.098667 512 981.098667z" p-id="707"></path></svg>
+            </span>
+            <div class="ui-sendInput"><input type="text" v-model="text" @keyup.enter="send"></div>
+            <div class="ui-sendBtn" @click="send">发送</div>
+          </div>
+          <div class="ui-iChat-expressionBox" v-show="isPicker">
+            <ui-expression @picker-expression="picker"></ui-expression>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+<template id="tpl">
+  <div class="ui-expression-list">
+    <div class="ui-expression-item" v-for="item in expressions">
+      <img :src="baseUrl+item.url" alt="表情" :title="item.title" @click="pickerExpression(item)">
+    </div>
+  </div>
+</template>
+<template id="login">
+  <div class="login-box">
+    <div class="login-form-box">
+      <div class="form-row">
+        <ul class="img-list">
+          <li v-bind:class="{'active':item==user.avatarUrl}"  v-for="item in picList" @click="user.avatarUrl=item"><img v-bind:src="item"></li>
+        </ul>
+      </div>
+      <div class="form-row"><input type="text" v-model="user.name" placeholder="请输入昵称" class="nick-name"></div>
+      <div class="form-row"><div class="login-btn" @click="login">登录</div></div>
+    </div>
+    <div class="ui-error" v-show="text!=''">{{text}}</div>
+  </div>
+</template>
+<script src="./js/vue.min.2.2.0.js"></script>
+<script src="./js/vue-resource.js"></script>
+<script src="./js/iChat-example.js"></script>
+</body>
+</html>

@@ -137,15 +137,8 @@
                 data:function () {
                     return{
                         expressions:expressions,
-                        baseUrl:baseUrl,
-                        isShow:false
+                        baseUrl:baseUrl
                     }
-                },
-                created:function () {
-                    var _this=this;
-                    document.addEventListener("click",function (e) {
-                        _this.isShow=false;
-                    })
                 },
                 methods:{
                     pickerExpression:function (expression) {
@@ -186,79 +179,65 @@
         window.uiExpression=uiExpression;
     }
 })()
-var socket=io.connect();
-Vue.component("ui-login",{
-    template:"#imLogin",
+if (/Android/gi.test(navigator.userAgent)) {
+    window.addEventListener('resize', function () {
+        if (document.activeElement.tagName == 'INPUT' || document.activeElement.tagName == 'TEXTAREA') {
+            window.setTimeout(function () {
+                document.activeElement.scrollIntoViewIfNeeded();
+            }, 0);
+        }
+    })
+}
+Vue.component('login',{
+    template:'#login',
     data:function () {
-        var images=[
-            'http://q.qlogo.cn/headimg_dl?dst_uin=705597001&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=956411241&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=1361514346&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=624748513&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=1741841217&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=157509895&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=453079985&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=753678776&spec=100',
-        ]
         return {
-            name:"",
-            isShow:false,
-            avatarUrl:images[0],
-            images:images,
-            errorMsg:""
+            picList:[
+                'http://q.qlogo.cn/headimg_dl?dst_uin=705597001&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=1361514346&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=624748513&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=1741841217&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=157509895&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=453079985&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=753678776&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=962666291&spec=100'
+            ],
+            user:{
+                avatarUrl:"http://q.qlogo.cn/headimg_dl?dst_uin=705597001&spec=100",
+                name:""
+            },
+            text:""
         }
     },
-    created:function () {
-        var _this=this;
-        document.addEventListener("click",function (e) {
-            _this.isShow=false;
-        })
-        _this.initSocketEvent();
-    },
     methods:{
-        userLogin:function () {
-            var _this=this;
-            var name=_this.trim(_this.name);
+        login:function () {
+            var name=this.trim(this.user.name);
             if(name!=""){
-                socket.emit("login",{
+                this.$emit('login',{
+                    id:"webChat_"+new Date().getTime(),
                     name:name,
-                    avatarUrl:this.avatarUrl
+                    avatarUrl:this.user.avatarUrl,
+                    type:"user"
                 })
             }else {
-                _this.name="";
-                this.showError("请输入用户昵称！")
+                this.showError('请输入昵称!')
             }
-        },
-        showError:function (err) {
-            var _this=this;
-            if(this.interval){
-                clearTimeout(_this.interval)
-            }
-            this.errorMsg=err;
-            this.interval=setTimeout(function () {
-                _this.errorMsg="";
-            },3000)
-        },
-        initSocketEvent:function () {
-            var _this=this;
-            socket.on("loginSuccess",function (user,users) {
-                _this.$emit("user-login",{
-                    user:user,
-                    users:users
-                })
-            })
-            socket.on("loginFail",function (msg) {
-                _this.showError(msg)
-            })
         },
         trim:function (string) {
             return string.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+        },
+        showError:function (err) {
+            var _this=this;
+            _this.text=err;
+            setTimeout(function () {
+                _this.text="";
+            },3000)
         }
     }
 })
 new Vue({
-    el:"#webChatBox",
-    template:"#webChat",
+    el:"#bid",
+    template:"#iChat",
     data:function () {
         return {
             loginUser:{
@@ -267,17 +246,23 @@ new Vue({
                 name:"似水流年",
                 type:"user"
             },
-            tab:"chat",
+            tab:"menu",
             users:[
                 {
-                    id:"group",
+                    id:"r001",
                     avatarUrl:"./images/group-icon.png",
                     name:"聊天室群",
                     type:"room"
+                },
+                {
+                    id:"a123456",
+                    name:"往事随风",
+                    avatarUrl:"http://q.qlogo.cn/headimg_dl?dst_uin=240571231&spec=100",
+                    type:"user"
                 }
             ],
             threads:{},
-            channelId:"group",
+            channelId:"r001",
             text:"",
             setting:{
                 isShowTime:true,
@@ -285,7 +270,9 @@ new Vue({
                 isShowName:true
             },
             keyWord:"",
-            isLogin:false
+            isLogin:true,
+            isPicker:false,
+            menu:"chat"
         }
     },
     computed: {
@@ -307,7 +294,7 @@ new Vue({
         }
     },
     created:function () {
-        this.initBg();
+
     },
     filters:{
         time:function (value) {
@@ -339,11 +326,12 @@ new Vue({
                 isRead:isRead
             }
             this.addMessage(message)
+            this.getMessage(to,text)
         },
-        receiveMessage:function (text,from,channelId) {
-            var isRead=this.channelId==channelId?true:false;
+        receiveMessage:function (text,from) {
+            var isRead=this.channelId==from.id?true:false;
             var message={
-                threadId:channelId,
+                threadId:from.id,
                 from:from,
                 to:this.loginUser,
                 content:text,
@@ -352,7 +340,7 @@ new Vue({
                 isRead:isRead
             }
             this.addMessage(message)
-            if(this.setting.isVoice&&channelId!="group"){
+            if(this.setting.isVoice){
                 this.$refs.audio.play();
             }
         },
@@ -368,15 +356,61 @@ new Vue({
         },
         send:function (){
             var text=this.trim(this.text);
-            if(text!=""&&this.isLogin){
-                this.sendMessage(text,this.channel);
-                if(this.channelId=="group"){
-                    socket.emit("groupMessage",text,this.loginUser)
-                }else {
-                    socket.emit("message",this.channelId,text,this.loginUser)
-                }
+            if(text!=""){
+                this.sendMessage(text,this.channel)
             }
             this.text="";
+        },
+        getMessage:function (channel,text) {
+            var _this=this;
+            this.$http.get("http://www.tuling123.com/openapi/api",{params:{
+                key:'a36d98ad2dfa44a487c74fefff41080c',
+                info:text,
+                userid:"123456"
+            }}).then(function (response) {
+                var data=response.body;
+                if(data.text){
+                    _this.receiveMessage(data.text,_this.channel)
+                }
+            })
+        },
+        filterData:function (data) {
+            switch(data.code) {
+                case 100000://文本类
+                    return data.text
+                    break;
+                case 200000://链接类
+                    return data.text+"<a href='"+data.url+"' class='res-link' target='_blank'>打开页页面</a>"
+                    break;
+                case 302000://新闻类
+                    var html=data.text+"<ul class='res-list'>";
+                    var len=3;
+                    if(data.list.length<3){
+                        len=data.list.length
+                    }
+                    for(var i=0;i<len;i++){
+                        var item=data.list[i];
+                        html+="<li><a href='"+item.detailurl+"' target='_blank'>"+(i+1)+".&nbsp;"+item.article+"</a></li>"
+                    }
+                    html+='</li>';
+                    return html;
+                    break;
+                case 308000://菜谱类
+                    var html=data.text+"<ul class='res-list'>";
+                    var len=3;
+                    if(data.list.length<3){
+                        len=data.list.length
+                    }
+                    for(var i=0;i<len;i++){
+                        var item=data.list[i];
+                        html+="<li><a href='"+item.detailurl+"' target='_blank'>"+item.name+"</a></li>"
+                    }
+                    html+='</li>';
+                    return html;
+                    break;
+                default:
+                    return data.text
+            }
         },
         scrollFooter:function () {
             var ul = this.$refs.list;
@@ -420,8 +454,8 @@ new Vue({
         changeChannel:function (channelId) {
             var _this=this;
             this.channelId=channelId;
-            document.querySelector("title").innerHTML=_this.loginUser.name+" | 与"+this.channel.name+"聊天中";
             _this.setMessageReader(channelId);
+            _this.tab="chat";
             this.$nextTick(function () {
                 _this.scrollFooter()
             })
@@ -450,39 +484,9 @@ new Vue({
                 },30000)
             })
         },
-        userLogin:function (payload) {
-            this.loginUser=payload.user;
-            if(!this.isLogin){
-                this.isLogin=true;
-                document.querySelector("title").innerHTML=this.loginUser.name+" | 与"+this.channel.name+"聊天中";
-                this.users=this.users.concat(payload.users);
-                this.initSocketEvent();
-            }
-        },
-        initSocketEvent:function () {
-            var _this=this;
-            socket.on('system',function (user,type) {
-                if(type=="join"){
-                    user.messages=[]
-                    _this.users.push(user)
-                }
-                if(type=="logout"){
-                    _this.users.forEach(function (item,index) {
-                        if(item.id==user.id){
-                            _this.users.splice(index, 1);
-                        }
-                    })
-                    if(user.id==_this.channelId){
-                        _this.changeChannel("group");
-                    }
-                }
-            })
-            socket.on("message",function (user,text) {
-                _this.receiveMessage(text,user,user.id)
-            })
-            socket.on("groupMessage",function (user,text) {
-                _this.receiveMessage(text,user,"group")
-            })
+        userLogin:function (user) {
+            this.loginUser=user;
+            this.isLogin=true;
         }
     }
 })

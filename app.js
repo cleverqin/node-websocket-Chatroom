@@ -46,11 +46,25 @@ io.sockets.on('connection', function(socket) {
         }
     });
     //群发消息
-    socket.on('groupMessage', function(msg) {
+    socket.on('groupMessage', function(msg,from){
+        if(!socket.user){
+            from.id=socket.id;
+            socket.user=from;
+            users.push(from);
+            socket.broadcast.emit('system', from,'join');
+            socket.emit('loginSuccess',from,[]);
+        }
         socket.broadcast.emit('groupMessage', socket.user, msg);
     });
     //发送私信
-    socket.on('message', function(id,msg) {
+    socket.on('message', function(id,msg,from) {
+        if(!socket.user){
+            from.id=socket.id;
+            socket.user=from;
+            users.push(from);
+            socket.broadcast.emit('system', from,'join');
+            socket.emit('loginSuccess',from,[]);
+        }
         socket.broadcast.to(id).emit('message',socket.user,msg);
     });
 });

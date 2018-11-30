@@ -137,15 +137,8 @@
                 data:function () {
                     return{
                         expressions:expressions,
-                        baseUrl:baseUrl,
-                        isShow:false
+                        baseUrl:baseUrl
                     }
-                },
-                created:function () {
-                    var _this=this;
-                    document.addEventListener("click",function (e) {
-                        _this.isShow=false;
-                    })
                 },
                 methods:{
                     pickerExpression:function (expression) {
@@ -186,63 +179,66 @@
         window.uiExpression=uiExpression;
     }
 })()
+if (/Android/gi.test(navigator.userAgent)) {
+    window.addEventListener('resize', function () {
+        if (document.activeElement.tagName == 'INPUT' || document.activeElement.tagName == 'TEXTAREA') {
+            window.setTimeout(function () {
+                document.activeElement.scrollIntoViewIfNeeded();
+            }, 0);
+        }
+    })
+}
 var socket=io.connect();
-Vue.component("ui-login",{
-    template:"#imLogin",
+Vue.component('login',{
+    template:'#login',
     data:function () {
-        var images=[
-            'http://q.qlogo.cn/headimg_dl?dst_uin=705597001&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=956411241&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=1361514346&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=624748513&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=1741841217&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=157509895&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=453079985&spec=100',
-            'http://q.qlogo.cn/headimg_dl?dst_uin=753678776&spec=100',
-        ]
         return {
-            name:"",
-            isShow:false,
-            avatarUrl:images[0],
-            images:images,
-            errorMsg:""
+            picList:[
+                'http://q.qlogo.cn/headimg_dl?dst_uin=705597001&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=1361514346&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=624748513&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=1741841217&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=157509895&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=453079985&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=753678776&spec=100',
+                'http://q.qlogo.cn/headimg_dl?dst_uin=962666291&spec=100'
+            ],
+            user:{
+                avatarUrl:"http://q.qlogo.cn/headimg_dl?dst_uin=705597001&spec=100",
+                name:""
+            },
+            text:""
         }
     },
     created:function () {
-        var _this=this;
-        document.addEventListener("click",function (e) {
-            _this.isShow=false;
-        })
-        _this.initSocketEvent();
+        this.initSocketEvent();
     },
     methods:{
-        userLogin:function () {
-            var _this=this;
-            var name=_this.trim(_this.name);
+        login:function () {
+            var name=this.trim(this.user.name);
             if(name!=""){
                 socket.emit("login",{
                     name:name,
-                    avatarUrl:this.avatarUrl
+                    avatarUrl:this.user.avatarUrl
                 })
             }else {
-                _this.name="";
-                this.showError("请输入用户昵称！")
+                this.showError('请输入昵称！')
             }
+        },
+        trim:function (string) {
+            return string.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
         },
         showError:function (err) {
             var _this=this;
-            if(this.interval){
-                clearTimeout(_this.interval)
-            }
-            this.errorMsg=err;
-            this.interval=setTimeout(function () {
-                _this.errorMsg="";
+            _this.text=err;
+            setTimeout(function () {
+                _this.text="";
             },3000)
         },
         initSocketEvent:function () {
             var _this=this;
             socket.on("loginSuccess",function (user,users) {
-                _this.$emit("user-login",{
+                _this.$emit("login",{
                     user:user,
                     users:users
                 })
@@ -251,14 +247,11 @@ Vue.component("ui-login",{
                 _this.showError(msg)
             })
         },
-        trim:function (string) {
-            return string.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-        }
     }
 })
 new Vue({
-    el:"#webChatBox",
-    template:"#webChat",
+    el:"#bid",
+    template:"#iChat",
     data:function () {
         return {
             loginUser:{
@@ -267,7 +260,7 @@ new Vue({
                 name:"似水流年",
                 type:"user"
             },
-            tab:"chat",
+            tab:"menu",
             users:[
                 {
                     id:"group",
@@ -285,7 +278,9 @@ new Vue({
                 isShowName:true
             },
             keyWord:"",
-            isLogin:false
+            isLogin:false,
+            isPicker:false,
+            menu:"chat"
         }
     },
     computed: {
@@ -305,9 +300,6 @@ new Vue({
             })
             return user;
         }
-    },
-    created:function () {
-        this.initBg();
     },
     filters:{
         time:function (value) {
@@ -422,6 +414,7 @@ new Vue({
             this.channelId=channelId;
             document.querySelector("title").innerHTML=_this.loginUser.name+" | 与"+this.channel.name+"聊天中";
             _this.setMessageReader(channelId);
+            _this.tab="chat";
             this.$nextTick(function () {
                 _this.scrollFooter()
             })
