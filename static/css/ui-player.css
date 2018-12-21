@@ -1,0 +1,385 @@
+/************歌词样式**************8*/
+.ui-lrc-container{
+    width: 180px;
+    height: 70px;
+    position: absolute;
+    left: 100%;
+    margin-left:22px;
+    padding: 10px;
+    border-radius: 4px;
+    top: 0;
+    visibility: hidden;
+    opacity: 1;
+}
+.ui-lrcBox{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+.ui-lrc-body{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.ui-icon-close{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+.ui-lrcBox ul{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    transition: top .2s;
+}
+.ui-lrcBox ul li{
+    text-align: center;
+    line-height: 20px;
+    font-size: 12px;
+    color: #f2f2f2;
+}
+.ui-lrcBox ul li.active{
+    color: #01e5ff;
+}
+/*******************进度条样式*************************/
+.ui-vertical{
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+    background: hsla(0,0%,100%,.2);
+    position: relative;
+    cursor: pointer;
+}
+.ui-vertical .ui-progress{
+    width: 100%;
+    height: 0;
+    border-radius: 2px;
+    background: #3a8ee6;
+    position: absolute;
+    bottom: 0;
+}
+.ui-vertical .ui-preload{
+    position: absolute;
+    border-radius: 2px;
+    height: 0;
+    width: 100%;
+    background: hsla(0,0%,100%,.3);
+    bottom: 0;
+    left: 0;
+}
+.ui-vertical .ui-dotCtrl{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ffffff;
+    left: 50%;
+    margin-left: -5px;
+    bottom: 100%;
+    margin-bottom: -5px;
+    user-select: none;
+}
+.ui-progressBox{
+    height: 4px;
+    width: 100%;
+    border-radius: 2px;
+    background: hsla(0,0%,100%,.2);
+    position: relative;
+    cursor: pointer;
+}
+.ui-progressBox .ui-progress{
+    width: 0;
+    height: 100%;
+    border-radius: 2px;
+    background: #3a8ee6;
+    position: relative;
+}
+.ui-progressBox .ui-preload{
+    position: absolute;
+    height: 100%;
+    width: 0;
+    background: hsla(0,0%,100%,.3);
+    border-radius: 2px;
+    left: 0;
+    top: 0;
+    border-radius: 2px;
+}
+.ui-progressBox .ui-dotCtrl{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ffffff;
+    left: 100%;
+    margin-left: -5px;
+    bottom: 50%;
+    margin-bottom: -5px;
+    user-select: none;
+}
+/*******************播放器样式***********************/
+.ui-player-Box{
+    position: fixed;
+    padding: 10px 10px 5px;
+    border-radius: 4px 0 0 4px;
+    left: 0;
+    bottom: 40px;
+    transition: left .5s;
+}
+.ui-song-poster{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    float: left;
+}
+.ui-song-poster img{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.ui-player-content{
+    position: relative;
+}
+.ui-time-progress{
+    height: 4px;
+    padding: 3px 0;
+    margin-top: 5px;
+}
+.ui-song-info{
+    float: left;
+    padding: 0 10px;
+    width: 80px;
+}
+.ui-song-info>div{
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    height: 20px;
+    font-size: 12px;
+}
+.ui-playBtnBox{
+    display: block;
+    padding: 10px 0;
+    float: left;
+}
+.ui-playBtnBox>div{
+    display: block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    float: left;
+    font-size: 30px;
+    cursor: pointer;
+    vertical-align: middle;
+    position: relative;
+}
+.ui-playBtnBox>div.ui-playBtn-play{
+    font-size: 35px;
+}
+.ui-volumeBox{
+    padding: 10px 0;
+    float: left;
+}
+
+.ui-volumeIcon{
+    position: relative;
+    width: 30px;
+    height: 40px;
+    font-size: 20px;
+    float: left;
+}
+.ui-volume-progress{
+    width: 70px;
+    height: 4px;
+    padding: 18px 0;
+    float: left;
+}
+.ui-play-menus{
+    position: absolute;
+    top: 0;
+    right: 10px;
+}
+
+.ui-play-menus>span{
+    width: 25px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 15px;
+    position: relative;
+    cursor: pointer;
+    display: block;
+    float: left;
+}
+.ui-toggleBtn{
+    position: absolute;
+    height: 90px;
+    left: 100%;
+    border-left: 1px solid #000000;
+    width: 20px;
+    font-size: 14px;
+    border-radius: 0 4px 4px 0;
+    top: 0;
+    cursor: pointer;
+}
+
+.ui-songsBox{
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    max-height: 300px;
+    border-radius: 4px 4px 0 0;
+    width: 100%;
+    border-bottom: 1px solid #000000;
+    overflow-y: auto;
+}
+.ui-open .icon-right{
+    display: none;
+}
+.ui-open{
+    left: 0;
+}
+.ui-close{
+    left: -400px;
+}
+.ui-close .icon-left{
+    display: none;
+}
+.ui-play .icon-play{
+    display: none;
+}
+.ui-pause .icon-pause{
+    display: none;
+}
+.ui-lrc-show{
+    visibility: visible;
+    opacity: 1;
+}
+.ui-currentTime{
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+    line-height: 20px;
+    font-size: 12px;
+}
+/**************播放动画***************/
+@-webkit-keyframes rotateRound {
+    0% {-webkit-transform: rotate(0deg);}
+    100% {-webkit-transform: rotate(360deg);}
+}
+@-moz-keyframes rotateRound {
+    0% {-moz-transform: rotate(0deg);}
+    100% {-moz-transform: rotate(360deg);}
+}
+@keyframes rotateRound {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+.playing{
+    -moz-animation: rotateRound 20s linear infinite;
+    -webkit-animation: rotateRound 20s linear infinite;
+    animation: rotateRound 20s linear infinite ;
+
+}
+.paused{
+    animation: rotateRound 20s linear infinite paused;
+}
+/**************歌单列表样式*******************/
+.ui-song-list{
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+.ui-song-list tr td {
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 20px;
+    cursor: pointer;
+    padding: 5px 8px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.ui-song-list tbody tr:hover{
+    background: rgba(0, 0, 0, 0.2);
+}
+/********************************************/
+/*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
+.scroll::-webkit-scrollbar{
+    width: 5px;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0);
+}
+/*定义滚动条的轨道，内阴影及圆角*/
+.scroll::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 6px rgba(240, 240, 240, 0);
+    border-radius: 10px;
+    background-color: rgba(0, 89, 255, 0);
+}
+/*定义滑块，内阴影及圆角*/
+.scroll:hover::-webkit-scrollbar-thumb{
+    /*width: 10px;*/
+    height: 20px;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(236, 236, 236, 0.3);
+    background-color: rgba(203, 203, 203, 0.54);
+    transition: all 0.5s;
+}
+/**************SVG图标居中********************/
+.ui-icon-close svg,
+.ui-toggleBtn svg,
+.ui-volumeIcon svg,
+.ui-playBtnBox>div svg,
+.ui-volumeIcon svg,
+.ui-playBtnBox>div svg,
+.ui-icon-menu svg{
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -0.5em;
+    margin-top: -0.5em;
+}
+/****************清除浮动*******************/
+.ui-volumeBox:after,
+.ui-play-menus:after,
+.ui-playBtnBox:after,
+.ui-player-content:after{
+    clear: both;
+    content: "";
+    display: block;
+}
+/******************文字颜色配色*********************/
+.ui-song-info>div,.ui-currentTime{
+    color: #d1d1d1;
+}
+/*******************按钮图标颜色配色**********************/
+.ui-playBtnBox>div,
+.ui-play-menus>span,
+.ui-volumeIcon,
+.ui-toggleBtn,
+.ui-icon-close{
+    color: #cdd1ec;
+}
+.ui-playBtnBox>div:hover,
+.ui-play-menus>span:hover,
+.ui-volumeIcon:hover,
+.ui-toggleBtn:hover,
+.ui-icon-close:hover{
+    color: #ffffff;
+}
+/*******************模块背景配色**********************/
+.ui-player-Box,
+.ui-lrc-container,
+.ui-toggleBtn,
+.ui-songsBox{
+    background-image: linear-gradient(60deg, #29323c 0%, #485563 100%);
+}

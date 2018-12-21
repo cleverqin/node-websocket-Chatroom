@@ -180,6 +180,448 @@
             }
         }
     }
+    function UiLrc(option) {
+        var defaultOpt={
+            el:document.body,
+            audio:document.querySelector("audio"),
+            lrcUrl:"",
+            lrcArr:[]
+        }
+        this.opt=Object.assign({},defaultOpt,option);
+        this.init();
+    }
+    UiLrc.prototype={
+        init:function () {
+            var _this=this;
+            this.getLrc(this.opt.lrcUrl,function (text) {
+                if(text){
+                    _this.opt.lrcArr=_this.parseLrc(text);
+                }
+                _this.initDom()
+            })
+        },
+        getLrc:function(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState != 4 ) return; // 4 表示数据发送完毕
+                if(xhr.status == 200) {
+                    var rsp = xhr.responseText;
+                    callback(rsp);
+                }
+                else callback();
+            }
+            xhr.open('GET', url, true);
+            xhr.send(null);
+        },
+        initDom:function () {
+            var _this=this;
+            if(this.opt.lrcArr.length>0){
+                this.opt.el.innerHTML="<div class='ui-lrcBox'><ul></ul></div>";
+                this.opt.lrcArr.forEach(function (item) {
+                    _this.opt.el.querySelector("ul").innerHTML+="<li data-time='"+item[0]+"'>"+item[1]+"</li>";
+                })
+                _this.initEvent();
+            }else {
+                this.opt.el.innerHTML="<div class='ui-lrcBox'><ul><li>未查到相关歌词</li></ul></div>";
+            }
+        },
+        parseLrc:function (lrcStr) {
+            var array = lrcStr.split('\n');
+            var result = [];
+            for(var i=0; i<array.length; i++) {
+                var temp = array[i].split(']');
+                if(!/^\[\d+:\d+/g.test(temp[0])) continue;
+                var text = temp.pop().trim();
+                if(text.length<=0){
+                    text="......"
+                }
+                for(var j=0; j< temp.length; j++) {
+                    var _time = temp[j].replace(/^\s*\[/g, '').split(':');
+                    var time = parseInt(_time[0])*60 + parseFloat(_time[1]);
+                    result.push([time, text]);
+                }
+            }
+            result.sort(function(a, b){
+                return a[0] < b[0] ? -1 : (a[0] > b[0] ? 1 : 0);
+            });
+            return result;
+        },
+        findLrcTime:function (time) {
+            var lrc=this.opt.lrcArr,start=0;
+            if(start < 0 || start == undefined) start = 0;
+            for(var i=start; i<lrc.length; i++) {
+                if(time >= lrc[i][0] && (!lrc[i+1] || (lrc[i+1] && time < lrc[i+1][0]))) {
+                    return i;
+                }
+            }
+            return -1;
+        },
+        initEvent:function () {
+            var _this=this;
+            this.opt.audio.addEventListener("timeupdate",function (e) {
+                var time=_this.opt.audio.currentTime;
+                var index=_this.findLrcTime(time);
+                if(index!=-1){
+                    _this.scrollLrc(_this.opt.lrcArr[index])
+                }
+            })
+        },
+        scrollLrc:function (lrc) {
+            var $el=this.opt.el;
+            var $ul=$el.querySelector(".ui-lrcBox ul")
+            var $lrc=$el.querySelector("li[data-time='"+lrc[0]+"']");
+            var $active=$el.querySelector("li.active");
+            if($active){
+                $active.className="";
+            }
+            if($lrc){
+                $lrc.className="active";
+                var top=this.elOffsetParentTop($lrc);
+                var h=$el.querySelector(".ui-lrcBox").offsetHeight/2;
+                var ah=$lrc.offsetHeight/2;
+                if((top-h+ah)>0){
+                    $ul.style.top=-(top-h+ah)+"px";
+                }else {
+                    $ul.style.top=0;
+                }
+            }
+        },
+        elOffsetParentTop:function (element) {
+            var el = (typeof element == "string") ? document.getElementById(element) : element;
+            if (el.parentNode === null || el.style.display == 'none') {
+                return false;
+            }
+            return el.offsetTop;
+        }
+    }
+    function UiSlider(option) {
+        var defaultOpt={
+            el:document.body,
+            async:false,
+            update:function () {},
+            percent:0,
+            isVertical:false,
+        }
+        this.opt=Object.assign({},defaultOpt,option);
+        this._init();
+    }
+    UiSlider.prototype={
+        _init:function () {
+            this.$el=this.opt.el;
+            var isVerticalClass=this.opt.isVertical?"ui-vertical":"ui-progressBox";
+            var template="<div class='"+isVerticalClass+" ui-progressBody'>" +
+              "<div class='ui-preload'></div>"+
+              "<div class='ui-progress'><span class='ui-dotCtrl'></span></div></div>";
+            this.$el.innerHTML=template;
+            this.$box=this.$el.querySelector(".ui-progressBody");
+            this.$progress=this.$el.querySelector(".ui-progress");
+            this.$perload=this.$el.querySelector(".ui-preload");
+            this.$ctrl=this.$el.querySelector(".ui-dotCtrl");
+            this.power=true;
+            this._initEvent();
+            this._setProgress(this.opt.percent)
+        },
+        _initEvent:function () {
+            var _this=this,sPos={x:0,y:0},offset={width:0,height:0};
+            this.$ctrl.addEventListener("mousedown",function (e) {
+                _this.power=false;
+                sPos.x=_this.getMousePos(e).x;
+                sPos.y=_this.getMousePos(e).y;
+                offset.width=_this.$progress.offsetWidth;
+                offset.height=_this.$progress.offsetHeight;
+            })
+            document.addEventListener("mousemove",function (e) {
+                if(!_this.power){
+                    if(_this.opt.isVertical){
+                        var moveL=sPos.y-_this.getMousePos(e).y;;
+                        var set=offset.height+moveL;
+                        _this._getPercent(set)
+                    }else {
+                        var moveL=_this.getMousePos(e).x-sPos.x;
+                        var set=offset.width+moveL;
+                        _this._getPercent(set)
+                    }
+                }
+            })
+            document.addEventListener("mouseup",function (e) {
+                if(!_this.power){
+                    _this.power=true;
+                    if(_this.opt.isVertical){
+                        var moveL=sPos.y-_this.getMousePos(e).y;;
+                        var set=offset.height+moveL;
+                        _this._getPercent(set)
+                    }else {
+                        var moveL=_this.getMousePos(e).x-sPos.x;
+                        var set=offset.width+moveL;
+                        _this._getPercent(set)
+                    }
+                }
+            })
+            _this.$box.addEventListener("click",function (e) {
+                if(_this.opt.isVertical){
+                    var move=_this.getMousePos(e).y-_this.getTop(_this.$box);
+                    var set=_this.$box.offsetHeight-move;
+                    _this._getPercent(set);
+                }else {
+                    var move=_this.getMousePos(e).x-_this.getLeft(_this.$box);
+                    _this._getPercent(move);
+                }
+            })
+        },
+        getMousePos: function (event) {
+            var e = event || window.event;
+            var scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
+            var scrollY = document.documentElement.scrollTop || document.body.scrollTop;
+            var x = e.pageX || e.clientX + scrollX;
+            var y = e.pageY || e.clientY + scrollY;
+            return {'x': x, 'y': y};
+        },
+        getTop: function (e) {
+            var offset = e.offsetTop;
+            if (e.offsetParent != null) {
+                offset +=this.getTop(e.offsetParent);
+            }
+            return offset;
+        },
+        getLeft: function (e) {
+            var offset = e.offsetLeft;
+            if (e.offsetParent != null) {
+                offset +=this.getLeft(e.offsetParent);
+            }
+            return offset;
+        },
+        _getPercent:function(setH){
+            var maxH=this.opt.isVertical?this.$box.offsetHeight:this.$box.offsetWidth,
+              percent=0;
+            if(setH<0){
+                percent=0;
+            }else if(setH>maxH){
+                percent=1;
+            }else {
+                percent=setH/maxH
+            }
+            this._setProgress(percent)
+        },
+        _setProgress:function (percent) {
+            var attr=this.opt.isVertical?"height":"width";
+            this.$progress.style[attr]=percent*100+"%";
+            if(this.opt.async){
+                this.opt.update(percent)
+            }
+            if(this.power&&!this.async){
+                this.opt.update(percent)
+            }
+        },
+        setPercent:function (percent) {
+            var attr=this.opt.isVertical?"height":"width";
+            if(this.power){
+                if(percent>=0&&percent<=1){
+                    this.$progress.style[attr]=percent*100+"%";
+                }
+            }
+        },
+        setPreLoad:function (percent) {
+            var attr=this.opt.isVertical?"height":"width";
+            if(percent>=0&&percent<=1){
+                this.$perload.style[attr]=percent*100+"%";
+            }
+        }
+    };
+    function UiPlayer(option) {
+        var defaultOpt={
+            el:document.body,
+            songs:[]
+        }
+        this.opt=Object.assign({},defaultOpt,option);
+        this._init()
+    }
+    UiPlayer.prototype={
+        _init:function () {
+            this.$el=this.opt.el;
+            this.$lrcBtn=this.$el.querySelector(".ui-icon-lrc");
+            this.$lrcBox=this.$el.querySelector(".ui-lrc-container");
+            this.$lrcBody=this.$el.querySelector(".ui-lrc-body");
+            this.$lrcClose=this.$el.querySelector(".ui-icon-close");
+            this.$listBtn=this.$el.querySelector(".ui-icon-menu");
+            this.$listBox=this.$el.querySelector(".ui-songsBox");
+            this.$toggleBtn=this.$el.querySelector(".ui-toggleBtn");
+            this.$volume=this.$el.querySelector(".ui-volume-progress");
+            this.$time=this.$el.querySelector(".ui-time-progress");
+            this.$name=this.$el.querySelector(".ui-song-name");
+            this.$author=this.$el.querySelector(".ui-song-author");
+            this.$duration=this.$el.querySelector(".ui-song-time");
+            this.$next=this.$el.querySelector(".ui-playBtn-next");
+            this.$play=this.$el.querySelector(".ui-playBtn-play");
+            this.$prev=this.$el.querySelector(".ui-playBtn-prev");
+            this.$poster=this.$el.querySelector(".ui-song-poster img");
+            this.$currentTime=this.$el.querySelector(".ui-currentTime");
+            this.$songsBody=this.$el.querySelector(".ui-songs-body");
+            this.audio=this.$el.querySelector("audio");
+            this.audio.volume=0.5;
+            this.index=0;
+            if(this.opt.songs.length>0){
+                this.changeSong(this.opt.songs[0])
+            }
+            this._initEvent()
+        },
+        _initEvent:function () {
+            var _this=this;
+            this.$lrcBtn.addEventListener("click",function (e) {
+                if(_this.$lrcBox.className.indexOf('ui-lrc-show')!=-1){
+                    _this.$lrcBox.className="ui-lrc-container"
+                }else {
+                    _this.$lrcBox.className="ui-lrc-container ui-lrc-show";
+                }
+            })
+            this.$lrcClose.addEventListener("click",function (e) {
+                if(_this.$lrcBox.className.indexOf('ui-lrc-show')!=-1){
+                    _this.$lrcBox.className="ui-lrc-container"
+                }else {
+                    _this.$lrcBox.className="ui-lrc-container ui-lrc-show";
+                }
+            })
+            this.$listBtn.addEventListener("click",function (e) {
+                if(_this.$listBox.style.display=="none"){
+                    _this.$listBox.style.display="block";
+                }else {
+                    _this.$listBox.style.display="none";
+                }
+            })
+            this.$toggleBtn.addEventListener("click",function (e) {
+                if(_this.$el.className.indexOf('ui-close')!=-1){
+                    _this.$el.className="ui-player-Box ui-open"
+                }else {
+                    _this.$el.className="ui-player-Box ui-close";
+                }
+            })
+            _this.volume=new UiSlider({
+                el:_this.$volume,
+                async:true,
+                percent:0.5,
+                update:function (val) {
+                    _this.audio.volume=val;
+                }
+            });
+            _this.time=new UiSlider({
+                el:_this.$time,
+                percent:0,
+                update:function (val) {
+                    if(_this.audio.duration){
+                        _this.audio.currentTime=_this.audio.duration*val;
+                    }
+                }
+            })
+            _this.audio.ondurationchange=function () {
+                _this.$duration.innerHTML=_this.formatTime(_this.audio.duration)
+            }
+            _this.audio.onerror=function (e) {
+                console.error("音频加载出错了！！")
+            }
+            _this.audio.onended=function (e) {
+                _this.next();
+            }
+            _this.audio.onpause=function () {
+                _this.$play.className="ui-playBtn-play ui-play"
+                _this.$poster.className="paused"
+            }
+            _this.audio.onplay=function () {
+                _this.$play.className="ui-playBtn-play ui-pause";
+                _this.$poster.className="playing"
+            }
+            _this.$play.addEventListener("click",function (e) {
+                if(_this.audio.paused){
+                    _this.audio.play()
+                }else {
+                    _this.audio.pause()
+                }
+            })
+            _this.$next.addEventListener("click",function (e) {
+                _this.next()
+            })
+            _this.$prev.addEventListener("click",function (e) {
+                _this.prev()
+            })
+            _this.audio.addEventListener("timeupdate",function (e) {
+                _this.time.setPercent(_this.audio.currentTime/_this.audio.duration);
+                _this.$currentTime.innerHTML=_this.formatTime(_this.audio.currentTime);
+            })
+            _this.audio.addEventListener("progress",function (e) {
+                if(_this.audio.buffered.length>0&&_this.audio.duration){
+                    _this.time.setPreLoad(_this.audio.buffered.end(_this.audio.buffered.length-1)/_this.audio.duration)
+                }
+            })
+            _this.renderSongsList();
+        },
+        changeSong:function (song) {
+            this.$name.innerHTML=song.title;
+            this.$author.innerHTML=song.author;
+            this.$poster.src=song.image;
+            this.$duration.innerHTML=this.formatTime(0);
+            this.$currentTime.innerHTML=this.formatTime(0);
+            this.audio.src="https://music.163.com/song/media/outer/url?id="+song.id+".mp3";
+            new UiLrc({
+                el:this.$lrcBody,
+                audio:this.audio,
+                lrcUrl:"https://api.asilu.com/163music/?type=songlrc&lrc=lrc&id="+song.id
+            })
+            if(this.time){
+                this.time.setPercent(0);
+                this.time.setPreLoad(0);
+            }
+        },
+        prev:function () {
+            var index=this.index-1;
+            if(index>=0&&index<this.opt.songs.length){
+                this.playSong(index);
+            }
+        },
+        next:function () {
+            var index=this.index+1;
+            if(index>=0&&index<this.opt.songs.length){
+                this.playSong(index);
+            }
+        },
+        playSong:function (index) {
+            if(index>=0&&index<this.opt.songs.length){
+                this.index=index;
+                this.changeSong(this.opt.songs[this.index]);
+                this.audio.play();
+            }
+        },
+        formatTime:function(time) {
+            var fen=parseInt(time/60);
+            var miao=parseInt(time%60);
+            if(fen<=9){
+                fen="0"+fen;
+            }
+            if(miao<=9){
+                miao="0"+miao;
+            }
+            return fen+'：'+miao;
+        },
+        renderSongsList:function () {
+            var _this=this;
+            _this.$songsBody.innerHTML="";
+            _this.opt.songs.forEach(function (song,index) {
+                var $tr=document.createElement('tr');
+                $tr.innerHTML="<td>"+index+"</td><td>"+song.title+"</td><td>"+song.author+"</td>";
+                $tr.addEventListener("click",function (e) {
+                    _this.playSong(index);
+                })
+                _this.$songsBody.appendChild($tr);
+            })
+        },
+        reloadSongs:function (songs) {
+            this.opt.songs=songs;
+            this.index=0;
+            if(songs.length>0){
+                this.changeSong(songs[0]);
+            }
+        }
+    }
+    window.UiLrc=UiLrc;
+    window.UiSlider=UiSlider;
+    window.UiPlayer=UiPlayer;
     if (window.Vue) {
         Vue.use(uiExpression)
     }else {
@@ -302,6 +744,7 @@ new Vue({
     },
     created:function () {
         this.initBg();
+        this.initPlayer();
     },
     filters:{
         time:function (value) {
@@ -493,6 +936,17 @@ new Vue({
         userLogin:function (user) {
             this.loginUser=user;
             this.isLogin=true;
+        },
+        initPlayer:function () {
+            this.$http.jsonp("https://api.asilu.com/163music/?type=playlist&id=545888750")
+              .then(function (response) {
+                var body=response.body;
+                  var songs=body.songs;
+                  new UiPlayer({
+                      el:document.querySelector(".ui-player-Box"),
+                      songs:songs
+                  })
+            })
         }
     }
 })
