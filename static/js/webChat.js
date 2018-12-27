@@ -721,7 +721,9 @@ new Vue({
                 isShowName:true
             },
             keyWord:"",
-            isLogin:true
+            isLogin:true,
+            star:0,
+            starUser:[]
         }
     },
     computed: {
@@ -745,6 +747,8 @@ new Vue({
     created:function () {
         this.initBg();
         this.initPlayer();
+        this.getStar();
+        this.getStarUser();
     },
     filters:{
         time:function (value) {
@@ -947,6 +951,20 @@ new Vue({
                       songs:songs
                   })
             })
+        },
+        getStar:function () {
+            this.$http.get("https://api.github.com/repos/cleverqin/node-websocket-Chatroom")
+              .then(function (reponse) {
+                  var body=reponse.body;
+                  this.star=body.stargazers_count;
+              })
+        },
+        getStarUser:function () {
+            this.$http.get("https://api.github.com/repos/cleverqin/node-websocket-Chatroom/stargazers")
+              .then(function (reponse) {
+                  var body=reponse.body;
+                  this.starUser=body;
+              })
         }
     }
 })

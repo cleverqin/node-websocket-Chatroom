@@ -117,13 +117,20 @@
                     </div>
                 </div>
                 <div class="ui-webChat-item ui-webChat-tool" v-show="tab=='tool'">
-                    <div class="ui-settingBox">
+                    <div class="ui-settingBox ui-toolInfoBox">
                         <h2>关于</h2>
                         <ul class="ui-tool-list">
                             <li><span class="ui-info-txt">版本：v1.0.0</span></li>
                             <li><span class="ui-info-txt">协议：MIT</span></li>
                             <li><span class="ui-info-txt">源码地址：https://github.com/cleverqin/node-websocket-Chatroom</span></li>
                             <li><span class="ui-info-txt">联系我：705597001@qq.com</span></li>
+                            <li><span class="ui-info-txt">Star：{{star}} ★</span></li>
+                            <li>
+                                <div class="ui-star-user" v-for="item in starUser">
+                                    <img :src="item.avatar_url" alt="">
+                                    <div class="ui-starUser-info">{{item.login}}</div>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>
