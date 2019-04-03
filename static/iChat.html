@@ -8,9 +8,9 @@
   <meta name="keywords" content="iChat，socket，Vue，nodejs">
   <meta name="author" content="cleverqin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <link rel="icon" sizes="any" mask href="./images/logo.png">
-  <link rel="stylesheet" href="./css/font-awesome.min.css">
-  <link rel="stylesheet" href="./css/iChat.css">
+  <link rel="icon" sizes="any" mask href="/static/images/logo.png">
+  <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/static/css/iChat.css">
 </head>
 <body>
 <div id="bid"></div>
@@ -83,7 +83,7 @@
         </div>
       </div>
       <div class="ui-iChat-box" style="display: none" v-show="tab=='chat'">
-        <audio src="./images/8400.mp3" ref="audio"></audio>
+        <audio src="/static/images/8400.mp3" ref="audio"></audio>
         <div class="ui-iChat-header">
           <div class="ui-back fa fa-angle-left " @click="tab='menu'"></div>
           {{channel.name}}
@@ -139,9 +139,9 @@
       <div class="ui-error" v-show="text!=''">{{text}}</div>
     </div>
 </template>
-<script src="./js/vue.min.2.2.0.js"></script>
-<script src="./js/vue-resource.js"></script>
-<script src="./socket.io/socket.io.js"></script>
-<script src="./js/iChat.js"></script>
+<script src="/static/js/vue.min.2.2.0.js"></script>
+<script src="/static/js/vue-resource.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/static/js/iChat.js"></script>
 </body>
 </html>

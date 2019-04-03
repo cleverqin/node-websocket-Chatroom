@@ -21,7 +21,25 @@ let kit={
         })
     }
 }
-app.use('/', express.static(__dirname + '/static'));
+app.use('/static', express.static(__dirname + '/static'));
+app.get("/",(req,res)=>{
+    let userAgent=req.headers['user-agent'].toLowerCase();
+    let bIsIpad = userAgent.match(/ipad/i) == "ipad";
+    let bIsIphoneOs = userAgent.match(/iphone os/i) == "iphone os";
+    let bIsMidp = userAgent.match(/midp/i) == "midp";
+    let bIsUc7 = userAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+    let bIsUc = userAgent.match(/ucweb/i) == "ucweb";
+    let bIsAndroid = userAgent.match(/android/i) == "android";
+    let bIsCE = userAgent.match(/windows ce/i) == "windows ce";
+    let bIsWM = userAgent.match(/windows mobile/i) == "windows mobile";
+    if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+        let path=__dirname + '/static/iChat.html';
+        res.sendFile(path);
+    } else {
+        let path=__dirname + '/static/index.html';
+        res.sendFile(path);
+    }
+})
 io.sockets.on('connection', function(socket) {
     //创建用户链接
     socket.on('login', function(user) {
@@ -31,6 +49,7 @@ io.sockets.on('connection', function(socket) {
         } else {
             socket.user = user;
             user.id=socket.id;
+            user.address=socket.handshake.address;
             console.log("登录成功！",user)
             socket.emit('loginSuccess',user,users);
             users.push(user)
@@ -68,6 +87,6 @@ io.sockets.on('connection', function(socket) {
         socket.broadcast.to(id).emit('message',socket.user,msg);
     });
 });
-server.listen(3000,function () {
-    console.log("服务器已启动在：3000端口","http://localhost:3000`")
+server.listen(3000,function (){
+    console.log("服务器已启动在：3000端口","http://localhost:3000")
 });

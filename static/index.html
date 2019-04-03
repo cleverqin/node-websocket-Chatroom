@@ -7,16 +7,16 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="cleverqin">
-    <link rel="icon" sizes="any" mask href="./images/logo.png">
-    <link rel="stylesheet" href="./css/font-awesome.min.css">
-    <link rel="stylesheet" href="./css/webChat.css">
+    <link rel="icon" sizes="any" mask href="/static/images/logo.png">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/webChat.css">
 </head>
 <body>
 <div id="webChatBox"></div>
 <script id="webChat" type="text/html">
     <div id="app" v-cloak>
         <div class="ui-webChat-box" v-if="isLogin">
-            <audio src="./images/8400.mp3" ref="audio"></audio>
+            <audio src="/static/images/8400.mp3" ref="audio"></audio>
             <div class="ui-webChat-menuBox">
                 <div class="ui-userCard">
                     <img :src="loginUser.avatarUrl" alt="" :title="loginUser.name">
@@ -145,9 +145,9 @@
         <div class="im-login-errorBox" v-show="errorMsg!=''">{{errorMsg}}</div>
     </div>
 </script>
-<script src="./js/vue.min.2.2.0.js"></script>
-<script src="./js/vue-resource.js"></script>
-<script src="./socket.io/socket.io.js"></script>
-<script src="./js/index.js"></script>
+<script src="/static/js/vue.min.2.2.0.js"></script>
+<script src="/static/js/vue-resource.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/static/js/index.js"></script>
 </body>
 </html>

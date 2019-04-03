@@ -264,7 +264,7 @@ new Vue({
             users:[
                 {
                     id:"group",
-                    avatarUrl:"./images/group-icon.png",
+                    avatarUrl:"/static/images/group-icon.png",
                     name:"聊天室群",
                     type:"room"
                 }
