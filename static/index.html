@@ -12,7 +12,9 @@
     <link rel="stylesheet" href="/static/css/webChat.css">
 </head>
 <body>
+<!--应用挂着点-->
 <div id="webChatBox"></div>
+<!--主界面模版-->
 <script id="webChat" type="text/html">
     <div id="app" v-cloak>
         <div class="ui-webChat-box" v-if="isLogin">
@@ -104,6 +106,7 @@
         <ui-login v-if="!isLogin" @user-login="userLogin"></ui-login>
     </div>
 </script>
+<!--表情组件模版-->
 <script id="tpl" type="text/html">
     <div class="ui-expression-box" @click.stop="isShow=!isShow">
         <transition name="custom-classes-transition" enter-active-class="animate scaleFadeIn" leave-active-class="animate scaleFadeOut">
@@ -117,6 +120,7 @@
         </transition>
     </div>
 </script>
+<!--登录组件模版-->
 <script id="imLogin" type="text/html">
     <div class="im-login-box">
         <div class="im-login-banner">

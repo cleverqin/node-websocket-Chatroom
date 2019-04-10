@@ -13,7 +13,9 @@
   <link rel="stylesheet" href="/static/css/iChat.css">
 </head>
 <body>
+<!--应用挂载点-->
 <div id="bid"></div>
+<!--主界面模版-->
 <template id="iChat">
   <section id="app">
     <login v-show="!isLogin" @login="userLogin"></login>
@@ -118,6 +120,7 @@
     </div>
   </section>
 </template>
+<!--表情组件模版-->
 <template id="tpl">
   <div class="ui-expression-list">
     <div class="ui-expression-item" v-for="item in expressions">
@@ -125,6 +128,7 @@
     </div>
   </div>
 </template>
+<!--登录组件模版-->
 <template id="login">
     <div class="login-box">
       <div class="login-form-box">
