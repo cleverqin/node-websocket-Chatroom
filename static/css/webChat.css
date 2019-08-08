@@ -295,7 +295,12 @@ body{
     height: 30px;
     float: left;
     padding-top: 5px;
-    background: url(../images/icon.png) no-repeat -335px center;
+    text-align: center;
+    line-height: 30px;
+    font-size: 25px;
+    color: #6a737d;
+    background: url("../images/face.svg") no-repeat center;
+    background-size: 22px;
 }
 .ui-message-textBox{
     margin: 0 10px;
