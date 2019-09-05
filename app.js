@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
     res.sendFile(path);
   }
 })
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection',(socket)=>{
   //创建用户链接
   socket.on('login', (user)=> {
     if (kit.isHaveUser(user)) {
@@ -71,7 +71,7 @@ io.sockets.on('connection', function (socket) {
     }
   });
   //群发消息
-  socket.on('groupMessage', function (msg, from) {
+  socket.on('groupMessage',(from, to,message,type)=>{
     //用户登录状态掉线，重置用户登录状态
     if (!socket.user) {
       from.id = socket.id;
@@ -80,10 +80,10 @@ io.sockets.on('connection', function (socket) {
       socket.broadcast.emit('system', from, 'join');
       socket.emit('loginSuccess', from, []);
     }
-    socket.broadcast.emit('groupMessage', socket.user, msg);
+    socket.broadcast.emit('groupMessage', socket.user, to,message,type);
   });
   //发送私信
-  socket.on('message', function (id, msg, from) {
+  socket.on('message',(from, to,message,type)=> {
     //用户登录状态掉线，重置用户登录状态
     if (!socket.user) {
       from.id = socket.id;
@@ -92,7 +92,7 @@ io.sockets.on('connection', function (socket) {
       socket.broadcast.emit('system', from, 'join');
       socket.emit('loginSuccess', from, []);
     }
-    socket.broadcast.to(id).emit('message', socket.user, msg);
+    socket.broadcast.to(to.id).emit('message', socket.user, to,message,type);
   });
 });
 //启动服务器

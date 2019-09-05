@@ -634,9 +634,15 @@ body{
     box-sizing: border-box;
     margin: -1px;
     width: 220px;
+    outline: none;
+    position: relative;
 }
 .im-form-element .im-input:first-child{
     border-radius:4px 4px 0 0;
+}
+.im-form-element .im-input:focus{
+    border-color: #2ea6da;
+    z-index: 99;
 }
 .im-form-element .im-input{
     border-radius:0 0 4px 4px;
@@ -703,6 +709,37 @@ body{
     color: #f56c6c;
     border-radius: 0 0 4px 4px;
 }
+.add-avatar-box{
+    padding: 5px;
+    box-sizing: border-box;
+}
+.add-avatar-box input{
+    width: 100%;
+    line-height: 30px;
+    height: 30px;
+    border-radius: 4px;
+    outline: none;
+    border: 1px solid #C0C4CC;
+    font-size: 14px;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+.add-avatar-box input:focus{
+    border: 1px solid #2ea6da;
+}
+[class^=ui-alert-],[class*=" ui-alert-"]{
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    line-height: 24px;
+    background: rgba(0, 0, 0, 0.51);
+    border-radius: 4px;
+    font-size: 12px;
+    color: #f2f2f2;
+    padding: 5px 10px;
+}
+/*******************/
 .github-corner {
     border-bottom: 0;
     position: fixed;

@@ -340,26 +340,29 @@ new Vue({
   },
   methods: {
     //发送消息
-    sendMessage: function (text, to) {
-      var isRead = this.channelId == to.id ? true : false;
+    sendMessage: function (from, to,text,type) {
       var message = {
         threadId: to.id,
-        from: this.loginUser,
+        from: from,
         to: to,
         content: text,
         time: new Date().getTime(),
         type: "send",
-        isRead: isRead
+        isRead: true
       }
       this.addMessage(message)
     },
     //接收消息
-    receiveMessage: function (text, from, channelId) {
-      var isRead = this.channelId == channelId ? true : false;
+    receiveMessage: function (from, to, text,type) {
+      var channelId=from.id;
+      if(to.type=='room'){
+        channelId=to.id;
+      }
+      var isRead = this.channelId ==channelId;
       var message = {
         threadId: channelId,
         from: from,
-        to: this.loginUser,
+        to: to,
         content: text,
         time: new Date().getTime(),
         type: "receive",
@@ -385,11 +388,11 @@ new Vue({
     send: function () {
       var text = this.trim(this.text);
       if (text != "" && this.isLogin) {
-        this.sendMessage(text, this.channel);
+        this.sendMessage(this.loginUser,this.channel,text,"text");
         if (this.channelId == "group") {
-          socket.emit("groupMessage", text, this.loginUser)
+          socket.emit("groupMessage",this.loginUser,this.channel,text,"text")
         } else {
-          socket.emit("message", this.channelId, text, this.loginUser)
+          socket.emit("message",this.loginUser,this.channel,text,"text")
         }
       }
       this.text = "";
@@ -461,21 +464,6 @@ new Vue({
         })
       }
     },
-    //初始化自动更换页面背景，背景图来源于Bing
-    initBg: function () {
-      this.$http.jsonp("https://api.asilu.com/bg/").then(function (response) {
-        var images = response.body.images,
-          len = images.length;
-        setInterval(function () {
-          var index = parseInt(Math.random() * len);
-          var img = new Image();
-          img.addEventListener('load', function () {
-            document.body.style.backgroundImage = "url(" + images[index].url + ")";
-          })
-          img.src = images[index].url;
-        }, 30000)
-      })
-    },
     //处理用户登录
     userLogin: function (payload) {
       this.loginUser = payload.user;
@@ -505,11 +493,11 @@ new Vue({
           }
         }
       })
-      socket.on("message", function (user, text) {
-        _this.receiveMessage(text, user, user.id)
+      socket.on("message", function (from, to,text,type) {
+        _this.receiveMessage(from,to,text,type)
       })
-      socket.on("groupMessage", function (user, text) {
-        _this.receiveMessage(text, user, "group")
+      socket.on("groupMessage", function (from, to,text,type) {
+        _this.receiveMessage(from,to,text,type)
       })
     }
   }

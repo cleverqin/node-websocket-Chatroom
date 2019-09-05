@@ -183,10 +183,61 @@
       }
     }
   }
+  var Message={
+    install(Vue){
+      function _extend(opt,option) {
+        for(let key in opt){
+          if(option[key]){
+            opt[key]=option[key]
+          }
+        }
+        return opt
+      }
+      var inter=null;
+      Vue.prototype.$message=function (option) {
+        let opt=_extend({
+          type:"info",
+          text:"",
+          duration:3000
+        },option)
+        let Message=Vue.extend({
+          template:"<transition name='custom-classes-transition'" +
+            "enter-active-class=\"slideIn\"\n" +
+            " leave-active-class=\"slideOut\"" +
+            "v-on:after-leave=\"delELe\">" +
+            "<div :class='\"ui-alert-\"+type' ref='alter' v-show='show'>{{msg}}</div>" +
+            "</transition>",
+          data:function () {
+            return {
+              msg:opt.text,
+              show:false,
+              type:opt.type
+            }
+          },
+          mounted:function () {
+            let _this=this;
+            this.show=true;
+            inter=setTimeout(function () {
+              _this.show=false;
+            },opt.duration)
+          },
+          methods:{
+            delELe:function () {
+              this.$refs.alter.remove()
+            }
+          }
+        })
+        document.body.appendChild(new Message().$mount().$el)
+        return Message;
+      }
+    }
+  }
   if (window.Vue) {
     Vue.use(uiExpression)
+    Vue.use(Message)
   } else {
     window.uiExpression = uiExpression;
+    window.uiMessage=uiMessage;
   }
 })()
 //创建socket链接
@@ -211,7 +262,8 @@ Vue.component("ui-login", {
       isShow: false,
       avatarUrl: images[0],
       images: images,
-      errorMsg: ""
+      errorMsg: "",
+      qq:""
     }
   },
   created: function () {
@@ -263,6 +315,21 @@ Vue.component("ui-login", {
     //去除空格
     trim: function (string) {
       return string.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+    },
+    addQQAvatar(qq) {
+      let qqReg = /^[1-9][0-9]{3,9}[0-9]$/;
+      if (qqReg.test(qq)) {
+        let qqAvatarUrl = "http://q.qlogo.cn/headimg_dl?dst_uin=" + qq + "&spec=100";
+        if (this.images.indexOf(qqAvatarUrl) == -1) {
+          this.images.push(qqAvatarUrl);
+        }
+        this.qq = "";
+      } else {
+        this.$message({
+          text: "输入的QQ号有误!",
+          type:"error"
+        })
+      }
     }
   }
 })
@@ -351,26 +418,29 @@ new Vue({
   },
   methods: {
     //发送消息
-    sendMessage: function (text, to) {
-      var isRead = this.channelId == to.id ? true : false;
+    sendMessage: function (from, to,text,type) {
       var message = {
         threadId: to.id,
-        from: this.loginUser,
+        from: from,
         to: to,
         content: text,
         time: new Date().getTime(),
         type: "send",
-        isRead: isRead
+        isRead: true
       }
       this.addMessage(message)
     },
     //接收消息
-    receiveMessage: function (text, from, channelId) {
-      var isRead = this.channelId == channelId ? true : false;
+    receiveMessage: function (from, to, text,type) {
+      var channelId=from.id;
+      if(to.type=='room'){
+        channelId=to.id;
+      }
+      var isRead = this.channelId ==channelId;
       var message = {
         threadId: channelId,
         from: from,
-        to: this.loginUser,
+        to: to,
         content: text,
         time: new Date().getTime(),
         type: "receive",
@@ -396,11 +466,11 @@ new Vue({
     send: function () {
       var text = this.trim(this.text);
       if (text != "" && this.isLogin) {
-        this.sendMessage(text, this.channel);
+        this.sendMessage(this.loginUser,this.channel,text,"text");
         if (this.channelId == "group") {
-          socket.emit("groupMessage", text, this.loginUser)
+          socket.emit("groupMessage", this.loginUser,this.channel,text,"text")
         } else {
-          socket.emit("message", this.channelId, text, this.loginUser)
+          socket.emit("message",this.loginUser,this.channel,text,"text")
         }
       }
       this.text = "";
@@ -515,12 +585,16 @@ new Vue({
           }
         }
       })
-      socket.on("message", function (user, text) {
-        _this.receiveMessage(text, user, user.id)
+      socket.on("message", function (from, to,text,type) {
+        _this.receiveMessage(from,to,text,type)
       })
-      socket.on("groupMessage", function (user, text) {
-        _this.receiveMessage(text, user, "group")
+      socket.on("groupMessage", function (from, to,text,type) {
+        _this.receiveMessage(from,to,text,type)
       })
+      socket.on('disconnect',function () {
+        console.log("断开重新链接！")
+        socket.open();
+      });
     }
   }
 })
