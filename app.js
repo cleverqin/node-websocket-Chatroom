@@ -54,18 +54,18 @@ io.sockets.on('connection',(socket)=>{
     } else {
       socket.user = user;
       user.id = socket.id;
-      user.address = socket.handshake.address;
+      user.roomId=socket.id;
+      user.address = socket.handshake.address.replace(/::ffff:/,"");
       console.log("登录成功！", user)
       socket.emit('loginSuccess', user, users);
       users.push(user)
       socket.broadcast.emit('system', user, 'join');
     }
-    ;
   });
   //用户注销链接
   socket.on('disconnect',()=> {
     if (socket.user != null) {
-      kit.delUser(socket.id);
+      kit.delUser(socket.user.id);
       console.log("用户退出！", socket.user)
       socket.broadcast.emit('system', socket.user, 'logout');
     }
@@ -74,7 +74,7 @@ io.sockets.on('connection',(socket)=>{
   socket.on('groupMessage',(from, to,message,type)=>{
     //用户登录状态掉线，重置用户登录状态
     if (!socket.user) {
-      from.id = socket.id;
+      from.roomId = socket.id;
       socket.user = from;
       users.push(from);
       socket.broadcast.emit('system', from, 'join');
@@ -86,14 +86,25 @@ io.sockets.on('connection',(socket)=>{
   socket.on('message',(from, to,message,type)=> {
     //用户登录状态掉线，重置用户登录状态
     if (!socket.user) {
-      from.id = socket.id;
+      from.roomId = socket.id;
       socket.user = from;
       users.push(from);
       socket.broadcast.emit('system', from, 'join');
       socket.emit('loginSuccess', from, []);
     }
-    socket.broadcast.to(to.id).emit('message', socket.user, to,message,type);
+    socket.broadcast.to(to.roomId).emit('message', socket.user, to,message,type);
   });
+  //判断用户重新连接
+  if(socket.handshake.query.User){
+    let user=JSON.parse(socket.handshake.query.User);
+    socket.user = user;
+    user.roomId = socket.id;
+    user.address = socket.handshake.address.replace(/::ffff:/,"");
+    console.log("重新连接成功！", user)
+    socket.emit('loginSuccess', user, users);
+    users.push(user)
+    socket.broadcast.emit('system', user, 'join');
+  }
 });
 //启动服务器
 server.listen(3000, function () {
