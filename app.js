@@ -3,11 +3,12 @@ const express = require('express'),
   server = require('http').createServer(app),
   io = require('socket.io').listen(server),
   //用于保存用户信息的数组
+  PORT=3000,
   users = [];
 let kit = {
   //判断用户是否存在
   isHaveUser(user) {
-    var flag = false;
+    let flag = false;
     users.forEach(function (item) {
       if (item.name == user.name) {
         flag = true;
@@ -22,6 +23,21 @@ let kit = {
         users.splice(index, 1);
       }
     })
+  },
+  getDeviceType(userAgent){
+    let bIsIpad = userAgent.match(/ipad/i) == "ipad";
+    let bIsIphoneOs = userAgent.match(/iphone os/i) == "iphone os";
+    let bIsMidp = userAgent.match(/midp/i) == "midp";
+    let bIsUc7 = userAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+    let bIsUc = userAgent.match(/ucweb/i) == "ucweb";
+    let bIsAndroid = userAgent.match(/android/i) == "android";
+    let bIsCE = userAgent.match(/windows ce/i) == "windows ce";
+    let bIsWM = userAgent.match(/windows mobile/i) == "windows mobile";
+    if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+      return "touch";
+    } else {
+      return "pc";
+    }
   }
 }
 //设置静态资源
@@ -29,15 +45,7 @@ app.use('/static', express.static(__dirname + '/static'));
 //用户访问网站页面会根据浏览器userAgent返回不同的页面
 app.get("/", (req, res) => {
   let userAgent = req.headers['user-agent'].toLowerCase();
-  let bIsIpad = userAgent.match(/ipad/i) == "ipad";
-  let bIsIphoneOs = userAgent.match(/iphone os/i) == "iphone os";
-  let bIsMidp = userAgent.match(/midp/i) == "midp";
-  let bIsUc7 = userAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
-  let bIsUc = userAgent.match(/ucweb/i) == "ucweb";
-  let bIsAndroid = userAgent.match(/android/i) == "android";
-  let bIsCE = userAgent.match(/windows ce/i) == "windows ce";
-  let bIsWM = userAgent.match(/windows mobile/i) == "windows mobile";
-  if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+  if (kit.getDeviceType(userAgent)=='touch') {
     let path = __dirname + '/static/iChat.html';
     res.sendFile(path);
   } else {
@@ -52,10 +60,14 @@ io.sockets.on('connection',(socket)=>{
       console.log("登录失败！", user)
       socket.emit('loginFail', "登录失败,昵称已存在!");
     } else {
-      socket.user = user;
       user.id = socket.id;
       user.roomId=socket.id;
       user.address = socket.handshake.address.replace(/::ffff:/,"");
+      let userAgent=socket.handshake.headers["user-agent"].toLowerCase();
+      let deviceType=kit.getDeviceType(userAgent);
+      user.deviceType=deviceType;
+      user.loginTime=new Date().getTime();
+      socket.user = user;
       console.log("登录成功！", user)
       socket.emit('loginSuccess', user, users);
       users.push(user)
@@ -107,6 +119,6 @@ io.sockets.on('connection',(socket)=>{
   }
 });
 //启动服务器
-server.listen(3000, function () {
-  console.log("服务器已启动在：3000端口", "http://localhost:3000")
+server.listen(PORT,()=> {
+  console.log(`服务器已启动在：${PORT}端口`, `http://localhost:${PORT}`)
 });
