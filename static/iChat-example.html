@@ -10,30 +10,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <link rel="icon" sizes="any" mask href="./images/logo.png">
   <script>
-      function browserRedirect() {
-          var sUserAgent = navigator.userAgent.toLowerCase();
-          var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
-          var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
-          var bIsMidp = sUserAgent.match(/midp/i) == "midp";
-          var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
-          var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
-          var bIsAndroid = sUserAgent.match(/android/i) == "android";
-          var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
-          var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
-          if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
-              console.log('在移动端浏览');
-          } else {
-              console.log('在pc端浏览');
-              window.location.href='../'
-          }
+    function browserRedirect() {
+      var sUserAgent = navigator.userAgent.toLowerCase();
+      var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+      var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+      var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+      var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+      var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+      var bIsAndroid = sUserAgent.match(/android/i) == "android";
+      var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+      var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+      if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+        console.log('在移动端浏览');
+      } else {
+        console.log('在pc端浏览');
+        window.location.href='../'
       }
-      browserRedirect();
+    }
+    browserRedirect();
   </script>
   <link rel="stylesheet" href="./css/font-awesome.min.css">
   <link rel="stylesheet" href="./css/iChat.css">
 </head>
 <body>
+<!--应用挂载点-->
 <div id="bid"></div>
+<!--主界面模版-->
 <template id="iChat">
   <section id="app">
     <login v-show="!isLogin" @login="userLogin"></login>
@@ -54,9 +56,8 @@
                 <img :src="item.avatarUrl" alt="">
                 <div class="ui-infoBox">
                   <span class="ui-infoTime" v-if="getLastMsg(item.id).time" v-show="setting.isShowTime">{{getLastMsg(item.id).time| time}}</span>
-                  <span class="ui-unReader-info" v-if="getUnReaderNum(item.id)>0">{{getUnReaderNum(item.id)}}</span>
-                  <div class="ui-name">{{item.name}}</div>
-                  <div class="ui-txt">{{getLastMsg(item.id).content}}</div>
+                  <div class="ui-name">{{item.name}}<span class="fa" :class="item.deviceType=='pc'?'fa-television':'fa-mobile-phone'" v-if="item.deviceType" style="margin-left: 5px"></span></div>
+                  <div class="ui-txt">{{getLastMsg(item.id).content}}<span class="ui-unReader-info" v-if="getUnReaderNum(item.id)>0">{{getUnReaderNum(item.id)}}</span></div>
                 </div>
               </div>
             </div>
@@ -66,7 +67,11 @@
               <img :src="loginUser.avatarUrl" alt="图片" class="ui-loginAvatar">
             </div>
             <ul class="ui-setting-list">
-              <li><span>用户：</span>{{loginUser.name}}</li>
+              <li>
+                <span>用户：</span>{{loginUser.name}}
+                <span class="fa" :class="loginUser.deviceType=='pc'?'fa-television':'fa-mobile-phone'" v-if="loginUser.deviceType"></span>
+                <span v-if="loginUser.address">IP:{{loginUser.address}}</span>
+              </li>
               <li>
                 <span>消息提示音</span>
                 <div class='switch-wrap'>
@@ -138,6 +143,7 @@
     </div>
   </section>
 </template>
+<!--表情组件模版-->
 <template id="tpl">
   <div class="ui-expression-list">
     <div class="ui-expression-item" v-for="item in expressions">
@@ -145,6 +151,7 @@
     </div>
   </div>
 </template>
+<!--登录组件模版-->
 <template id="login">
   <div class="login-box">
     <div class="login-form-box">
@@ -161,6 +168,7 @@
 </template>
 <script src="./js/vue.min.2.2.0.js"></script>
 <script src="./js/vue-resource.js"></script>
+<script src="./js/socket.io.js"></script>
 <script src="./js/iChat-example.js"></script>
 </body>
 </html>

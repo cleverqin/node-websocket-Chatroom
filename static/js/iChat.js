@@ -297,7 +297,8 @@ new Vue({
       //是否展示表情选择区
       isPicker: false,
       //菜单
-      menu: "chat"
+      menu: "chat",
+      logs:[]
     }
   },
   computed: {
@@ -477,7 +478,8 @@ new Vue({
     //初始化消息监听事件
     initSocketEvent: function () {
       var _this = this;
-      socket.on('system', function (user, type) {
+      _this.socket=socket;
+      _this.socket.on('system', function (user, type) {
         if (type == "join") {
           user.messages = []
           _this.users.push(user)
@@ -493,12 +495,59 @@ new Vue({
           }
         }
       })
-      socket.on("message", function (from, to,text,type) {
+      _this.socket.on("message", function (from, to,text,type) {
         _this.receiveMessage(from,to,text,type)
       })
-      socket.on("groupMessage", function (from, to,text,type) {
+      _this.socket.on("groupMessage", function (from, to,text,type) {
         _this.receiveMessage(from,to,text,type)
       })
-    }
+      _this.socket.on("error",(error)=>{
+        console.log("出错了！！")
+        _this.saveLog("socket链接出错了！"+JSON.stringify(error),"error");
+      })
+      _this.socket.on("connect",(data)=>{
+        console.log("链接成功！",data)
+        _this.saveLog("连接成功！"+JSON.stringify(data),"success");
+        _this.isOnline=true;
+      })
+      _this.socket.on("disconnect",(data)=>{
+        _this.isOnline=false;
+        console.log(JSON.stringify(data)+ ' - disconnect');
+        _this.saveLog("断开连接！"+JSON.stringify(data)+ ' - disconnect',"warning");
+      })
+      _this.socket.on("connect_error",(data)=>{
+        _this.isOnline=false;
+        console.log(JSON.stringify(data)+ ' - connect_error')
+        _this.saveLog("连接出错了！"+JSON.stringify(data)+ ' - connect_error',"error");
+      })
+      _this.socket.on("connect_timeout",(data)=>{
+        _this.isOnline=false;
+        console.log(JSON.stringify(data)+ ' - connect_timeout')
+        _this.saveLog("连接超时！"+JSON.stringify(data)+ ' - connect_timeout',"warning");
+      })
+      _this.socket.on("reconnect",(data)=>{
+        console.log(JSON.stringify(data)+ ' - reconnect')
+        _this.saveLog("重新连接！"+JSON.stringify(data)+ ' - reconnect',"info");
+      })
+      _this.socket.on("reconnect_attempt",(data)=>{
+        _this.socket.io.opts.query={
+          User:_this.loginUser.id?JSON.stringify(_this.loginUser):''
+        }
+        _this.saveLog("尝试重新连接！"+JSON.stringify(data)+ ' - reconnect_attempt',"info");
+      })
+    },
+    saveLog(text,type){
+      this.logs.push({
+        text:text,
+        type:type,
+        time:new Date().getTime()
+      })
+      let $el=document.getElementById('log-container');
+      if($el){
+        this.$nextTick(()=>{
+          $el.scrollTop = $el.scrollHeight
+        })
+      }
+    },
   }
 })

@@ -339,8 +339,8 @@ body{
 }
 .ui-unReader-info{
     position: absolute;
-    right: -8px;
-    top: -10px;
+    right: 0;
+    top: 1px;
     font-size: 12px;
     height: 18px;
     line-height: 16px;
@@ -370,6 +370,7 @@ body{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    position: relative;
 }
 /************************/
 .ui-menu-setting{

@@ -2,171 +2,256 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
+  <title>欢迎使用webTalk聊天应用</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>欢迎登陆WebChat聊天室</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
-  <meta name="author" content="cleverqin">
-  <link rel="icon" sizes="any" mask href="/static/images/logo.png">
-  <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+  <meta name="author" content="">
+  <link rel="icon" sizes="any" href="/static/images/logo.png">
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_737314_ykp1exp92.css">
+  <link rel="stylesheet" href="/static/css/ui-player.css">
   <link rel="stylesheet" href="/static/css/webChat.css">
 </head>
 <body>
-<!--应用挂着点-->
-<div id="webChatBox"></div>
-<!--主界面模版-->
-<script id="webChat" type="text/html">
-  <div id="app" v-cloak>
-    <div class="ui-webChat-box" v-if="isLogin">
-      <audio src="/static/images/8400.mp3" ref="audio"></audio>
-      <div class="ui-webChat-menuBox">
-        <div class="ui-userCard">
-          <img :src="loginUser.avatarUrl" alt="" :title="loginUser.name">
-          <div class="ui-userName">{{loginUser.name}}</div>
+<div id="app"></div>
+<template id="tpl">
+  <section>
+    <login @login="login" v-show="!loginUser.id"></login>
+    <div class="webTalk-box" v-show="loginUser.id">
+      <div class="webTalk-menu-box">
+        <div class="webTalk-login-avatar" :title="loginUser.name">
+          <img :src="loginUser.avatarUrl" alt="">
         </div>
-        <div class="ui-tabBtn-box">
-          <div class="ui-tabBtn-item" title="会话" @click="tab='chat'" :class="{active:tab=='chat'}"><span
-              class="fa fa-comments"></span></div>
-          <div class="ui-tabBtn-item" title="设置" @click="tab='setting'" :class="{active:tab=='setting'}"><span
-              class="fa fa-cog"></span></div>
-          <div class="ui-tabBtn-item" title="关于" @click="tab='tool'" :class="{active:tab=='tool'}"><span
-              class="fa fa-info-circle"></span></div>
-        </div>
+        <ul class="webTalk-menu-list">
+          <li class="webTalk-menu-item" title="会话" :class="{active:menu=='chat'}">
+            <span class="iconfont icon-comments" @click="menu='chat'"></span>
+          </li>
+          <li class="webTalk-menu-item" title="设置" :class="{active:menu=='setting'}">
+            <span class="iconfont icon-cog" @click="menu='setting'"></span>
+          </li>
+          <li class="webTalk-menu-item" title="关于" :class="{active:menu=='about'}">
+            <span class="iconfont icon-info" @click="menu='about'"></span>
+          </li>
+        </ul>
       </div>
-      <div class="ui-webChat-content">
-        <div class="ui-webChat-item ui-webChat-thread" v-show="tab=='chat'">
-          <div class="ui-users-box">
-            <div class="ui-user-search">
-              <span class="fa fa-search ui-icon-search"></span>
-              <input type="text" placeholder="搜索" v-model="keyWord">
+      <div class="webTalk-container">
+        <div class="webTalk-panel" v-show="menu=='chat'">
+          <div class="webTalk-panel-left">
+            <div class="webTalk-search">
+              <span class="iconfont icon-search"></span>
+              <input type="text" class="webTalk-search-input" placeholder="搜索" v-model="keyWord">
             </div>
-            <div class="ui-user-list ui-scroll">
-              <div class="ui-user-item" v-for="item in searchUser()" :class="{active:item.id==channelId}"
-                   @click="changeChannel(item.id)">
-                <img :src="item.avatarUrl" alt="">
-                <div class="ui-infoBox">
-                  <span class="ui-infoTime" v-if="getLastMsg(item.id).time" v-show="setting.isShowTime">{{getLastMsg(item.id).time| time}}</span>
-                  <span class="ui-unReader-info" v-if="getUnReaderNum(item.id)>0">{{getUnReaderNum(item.id)}}</span>
-                  <div class="ui-name">{{item.name}}</div>
-                  <div class="ui-txt">{{getLastMsg(item.id).content}}</div>
-                </div>
+            <div class="webTalk-users-list">
+              <div class="webTalk-users-listPanel ui-scroll">
+                <user :user="item"
+                      :messages="threads[item.id]?threads[item.id]:[]"
+                      :setting="setting"
+                      v-for="item in searchUser()"
+                      @click.native="changeChannel(item)"
+                      :class="{active:threadId==item.id}"></user>
+                <div class="webTalk-no-user" v-if="searchUser()==0">未查到相关数据</div>
               </div>
             </div>
           </div>
-          <div class="ui-messages-box">
-            <div class="ui-channel-header">{{channel.name}} <span v-if="channelId=='group'">（{{users.length}}）</span>
+          <div class="webTalk-panel-right">
+            <div class="webTalk-message-container" v-show="channel.id">
+              <div class="webTalk-title">
+                <h3 class="webTalk-title-text">{{channel.name}} <template v-if="channel.type=='room'">（{{onLineUsers.length}}）</template></h3>
+              </div>
+              <div class="webTalk-message-box">
+                <div class="webTalk-message-list ui-scroll" ref="messageList">
+                  <wt-message :message="item" :login-user="loginUser" :setting="setting" v-for="item in messages"></wt-message>
+                </div>
+              </div>
+              <div class="webTalk-footer">
+                <div class="webTalk-toolBar-box">
+                  <expression @picker-expression="pickerExpression"></expression>
+                </div>
+                <div class="webTalk-message-inputBox">
+                  <textarea class="webTalk-message-input ui-scroll" v-model="text" placeholder="请输入要说的话..." @keyup.enter="send(text)"></textarea>
+                </div>
+                <div class="webTalk-sendBtn-box">
+                  <button class="webTalk-sendBtn" @click="send(text)">发送</button>
+                </div>
+              </div>
             </div>
-            <div class="ui-messages-content">
-              <div class="ui-message-list ui-scroll" ref="list">
-                <div class="ui-thread-item" v-for="item in messages"
-                     :class="{'ui-thread-right':item.from.id==loginUser.id}">
-                  <div class="ui-thread-avatar">
-                    <img :src="item.from.avatarUrl" alt="">
-                  </div>
-                  <div class="ui-thread-content">
-                    <div class="ui-thread-info" v-if="item.type=='send'" v-show="setting.isShowName"><span
-                        v-show="setting.isShowTime">{{item.time | time}}</span>{{item.from.name}}
-                    </div>
-                    <div class="ui-thread-info" v-if="item.type=='receive'" v-show="setting.isShowName">
-                      {{item.from.name}}<span v-show="setting.isShowTime">{{item.time | time}}</span></div>
-                    <div class="ui-thread-body" v-html="$parseExpression(item.content)"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="ui-message-form">
-                <div class="ui-toolBox">
-                  <a href="javascript:" class="ui-toolBtn">
-                    <ui-expression @picker-expression="picker"></ui-expression>
-                  </a>
-                </div>
-                <div class="ui-message-textBox">
-                  <textarea class="ui-message-text ui-scroll" v-model="text" placeholder="请输入要说的话......"
-                            @keyup.enter="send"></textarea>
-                </div>
-                <div class="ui-sendBtn-box">
-                  <a href="javascript:;" class="ui-sendBtn" @click="send">发送</a>
-                </div>
-              </div>
+            <div class="webTalk-message-container" v-show="!channel.id">
+              <span class="iconfont icon-wechat"></span>
             </div>
           </div>
         </div>
-        <div class="ui-webChat-item ui-webChat-setting" v-show="tab=='setting'">
-          <div class="ui-settingBox">
-            <h2>设置</h2>
-            <ul class="ui-setting-list">
+        <div class="webTalk-panel" v-show="menu=='setting'">
+          <div class="webTalk-setting-box">
+            <div class="webTalk-setting-header">设置</div>
+            <ul class="webTalk-setting-list">
+              <li >
+                <div class="webTalk-info-row">
+                  <div class="webChat-imgBox">
+                    <img :src="loginUser.avatarUrl" alt="">
+                    <i class="iconfont" :class="loginUser.deviceType=='pc'?'icon-pc':'icon-phone'" v-if="loginUser.deviceType"></i>
+                  </div>
+                  <div class="webTalk-infoBox">
+                    <div>{{loginUser.name}}</div>
+                    <div class="webTalk-ip" v-if="loginUser.address">IP:{{loginUser.address}}</div>
+                  </div>
+                </div>
+              </li>
               <li><input type="checkbox" v-model="setting.isVoice"><span>消息提示音</span></li>
-              <li><input type="checkbox" v-model="setting.isShowTime"><span>显示消息时间</span></li>
-              <li><input type="checkbox" v-model="setting.isShowName"><span>显示用户名称</span></li>
+              <li><input type="checkbox" v-model="setting.isTime"><span>显示消息时间</span></li>
+              <li><input type="checkbox" v-model="setting.isName"><span>显示用户名称</span></li>
+              <li><input type="checkbox" v-model="setting.isCMD"><span>音乐远程CMD模式</span></li>
             </ul>
           </div>
         </div>
-        <div class="ui-webChat-item ui-webChat-tool" v-show="tab=='tool'">
-          <div class="ui-settingBox">
-            <h2>关于</h2>
-            <ul class="ui-tool-list">
-              <li><span class="ui-info-txt">版本：v1.0.0</span></li>
-              <li><span class="ui-info-txt">协议：MIT</span></li>
-              <li><span class="ui-info-txt">源码地址：https://github.com/cleverqin/node-websocket-Chatroom</span></li>
-              <li><span class="ui-info-txt">联系我：705597001@qq.com</span></li>
+        <div class="webTalk-panel" v-show="menu=='about'">
+          <div class="webTalk-about-box">
+            <div class="webTalk-about-header">关于</div>
+            <ul class="webTalk-about-list">
+              <li><span>版本：v1.0</span></li>
+              <li><span>协议：MIT</span></li>
+              <li><span>GitHub：<a :href="author.repositoriesUrl" target="_blank">{{author.repositoriesUrl}}</a></span></li>
+              <li><span>邮箱：{{author.email}}</span></li>
+              <li>
+                  <span class="">
+                    <a :href="author.repositoriesUrl" target="_blank">
+                      <img :src="'https://img.shields.io/github/stars/'+author.userName+'/'+author.repositoriesName+'?label=Star&amp;style=flat&amp;logo=github'" alt="" style="vertical-align: middle;">
+                    </a>
+                    <a :href="author.repositoriesUrl" target="_blank">
+                      <img :src="'https://img.shields.io/github/forks/'+author.userName+'/'+author.repositoriesName+'?label=Fork&amp;style=flat&amp;logo=github'" alt="" style="vertical-align: middle;">
+                    </a>
+                  </span>
+              </li>
             </ul>
           </div>
         </div>
+        <span class="webTalk-connect-status iconfont icon-wifi"
+              :class="{'webTalk-connect-fail':!isOnline}"
+              @click.stop="isShowLog=true"
+              :title="isOnline?'在线':'离线'"></span>
+      </div>
+      <div class="webTalk-flip">
+        <transition name="flip">
+          <div class="webTalk-logBox" v-show="isShowLog">
+            <div class="webTalk-logHeader">
+              连接日志
+              <span class="webTalk-log-closeBtn iconfont icon-close" @click.stop="isShowLog=false"></span>
+            </div>
+            <div class="webTalk-log-container" @click.stop="">
+              <div class="ui-scroll webTalk-log-list" id="log-container">
+                <div class="webTalk-log-item" v-for="log in logs">
+                  <span :class="'webTalk-log-'+log.type">{{log.text}}</span>
+                  <span class="webTalk-log-time">{{log.time|time}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+      <audio src="/static/images/8400.mp3"></audio>
+    </div>
+    <a-player  :auto-play="false" ref="player"></a-player>
+    <div class="wChat-copyright">CopyRight Power By CleverQin ©2019</div>
+  </section>
+</template>
+<template id="message">
+  <div class="webTalk-message-item" :class="message.from.id==loginUser.id?'webTalk-message-send':'webTalk-message-receive'">
+    <div class="webTalk-avatarBox">
+      <img :src="message.from.avatarUrl" alt="">
+    </div>
+    <div class="webTalk-message-body">
+      <template v-if="setting.isName">
+        <div class="webTalk-from-info" v-if="message.from.id!=loginUser.id">
+          <span >{{message.from.name}}</span>
+          <span class="webTalk-time-span" v-if="setting.isTime">{{message.time|time}}</span>
+        </div>
+        <div class="webTalk-from-info" v-else>
+          <span class="webTalk-time-span" v-if="setting.isTime">{{message.time|time}}</span>
+          <span>{{message.from.name}}</span>
+        </div>
+      </template>
+      <div class="webTalk-message-text" v-html="$parserExpression(message.content)"></div>
+    </div>
+  </div>
+</template>
+<template id="user">
+  <div class="webTalk-users-item">
+    <div class="webTalk-user-avatar">
+      <img :src="user.avatarUrl" alt="">
+      <i class="iconfont" :class="user.deviceType=='pc'?'icon-pc':'icon-phone'" v-if="user.deviceType" :title="user.address"></i>
+    </div>
+    <div class="webTalk-user-InfoBox">
+      <div class="webTalk-user-name">
+        {{user.name}}
+        <span class="webTalk-message-time">{{lastMessage.time|time}}</span>
+      </div>
+      <div class="webTalk-user-message">
+        {{lastMessage.content}}
+        <span class="webTalk-unReaderNum" v-if="unReaderNum!=0">{{unReaderNum}}</span>
       </div>
     </div>
-    <ui-login v-if="!isLogin" @user-login="userLogin"></ui-login>
   </div>
-</script>
-<!--表情组件模版-->
-<script id="tpl" type="text/html">
-  <div class="ui-expression-box" @click.stop="isShow=!isShow">
-    <transition name="custom-classes-transition" enter-active-class="animate scaleFadeIn"
-                leave-active-class="animate scaleFadeOut">
-      <div class="ui-expression-wrap" v-show="isShow">
-        <div class="ui-expression-body">
-          <a href="javascript:" class="ui-expression" v-for="item in expressions" @click.stop="pickerExpression(item)">
-            <img :src="baseUrl+item.url" alt="表情" :title="item.title">
-          </a>
+</template>
+<template id="expression">
+  <div class="webTalk-expression">
+      <span class="webTalk-toolBar" @click.stop="toggleShow()">
+        <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" >
+          <path d="M506.282667 803.925333c1.002667 0 2.069333-0.042667 3.114667-0.042667 170.261333-2.005333 238.528-150.869333 239.189333-152.341333L274.112 651.306667C276.949333 657.6 346.069333 803.925333 506.282667 803.925333z" ></path>
+          <path d="M326.805333 478.506667c27.029333 0 48.789333-21.866667 48.789333-48.810667s-21.781333-48.789333-48.789333-48.789333c-26.922667-0.042667-48.746667 21.824-48.746667 48.789333C278.058667 456.618667 299.84 478.506667 326.805333 478.506667z" ></path>
+          <path d="M697.749333 429.717333m-48.810667 0a2.288 2.288 0 1 0 97.621333 0 2.288 2.288 0 1 0-97.621333 0Z" ></path>
+          <path d="M512 0C229.696 0 0 229.696 0 512c0 282.325333 229.696 512 512 512 282.325333 0 512-229.674667 512-512C1024 229.696 794.325333 0 512 0zM512 981.098667C253.333333 981.098667 42.88 770.666667 42.88 512S253.333333 42.88 512 42.88 981.077333 253.333333 981.077333 512 770.666667 981.098667 512 981.098667z" ></path>
+        </svg>
+      </span>
+    <transition name="slider">
+      <div class="webTalk-expression-panel" v-show="isShow">
+        <div class="webTalk-expression-list">
+          <div class="webTalk-expression-item" v-for="item in expressions" @click.stop="pickerExpression(item)">
+            <img :src="item.url" :title="item.title">
+          </div>
         </div>
       </div>
     </transition>
   </div>
-</script>
-<!--登录组件模版-->
-<template id="imLogin" type="text/html">
-  <div class="im-login-box">
-    <div class="im-login-banner">
-      <span class="im-small"></span>
-    </div>
-    <div class="im-login-form">
-      <div class="im-login-group">
-        <div class="im-avatar">
-          <img :src="avatarUrl" alt="" @click.stop="isShow=!isShow">
-          <transition name='custom-classes-transition' enter-active-class="animate scaleFadeIn"
-                      leave-active-class="animate scaleFadeOut">
-            <div class="im-selectAvatar" style="display: none" v-show="isShow">
-              <div class="add-avatar-box">
-                  <input type="text" @click.stop="" v-model="qq" @keyup.enter="addQQAvatar(qq)" placeholder="输入QQ号添加使用QQ头像">
+</template>
+<template id="login">
+  <div class="webTalk-loginBox">
+    <div class="webTalk-loginBanner"></div>
+    <div class="webTalk-loginForm-box">
+      <form class="webTalk-login-form">
+        <div class="webTalk-user-avatarBox">
+          <img :src="user.avatarUrl" alt="" @click.stop="isShow=!isShow">
+          <transition name="slider">
+            <div class="webTalk-select-imgBox" v-show="isShow">
+              <div class="webTalk-addAvatar-box">
+                <input type="text" v-model="QQ" placeholder="输入QQ号添加使用QQ头像" @click.stop="" @keyup.enter="addQQAvatar(QQ)">
               </div>
-              <div class="im-avatarItem" v-for="item in images" :class="{active:item==avatarUrl}"
-                   @click="avatarUrl=item">
-                <img :src="item" alt="">
-              </div>
+              <ul class="webTalk-avatar-list">
+                <li :class="{active:user.avatarUrl==item}" v-for="item in avatars">
+                  <img :src="item" alt="" @click="user.avatarUrl=item">
+                </li>
+              </ul>
             </div>
           </transition>
         </div>
-        <div class="im-form-element">
-          <input type="text" class="im-input" placeholder="用户名" v-model="name">
-          <input type="text" class="im-input" placeholder="密码">
-          <button type="button" class="im-loginBtn" @click="userLogin">登录</button>
+        <div class="webTalk-form-inputBox">
+          <input type="text" class="webTalk-user-name" placeholder="用户名" v-model="user.name">
+          <input type="text" class="webTalk-user-password" placeholder="密码">
+          <button type="button" class="webTalk-formBtn" @click="login(user)">登录</button>
         </div>
-      </div>
+      </form>
     </div>
-    <div class="im-login-errorBox" v-show="errorMsg!=''">{{errorMsg}}</div>
   </div>
+</template>
+<template id="alter">
+  <transition name="alterSlider"
+              @after-leave="delELe">
+    <div :class="'webTalk-alert webTalk-alter-'+type" ref="alter" v-show="show">{{msg}}</div>
+  </transition>
 </template>
 <script src="/static/js/vue.min.2.2.0.js"></script>
 <script src="/static/js/vue-resource.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+<script src="/static/js/RandomName.js"></script>
+<script src="/static/js/vue-aPlayer.js"></script>
 <script src="/static/js/index.js"></script>
 </body>
 </html>

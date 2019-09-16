@@ -36,9 +36,8 @@
                 <img :src="item.avatarUrl" alt="">
                 <div class="ui-infoBox">
                   <span class="ui-infoTime" v-if="getLastMsg(item.id).time" v-show="setting.isShowTime">{{getLastMsg(item.id).time| time}}</span>
-                  <span class="ui-unReader-info" v-if="getUnReaderNum(item.id)>0">{{getUnReaderNum(item.id)}}</span>
-                  <div class="ui-name">{{item.name}}</div>
-                  <div class="ui-txt">{{getLastMsg(item.id).content}}</div>
+                  <div class="ui-name">{{item.name}}<span class="fa" :class="item.deviceType=='pc'?'fa-television':'fa-mobile-phone'" v-if="item.deviceType" style="margin-left: 5px"></span></div>
+                  <div class="ui-txt">{{getLastMsg(item.id).content}}<span class="ui-unReader-info" v-if="getUnReaderNum(item.id)>0">{{getUnReaderNum(item.id)}}</span></div>
                 </div>
               </div>
             </div>
@@ -48,7 +47,11 @@
               <img :src="loginUser.avatarUrl" alt="图片" class="ui-loginAvatar">
             </div>
             <ul class="ui-setting-list">
-              <li><span>用户：</span>{{loginUser.name}}</li>
+              <li>
+                <span>用户：</span>{{loginUser.name}}
+                <span class="fa" :class="loginUser.deviceType=='pc'?'fa-television':'fa-mobile-phone'" v-if="loginUser.deviceType"></span>
+                <span v-if="loginUser.address">IP:{{loginUser.address}}</span>
+              </li>
               <li>
                 <span>消息提示音</span>
                 <div class='switch-wrap'>

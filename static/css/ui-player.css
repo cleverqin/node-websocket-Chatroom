@@ -1,53 +1,100 @@
-/************歌词样式**************8*/
-.ui-lrc-container{
-    width: 180px;
-    height: 70px;
-    position: absolute;
-    left: 100%;
-    margin-left:22px;
-    padding: 10px;
-    border-radius: 4px;
-    top: 0;
-    visibility: hidden;
-    opacity: 1;
+.a-player-box{
+    background-image: linear-gradient(60deg, #29323c 0%, #485563 100%);
+    position: fixed;
+    padding: 10px 10px 5px;
+    left: 0;
+    bottom: 40px;
+    transition: left .5s;
+    width: 380px;
+    z-index: 999;
 }
-.ui-lrcBox{
+.a-player-hide{
+    left: -400px;
+}
+.a-player-content:after{
+    display: block;
+    content: "";
+    clear: both;
+}
+.a-player-content{
+    position: relative;
+}
+.a-player-poster{
+    width: 60px;
+    height: 60px;
+    float: left;
+}
+.a-player-poster img{
+    display: block;
     width: 100%;
     height: 100%;
+    border-radius: 50%;
+}
+.a-player-songInfo{
+    float: left;
+    padding: 0 10px;
+    width: 80px;
+}
+.a-player-songInfo div{
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     overflow: hidden;
-    position: relative;
-}
-.ui-lrc-body{
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-.ui-icon-close{
-    position: absolute;
-    width: 20px;
     height: 20px;
     font-size: 12px;
-    top: 0;
-    right: 0;
-    cursor: pointer;
+    color: #d1d1d1;
 }
-.ui-lrcBox ul{
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    position: absolute;
-    width: 100%;
-    top: 0;
-    transition: top .2s;
+.a-player-ctrlBox{
+    width: 120px;
+    padding: 10px 0;
+    height: 40px;
+    float: left;
 }
-.ui-lrcBox ul li{
+
+.a-player-ctrlBox .a-player-ctrlBtn{
+    display: block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
     text-align: center;
+    float: left;
+    font-size: 30px;
+    cursor: pointer;
+    vertical-align: middle;
+    position: relative;
+    color: #cdd1ec;
+}
+.a-player-ctrlBox  .a-player-playBtn{
+    font-size: 35px;
+}
+.a-player-volumeBox{
+    padding: 10px 0;
+    width: 100px;
+    float: left;
+}
+.a-player-volumeBox .a-player-ctrlBtn{
+    position: relative;
+    width: 30px;
+    height: 40px;
+    font-size: 20px;
+    float: left;
+    line-height: 40px;
+    text-align: center;
+    color: #cdd1ec;
+}
+.a-player-volumeProgress{
+    height: 4px;
+    padding: 18px 0;
+    width: 70px;
+    float: left;
+}
+.a-player-currentTime{
+    position: absolute;
+    bottom: 0;
+    right: 10px;
     line-height: 20px;
     font-size: 12px;
-    color: #f2f2f2;
-}
-.ui-lrcBox ul li.active{
-    color: #01e5ff;
+    color: #d1d1d1;
 }
 /*******************进度条样式*************************/
 .ui-vertical{
@@ -110,7 +157,6 @@
     border-radius: 2px;
     left: 0;
     top: 0;
-    border-radius: 2px;
 }
 .ui-progressBox .ui-dotCtrl{
     position: absolute;
@@ -124,93 +170,18 @@
     margin-bottom: -5px;
     user-select: none;
 }
-/*******************播放器样式***********************/
-.ui-player-Box{
-    position: fixed;
-    padding: 10px 10px 5px;
-    border-radius: 4px 0 0 4px;
-    left: 0;
-    bottom: 40px;
-    transition: left .5s;
-}
-.ui-song-poster{
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    overflow: hidden;
-    float: left;
-}
-.ui-song-poster img{
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-}
-.ui-player-content{
-    position: relative;
-}
-.ui-time-progress{
+/********************************/
+.a-player-timeBox{
     height: 4px;
     padding: 3px 0;
     margin-top: 5px;
 }
-.ui-song-info{
-    float: left;
-    padding: 0 10px;
-    width: 80px;
-}
-.ui-song-info>div{
-    line-height: 20px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    height: 20px;
-    font-size: 12px;
-}
-.ui-playBtnBox{
-    display: block;
-    padding: 10px 0;
-    float: left;
-}
-.ui-playBtnBox>div{
-    display: block;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    float: left;
-    font-size: 30px;
-    cursor: pointer;
-    vertical-align: middle;
-    position: relative;
-}
-.ui-playBtnBox>div.ui-playBtn-play{
-    font-size: 35px;
-}
-.ui-volumeBox{
-    padding: 10px 0;
-    float: left;
-}
-
-.ui-volumeIcon{
-    position: relative;
-    width: 30px;
-    height: 40px;
-    font-size: 20px;
-    float: left;
-}
-.ui-volume-progress{
-    width: 70px;
-    height: 4px;
-    padding: 18px 0;
-    float: left;
-}
-.ui-play-menus{
+.a-player-menus{
     position: absolute;
     top: 0;
     right: 10px;
 }
-
-.ui-play-menus>span{
+.a-player-menus span{
     width: 25px;
     height: 30px;
     text-align: center;
@@ -220,8 +191,10 @@
     cursor: pointer;
     display: block;
     float: left;
+    color: #cdd1ec;
+    user-select: none;
 }
-.ui-toggleBtn{
+.a-player-toggleBtn{
     position: absolute;
     height: 90px;
     left: 100%;
@@ -231,47 +204,119 @@
     border-radius: 0 4px 4px 0;
     top: 0;
     cursor: pointer;
+    background-image: linear-gradient(60deg, #29323c 0%, #485563 100%);
+    line-height: 90px;
+    text-align: center;
+    color: #cdd1ec;
 }
-
-.ui-songsBox{
+.a-player-lrcContent{
+    width: 180px;
+    height: 70px;
     position: absolute;
-    bottom: 100%;
-    left: 0;
-    max-height: 300px;
-    border-radius: 4px 4px 0 0;
-    width: 100%;
-    border-bottom: 1px solid #000000;
-    overflow-y: auto;
-}
-.ui-open .icon-right{
-    display: none;
-}
-.ui-open{
-    left: 0;
-}
-.ui-close{
-    left: -400px;
-}
-.ui-close .icon-left{
-    display: none;
-}
-.ui-play .icon-play{
-    display: none;
-}
-.ui-pause .icon-pause{
-    display: none;
-}
-.ui-lrc-show{
+    left: 100%;
+    margin-left: 22px;
+    padding: 10px;
+    border-radius: 4px;
+    top: 0;
     visibility: visible;
     opacity: 1;
+    background-image: linear-gradient(60deg, #29323c 0%, #485563 100%);
 }
-.ui-currentTime{
+.a-player-lrcBody{
+    height: 100%;
+    overflow: hidden;
+}
+.a-player-lrcClose{
     position: absolute;
-    bottom: 0;
-    right: 10px;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    color: #cdd1ec;
+    text-align: center;
+    line-height: 20px;
+}
+.a-player-lrcHide{
+    visibility: hidden;
+    z-index: -1;
+    opacity: 0;
+}
+/************歌词样式**************8*/
+.ui-lrc-container{
+    width: 180px;
+    height: 70px;
+    position: absolute;
+    left: 100%;
+    margin-left:22px;
+    padding: 10px;
+    border-radius: 4px;
+    top: 0;
+    visibility: hidden;
+    opacity: 1;
+}
+.ui-lrcBox{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+.ui-lrc-body{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.ui-icon-close{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+.ui-lrcBox ul{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    transition: top .2s;
+}
+.ui-lrcBox ul li{
+    text-align: center;
     line-height: 20px;
     font-size: 12px;
+    color: #f2f2f2;
 }
+.ui-lrcBox ul li.active{
+    color: #01e5ff;
+}
+/********************************************/
+/*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
+.scroll::-webkit-scrollbar{
+    width: 5px;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.13);
+}
+/*定义滚动条的轨道，内阴影及圆角*/
+.scroll::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 6px rgba(240, 240, 240, 0);
+    border-radius: 10px;
+    background-color: rgba(0, 89, 255, 0);
+}
+/*定义滑块，内阴影及圆角*/
+.scroll::-webkit-scrollbar-thumb{
+    /*width: 10px;*/
+    height: 20px;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(236, 236, 236, 0.3);
+    background-color: rgba(203, 203, 203, 0.54);
+    transition: all 0.5s;
+}
+/****************************/
 /**************播放动画***************/
 @-webkit-keyframes rotateRound {
     0% {-webkit-transform: rotate(0deg);}
@@ -294,121 +339,134 @@
 .paused{
     animation: rotateRound 20s linear infinite paused;
 }
-/**************歌单列表样式*******************/
-.ui-song-list{
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
-}
-.ui-song-list tr td {
-    color: #ffffff;
-    font-size: 12px;
-    line-height: 20px;
-    cursor: pointer;
-    padding: 5px 8px;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-.ui-song-list tbody tr:hover{
-    background: rgba(0, 0, 0, 0.2);
-}
-/********************************************/
-/*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
-.scroll::-webkit-scrollbar{
-    width: 5px;
-    height: 5px;
-    background-color: rgba(255, 255, 255, 0);
-}
-/*定义滚动条的轨道，内阴影及圆角*/
-.scroll::-webkit-scrollbar-track{
-    -webkit-box-shadow: inset 0 0 6px rgba(240, 240, 240, 0);
-    border-radius: 10px;
-    background-color: rgba(0, 89, 255, 0);
-}
-/*定义滑块，内阴影及圆角*/
-.scroll:hover::-webkit-scrollbar-thumb{
-    /*width: 10px;*/
-    height: 20px;
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(236, 236, 236, 0.3);
-    background-color: rgba(203, 203, 203, 0.54);
-    transition: all 0.5s;
-}
-/**************SVG图标居中********************/
-.ui-icon-close svg,
-.ui-toggleBtn svg,
-.ui-volumeIcon svg,
-.ui-playBtnBox>div svg,
-.ui-volumeIcon svg,
-.ui-playBtnBox>div svg,
-.ui-icon-menu svg{
-    display: block;
+/*****************歌曲列表样式********************/
+.a-player-listBox{
     position: absolute;
-    left: 50%;
-    top: 50%;
-    margin-left: -0.5em;
-    margin-top: -0.5em;
-}
-/****************清除浮动*******************/
-.ui-volumeBox:after,
-.ui-play-menus:after,
-.ui-playBtnBox:after,
-.ui-player-content:after{
-    clear: both;
-    content: "";
-    display: block;
-}
-/******************文字颜色配色*********************/
-.ui-song-info>div,.ui-currentTime{
-    color: #d1d1d1;
-}
-/*******************按钮图标颜色配色**********************/
-.ui-playBtnBox>div,
-.ui-play-menus>span,
-.ui-volumeIcon,
-.ui-toggleBtn,
-.ui-icon-close{
-    color: #cdd1ec;
-}
-.ui-playBtnBox>div:hover,
-.ui-play-menus>span:hover,
-.ui-volumeIcon:hover,
-.ui-toggleBtn:hover,
-.ui-icon-close:hover{
-    color: #ffffff;
-}
-/*******************模块背景配色**********************/
-.ui-player-Box,
-.ui-lrc-container,
-.ui-toggleBtn,
-.ui-songsBox{
+    width: 100%;
+    left: 0;
+    bottom: 100%;
     background-image: linear-gradient(60deg, #29323c 0%, #485563 100%);
+    border-radius: 4px 4px 0 0;
 }
-/****************************/
-.ui-star-user{
-    width: 60px;
-    display: inline-block;
-    padding: 10px 5px 5px;
-    margin-right: 10px;
-    margin-top: 5px;
-    border-radius: 4px;
-    border: 1px solid #e9e9e9;
+.a-player-list{
+    height: 240px;
+    overflow-y: auto;
+    padding: 0;
+    list-style: none;
+    margin: 0;
 }
-.ui-star-user img{
-    display: block;
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
-    margin: 0 auto;
-}
-.ui-starUser-info{
+.a-player-list li{
     font-size: 12px;
-    text-align: center;
-    color: #666666;
+    line-height: 28px;
+    color: #cccccc;
+    padding: 0 10px 0 30px;
+    position: relative;
+}
+.a-player-itemInfo{
+    margin-right: 80px;
+    height: 28px;
     overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.a-player-songStatus{
+    display: none;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #e62d21;
+    left: 5px;
+    top: 50%;
+    margin-top: -10px;
+    font-weight: bold;
+}
+.a-player-itemCtrl{
+    display: none;
+    position: absolute;
+    width: 80px;
+    height: 20px;
+    right:10px;
+    top: 50%;
+    margin-top: -10px;
+}
+.a-player-itemCtrl span{
+    float: left;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #cccccc;
+    user-select: none;
+    cursor: pointer;
+}
+.a-player-itemCtrl span:hover{
+    color: #f2f2f2;
+}
+.a-player-list li:hover,.a-player-list li.active{
+    background-color: rgba(0,0,0,0.3);
+}
+.a-player-list li.active .a-player-songStatus,.a-player-list li:hover .a-player-itemCtrl{
+    display: block;
+}
+.a-player-listHeader{
+    padding: 0 10px;
+    font-size: 12px;
+    height: 28px;
+    line-height: 28px;
+    color: #cccccc;
+    background-image: linear-gradient(60deg, #29323c 0%, #485563 100%);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+}
+.a-player-listClose{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    color: #cdd1ec;
+    right: 5px;
+    top: 50%;
+    margin-top: -10px;
+    cursor: pointer;
+}
+.a-player-error{
+    position: absolute;
+    font-size: 12px;
+    color: #f5bebb;
+    padding: 5px 10px 5px 30px;
+    border-radius: 4px;
+    line-height: 20px;
+    background: rgba(41, 50, 60, 0.81);
+    left: 0;
+    margin-left: 10px;
+    bottom: 100%;
+    margin-bottom: 10px;
+    white-space: nowrap;
+}
+.a-player-error span{
+    position: absolute;
+    left: 7px;
+    top: 5px;
+    display: block;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    font-size: 18px;
+    vertical-align: middle;
     line-height: 20px;
 }
-.ui-webChat-tool .ui-settingBox.ui-toolInfoBox{
-    width: 595px;
+.a-player-loading{
+    position: absolute;
+    width: 60px;
+    height: 10px;
+    left: 50%;
+    margin-left: -30px;
+    top: 50%;
+    margin-top: -7px;
 }
