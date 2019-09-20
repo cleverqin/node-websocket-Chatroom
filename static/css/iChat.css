@@ -147,11 +147,19 @@ html,body{
     position: absolute;
     top: 0;
     left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #FFFFFF;
+}
+.iTalk-session-container{
+    display: -webkit-flex;
     display: flex;
     width: 100%;
     height: 100%;
+    -webkit-flex-direction: column;
     flex-direction: column;
-    background-color: #FFFFFF;
+    position: relative;
 }
 .iTalk-sessionHeader{
     line-height: 36px;
@@ -175,9 +183,13 @@ html,body{
 }
 .iTalk-messageBox{
     width: 100%;
-    height: 100%;
     flex: 1;
+    -webkit-flex: 1;
     background: #eeeeee;
+    position: absolute;
+    top: 36px;
+    left: 0;
+    bottom: 44px;
 }
 .iTalk-message-list{
     display:block;
@@ -190,17 +202,15 @@ html,body{
 }
 .iTalk-sessionFooter{
     width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
 }
 .iTalk-sendForm{
     position: relative;
     padding-bottom: 5px;
     padding-top: 5px;
     border-top: 1px solid #d1d1d1;
-}
-.iTalk-sendForm:after{
-    display: block;
-    content: "";
-    clear: both;
 }
 .iTalk-inputBox{
     margin-left: 40px;
@@ -222,12 +232,14 @@ html,body{
 }
 .iTalk-sendForm span.iconfont{
     display: block;
+    position: absolute;
+    left: 0;
+    top: 7px;
     width: 40px;
     height: 30px;
     line-height: 30px;
     text-align: center;
     color: #6d6d6d;
-    float: left;
     font-size: 25px;
 }
 .iTalk-sendBtn{

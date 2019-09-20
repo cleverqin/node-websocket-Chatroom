@@ -105,26 +105,28 @@
         </div>
       </div>
     </div>
-    <div class="iTalk-container iTalk-sessionBox" v-show="isShowSession&&channel.id">
-      <div class="iTalk-sessionHeader">
-        <span class="iconfont icon-left" @click="isShowSession=!isShowSession"></span>
-        {{channel.name}}
-        <template v-if="channel.type=='room'">（{{onLineUsers.length}}）</template>
-      </div>
-      <div class="iTalk-messageBox">
-        <div class="iTalk-message-list" ref="messageList">
-          <wt-message :message="item" :login-user="loginUser" :setting="setting" v-for="item in messages"></wt-message>
+    <div class="iTalk-container iTalk-sessionBox" v-show="channel.id&&isShowSession">
+      <div class="iTalk-session-container">
+        <div class="iTalk-sessionHeader">
+          <span class="iconfont icon-left" @click="isShowSession=!isShowSession"></span>
+          {{channel.name}}
+          <template v-if="channel.type=='room'">（{{onLineUsers.length}}）</template>
         </div>
-      </div>
-      <div class="iTalk-sessionFooter">
-        <div class="iTalk-sendForm">
-          <span class="iconfont icon-face" @click.stop="toggleExpression"></span>
-          <div class="iTalk-inputBox">
-            <input type="text" v-model="text" @keyup.enter="send(text)">
+        <div class="iTalk-messageBox" :style="{bottom:!isShow?'44px':'174px'}">
+          <div class="iTalk-message-list" ref="messageList">
+            <wt-message :message="item" :login-user="loginUser" :setting="setting" v-for="item in messages"></wt-message>
           </div>
-          <span class="iTalk-sendBtn" @click="send(text)">发送</span>
         </div>
-        <expression @picker-expression="pickerExpression" ref="expression"></expression>
+        <div class="iTalk-sessionFooter">
+          <div class="iTalk-sendForm">
+            <span class="iconfont icon-face" @click.stop="toggleExpression"></span>
+            <div class="iTalk-inputBox">
+              <input type="text" v-model="text" @keyup.enter="send(text)">
+            </div>
+            <span class="iTalk-sendBtn" @click="send(text)">发送</span>
+          </div>
+          <expression @picker-expression="pickerExpression" :show="isShow" ref="expression"></expression>
+        </div>
       </div>
     </div>
     <div class="iTalk-logBox" v-show="isShowLog">
@@ -141,7 +143,7 @@
         </div>
       </div>
     </div>
-    <audio src="./img/8400.mp3"></audio>
+    <audio src="/static/images/8400.mp3"></audio>
   </div>
 </template>
 <!--消息模版-->
@@ -222,7 +224,7 @@
 </template>
 <!--表情模版-->
 <template id="expression">
-  <div class="iTalk-expression-panel" v-show="isShow">
+  <div class="iTalk-expression-panel" v-show="show">
     <div class="iTalk-expression-list">
       <div class="iTalk-expression-item" v-for="item in expressions" @click.stop="pickerExpression(item)">
         <img :src="item.url" :title="item.title">

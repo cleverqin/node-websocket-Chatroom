@@ -191,24 +191,15 @@
   });
   Vue.component("expression",{
     template:"#expression",
+    props:['show'],
     data(){
       return {
         expressions:arr,
-        isShow:false
       }
-    },
-    created:function () {
-      let _this=this;
-      document.addEventListener("click",(e)=>{
-        _this.isShow=false;
-      })
     },
     methods:{
       pickerExpression(expression){
         this.$emit("picker-expression",expression)
-      },
-      toggleShow(){
-        this.isShow=!this.isShow;
       }
     }
   })
@@ -380,7 +371,8 @@ new Vue({
       logs:[],
       isShowLog:false,
       keyWord:"",
-      isShowSession:false
+      isShowSession:false,
+      isShow:false
     }
   },
   computed:{
@@ -405,7 +397,11 @@ new Vue({
     }
   },
   created(){
+    let _this=this;
     this.initSocketEvent();
+    document.addEventListener("click",()=>{
+      _this.isShow=false;
+    })
   },
   methods:{
     sendMessage(to,message,type) {
@@ -634,7 +630,7 @@ new Vue({
       return arr;
     },
     toggleExpression(){
-      this.$refs['expression'].toggleShow();
+      this.isShow=!this.isShow;
     }
   }
 })
