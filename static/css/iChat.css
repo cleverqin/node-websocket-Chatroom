@@ -4,386 +4,256 @@ html,body{
     width: 100%;
     height: 100%;
 }
-body{
+.iTalk-container-box{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.iTalk-container{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+/********主界面底部菜单栏样式**********/
+.iTalk-panel-footer{
+    position: absolute;
+    height: 60px;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    border-top: 1px solid #d1d1d1;
+}
+.iTalk-panel-footer:after{
+    display: block;
+    content: "";
+    clear:both;
+}
+.iTalk-panel-footer .iTalk-panel-col{
+    width: 33.3333333%;
+    text-align: center;
+    float: left;
+    padding-top: 5px;
+    color: #6d6d6d;
+}
+.iTalk-panel-footer .iTalk-panel-col.active{
+    color: #1c8de0;
+}
+.iTalk-panel-col span{
+    font-size: 30px;
+    line-height: 30px;
+}
+.iTalk-panel-col div{
+    font-size: 12px;
+    line-height: 12px;
+    margin-top: 5px;
+}
+/***菜单对应面板样式****/
+.iTalk-panel-box{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    left: 0;
+    bottom: 60px;
+}
+.iTalk-panel{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+/*****socket连接状态样式****/
+.iTalk-status{
+    position: absolute;
+    right: 0;
+    top: 0;
+    line-height: 30px;
+    width: 30px;
+    font-size: 14px;
+    color: #f23853;
+    text-align: center;
+    z-index: 99;
+}
+.iTalk-status.success{
+    color: #36d62e;
+}
+/****搜索在线用户样式****/
+.iTalk-searchBox{
+    padding: 10px;
+    height: 30px;
+    background: #3a8ee6;
+}
+.iTalk-searchBox:after{
+    display: block;
+    clear: both;
+    content: "";
+}
+.iTalk-login-avatarBox{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    float: left;
+    position: relative;
+}
+.iTalk-login-avatarBox img{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.iTalk-search-element{
+    margin-left: 40px;
+    position: relative;
+}
+.iTalk-search-element span.iconfont{
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    left: 0;
+    top:0;
+    color: #bbbbbb;
+}
+.iTalk-search-element input{
+    line-height: 30px;
+    font-size: 12px;
+    width: 100%;
+    padding-left: 30px;
+    padding-right: 10px;
+    outline: none;
+    border: none;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.11);
+    border-radius: 4px;
+    color: #f2f2f2;
+}
+::-moz-placeholder { color: #bbbbbb; }
+::-webkit-input-placeholder { color:#bbbbbb; }
+:-ms-input-placeholder { color:#bbbbbb; }
+/****在线用户列表样式*******/
+.iTalk-usersBox{
+    position: absolute;
+    top: 50px;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+}
+.iTalk-userList{
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+/*********会话窗口样式***********/
+.iTalk-sessionBox{
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    background-color: #FFFFFF;
+}
+.iTalk-sessionHeader{
+    line-height: 36px;
+    text-align: center;
+    font-size: 14px;
+    color: #f2f2f2;
+    background: #3a8ee6;
+    position: relative;
+}
+.iTalk-sessionHeader span.iconfont{
+    display: block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    font-size: 14px;
+    color: #f2f2f2;
+    text-align: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.iTalk-messageBox{
+    width: 100%;
+    height: 100%;
+    flex: 1;
     background: #eeeeee;
 }
-/***************聊天气泡**********************/
-.ui-bubble-item:after,.ui-bubble-content:after{
-    display: block;
-    content: "";
-    clear: both;
-}
-.ui-bubble-item{
-    margin-top: 10px;
-}
-.ui-bubble-item:first-child{
-    margin-top: 0;
-}
-.ui-bubble-item .ui-avatarBox{
-    float: left;
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    position: relative;
-}
-.ui-avatarBox img{
-    display: block;
+.iTalk-message-list{
+    display:block;
     width: 100%;
     height: 100%;
-    border-radius: 4px;
-    border: none;
-}
-.ui-bubble-content{
-    margin: 0 50px;
-}
-.ui-bubble-info{
-    font-size: 12px;
-    color: #6f7180;
-    line-height: 24px;
-}
-.ui-bubble-info span{
-    margin: 0 10px;
-}
-.ui-bubble-body{
-    min-height: 20px;
-    padding: 10px;
-    background: #ffffff;
-    border-radius: 4px;
-    float: left;
-    position: relative;
-    font-size: 14px;
-    line-height: 20px;
-    color: #5f5f5f;
-}
-.ui-bubble-body:after{
-    position: absolute;
-    display: block;
-    content: "";
-    width: 0;
-    height: 0;
-    border-top: 3px solid transparent;
-    border-bottom: 3px solid transparent;
-    border-right: 5px solid #ffffff;
-    top: 0;
-    margin-top: 17px;
-    right:100%;
-}
-.ui-bubble-right .ui-avatarBox,.ui-bubble-right .ui-bubble-body{
-    float: right;
-}
-.ui-bubble-right .ui-bubble-info {
-    text-align: right;
-}
-.ui-bubble-right .ui-bubble-body:after{
-    right: 0;
-    border-right: none;
-    border-left: 5px solid #b2e281;
-    margin-right: -5px;
-}
-.ui-bubble-right .ui-bubble-body{
-    background: #b2e281;
-}
-/******************************************/
-.ui-iChat-box{
-    display: flex;
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-}
-.ui-iChat-header{
-    height: 30px;
-    width: 100%;
-    background: #3a8ee6;
-    position: relative;
-    line-height: 30px;
-    text-align: center;
-    font-size: 14px;
-    color: #ffffff;
-}
-.ui-iChat-body{
-    width: 100%;
-    height: 100%;
-    flex: 1;
+    box-sizing: border-box;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-}
-.ui-message-list{
     padding: 10px;
 }
-.ui-iChat-footer{
+.iTalk-sessionFooter{
     width: 100%;
-    background: #f2f2f2;
 }
-.ui-iChat-form{
-    height: 40px;
-    border-top: 1px solid #d1d1d1;
+.iTalk-sendForm{
     position: relative;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border-top: 1px solid #d1d1d1;
 }
-.ui-iChat-form:after{
+.iTalk-sendForm:after{
+    display: block;
     content: "";
     clear: both;
-    display: block;
 }
-.ui-expressionBtn{
-    display: block;
-    width: 40px;
-    height: 40px;
-    float: left;
-    font-size: 25px;
-    text-align: center;
-    line-height: 35px;
-    color: #4d4d4d;
-}
-.ui-sendInput{
+.iTalk-inputBox{
     margin-left: 40px;
     margin-right: 70px;
-    padding-top: 5px;
 }
-.ui-sendInput input{
-    width: 100%;
-    height: 30px;
+.iTalk-inputBox input{
+    outline: none;
     line-height: 30px;
     font-size: 14px;
-    color: #333333;
-    outline: none;
+    border: none;
     border-bottom: 1px solid #d1d1d1;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    background: none;
-    padding: 0 10px;
-    box-sizing: border-box;
+    height: 30px;
+    width: 100%;
+    background:transparent;
+    color: #6d6d6d;
 }
-.ui-sendInput input:focus{
+.iTalk-inputBox input:focus{
     border-bottom: 1px solid #1fa600;
 }
-.ui-sendBtn{
-    font-size: 14px;
-    line-height: 30px;
-    width: 50px;
-    color: #ffffff;
-    border-radius: 4px;
-    text-align: center;
-    float: right;
-    background: #1fa600;
-    margin-right: 10px;
-    position: absolute;
-    top: 5px;
-    right: 0;
-}
-.ui-iChat-expressionBox{
-    height: 160px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-}
-.ui-expression-list:after{
-    display: block;
-    clear: both;
-    content: "";
-}
-.ui-expression-item{
-    width: 14.2857143%;
-    padding: 10px 0;
-    float: left;
-}
-.ui-expression-item img{
-    display: block;
-    border: none;
-    width: 20px;
-    height: 20px;
-    margin: 0 auto;
-}
-.ui-back{
-    width: 30px;
-    height: 30px;
-    text-align: center;
-    line-height: 30px;
-    color: #ffffff;
-    font-size: 20px;
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-.ui-imChat{
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-.ui-iChat-panelBox{
-    display: flex;
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-}
-.ui-panelBody{
-    width: 100%;
-    height: 100%;
-    flex: 1;
-    position: relative;
-}
-.ui-panel-footer{
-    width: 100%;
-    border-top: 1px solid #d1d1d1;
-}
-.ui-panel-footer:after{
-    content: "";
-    display: block;
-    clear: both;
-}
-.ui-bar-item{
-    width: 50%;
-    float: left;
-    text-align: center;
-    font-size: 12px;
-    color: #9f9f9f;
-    padding: 5px;
-    box-sizing: border-box;
-}
-.ui-bar-item .ui-baIcon{
-    display: block;
-    font-size: 30px;
-    margin-bottom: 5px;
-}
-.ui-bar-item.active{
-    color: #3a8ee6;
-}
-.ui-panel-item{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.ui-item-header{
-    background: #3a8ee6;
-    padding:10px;
-}
-.ui-item-header:after{
-    content: "";
-    display: block;
-    clear: both;
-}
-.ui-imgBox{
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    float: left;
-}
-.ui-imgBox img{
-    display: block;
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 50%;
-}
-.ui-searchInputBox{
-    margin-left: 40px;
-    margin-right: 10px;
-    position: relative;
-}
-.ui-searchInputBox input{
-    outline: none;
-    border: none;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.11);
-    line-height: 30px;
-    width: 100%;
-    padding-left:30px;
-    box-sizing: border-box;
-    height: 30px;
-    color: #bfbfbf;
-}
-::-moz-placeholder { color: #aaaaaa; }
-::-webkit-input-placeholder { color:#aaaaaa; }
-:-ms-input-placeholder { color:#aaaaaa; }
-.ui-searchInputBox:after{
-    display: block;
-    content: "\f002";
-    height: 30px;
-    width: 30px;
-    text-align: center;
-    line-height: 30px;
-    position: absolute;
-    font-family:'FontAwesome';
-    top: 0;
-    left: 0;
-    font-size: 14px;
-    color: #aaaaaa;
-}
-/***************用户卡片样式*********************/
-.ui-user-item{
-    padding: 10px;
-    position:relative;
-    background: #ffffff;
-    border-bottom: 1px solid #d1d1d1;
-}
-.ui-user-item>img{
+.iTalk-sendForm span.iconfont{
     display: block;
     width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    float: left;
-}
-.ui-infoBox{
-    margin-left: 55px;
-    position: relative;
-}
-.ui-infoTime{
-    position: absolute;
-    right: 0;
-    top: 0;
-    line-height: 20px;
-    font-size: 12px;
-    color: #909399;
-    height: 20px;
-}
-.ui-unReader-info{
-    position: absolute;
-    right: 0;
-    top: 1px;
-    font-size: 12px;
-    height: 18px;
-    line-height: 16px;
-    padding: 0 6px;
+    height: 30px;
+    line-height: 30px;
     text-align: center;
-    white-space: nowrap;
-    border-radius: 10px;
-    background: #f56c6c;
-    color: #ffffff;
-    transform: scale(0.7);
+    color: #6d6d6d;
+    float: left;
+    font-size: 25px;
 }
-.ui-infoBox .ui-name{
-    font-size: 14px;
-    color: #666666;
-    line-height: 20px;
-    height: 20px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 500;
-}
-.ui-txt{
+.iTalk-sendBtn{
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    color: #f2f2f2;
+    border-radius: 4px;
+    background-color: #1fa600;
+    top: 50%;
+    margin-top: -15px;
+    right: 10px;
     font-size: 12px;
-    color: #9a9a9a;
-    line-height: 20px;
-    height: 20px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    position: relative;
 }
-/************************/
-.ui-menu-setting{
-    background: #ffffff;
-}
-.ui-user-banner{
+/*****设置面板样式******/
+.iTalk-bannerBox{
     height: 160px;
-    width: 100%;
-    background: url("../images/ceCo1gMpzZoQ.jpg") no-repeat center;
+    background-image: url("../images/ceCo1gMpzZoQ.jpg");
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     position: relative;
 }
-.ui-loginAvatar{
+.iTalk-user-avatarBox{
     position: absolute;
     width: 80px;
     height: 80px;
@@ -395,25 +265,27 @@ body{
     margin-left: -44px;
     margin-bottom: -20px;
 }
-.ui-setting-list{
-    list-style: none;
-    padding: 0;
+.iTalk-user-avatarBox img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.iTalk-userInfo-box{
     margin-top: 20px;
 }
-.ui-setting-list li{
+.iTalk-userInfo-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.iTalk-userInfo-list li{
     margin: 0 10px;
     line-height: 40px;
     font-size: 14px;
     padding: 0 10px;
     border-bottom: 1px solid #f2f2f2;
     color: #767676;
-}
-.ui-switch{
-    width: 20px;
-    height: 20px;
-    float: right;
-    vertical-align: middle;
-    margin-top: 10px;
 }
 .switch-wrap input[type=checkbox]{
     height: 0px;
@@ -424,12 +296,11 @@ body{
 }
 .switch-wrap label{
     display: inline-block;
-    width: 42px;
-    height: 22px;
-    border: 1px solid #DFDFDF;
+    width: 40px;
+    height: 20px;
+    border: 1px solid #d1d1d1;
     outline: none;
     border-radius: 16px;
-    box-sizing: border-box;
     background: #f2f2f2;
     transition: border-color .3s,background-color .3s;
     vertical-align: middle;
@@ -457,54 +328,406 @@ body{
     height: 40px;
     float: right;
 }
-.ui-user-list{
-    height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+/*******关于面板样式***********/
+.iTalk-about-header{
+    line-height: 40px;
+    font-size: 14px;
+    padding: 0 15px;
+    color: #6a737d;
+    font-weight: bold;
 }
-/***********************************/
-/*****************************************/
-.login-box{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 99;
-    top: 0;
-    left: 0;
-    background: url("../images/a1 (10).jpg") center no-repeat ;
-    background-size: cover;
-}
-.img-list{
+.iTalk-aboutInfo-list{
     padding: 0;
+    margin: 0;
     list-style: none;
-    max-width: 305px;
-    margin: 0 auto;
 }
-.img-list:after{
+.iTalk-aboutInfo-list li{
+    margin: 0 10px;
+    padding: 5px;
+    border-bottom: 1px dotted #d1d1d1;
+    line-height: 20px;
+    vertical-align: middle;
+    color: #6a737d;
+    font-size: 12px;
+}
+.iTalk-aboutInfo-list li a{
+    text-decoration: none;
+    color: #00aefe;
+}
+/*******消息气泡样式*******/
+.iTalk-message-item:after{
     display: block;
-    content: '';
+    content: "";
     clear: both;
 }
-.img-list li{
-    float: left;
-    width: 60px;
-    height: 60px;
+.iTalk-message-item{
+    margin-top: 10px;
+}
+.iTalk-message-item:first-child{
+    margin-top: 0;
+}
+.iTalk-avatarBox{
+    display: block;
+    width: 40px;
+    height: 40px;
     border-radius: 4px;
-    margin-left: 10px;
-    margin-bottom: 10px;
-    border: 2px solid transparent;
+}
+.iTalk-avatarBox img{
+    display: block;
+    border: none;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.iTalk-from-info{
+    line-height: 20px;
+    font-size: 12px;
+    color: #6d6d6d;
+}
+.iTalk-message-body{
+    margin: 0 55px;
+}
+.iTalk-message-text{
+    display: inline-block;
+    line-height: 20px;
+    min-height: 20px;
+    padding: 10px;
+    position: relative;
+    border-radius: 4px;
+    background: #FFFFFF;
+    font-size: 12px;
+    color: #6d6d6d;
+    word-wrap: break-word;
+    text-align: left;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.iTalk-message-text img {
+    margin: 2px;
+    border: 0;
+    vertical-align: bottom;
+}
+.iTalk-time-span{
+    margin: 0 5px;
+}
+.iTalk-message-send .iTalk-avatarBox{
+    float: right;
+}
+.iTalk-message-send .iTalk-from-info{
+    text-align: right;
+}
+.iTalk-message-send .iTalk-message-text{
+    background: #b2e281;
+}
+.iTalk-message-send .iTalk-message-text:after{
+    display: block;
+    width: 0;
+    height: 0;
+    content: "";
+    position: absolute;
+    left: 100%;
+    border-top: 5px solid transparent;
+    border-left: 5px solid #b2e281;
+    border-bottom: 5px solid transparent;
+    top:15px;
+}
+.iTalk-message-send .iTalk-message-body{
+    text-align: right;
+}
+.iTalk-message-receive .iTalk-avatarBox{
+    float: left;
+}
+.iTalk-message-receive .iTalk-from-info{
+    text-align: left;
+}
+.iTalk-message-receive .iTalk-message-text:after{
+    display: block;
+    width: 0;
+    height: 0;
+    content: "";
+    position: absolute;
+    right: 100%;
+    border-top: 5px solid transparent;
+    border-right: 5px solid #FFFFFF;
+    border-bottom: 5px solid transparent;
+    top:15px;
+}
+/*******用户列表样式*********/
+.iTalk-users-item{
+    padding: 10px;
+    position: relative;
+    border-bottom: 1px solid #f2f2f2;
+}
+.iTalk-users-item:after{
+    display: block;
+    content: "";
+    clear: both;
+}
+.iTalk-user-avatar{
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    float: left;
     position: relative;
 }
-.img-list li.active{
+.iTalk-user-avatar i{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    font-size: 12px;
+    line-height: 1;
+    color: #f2f2f2;
+    background: rgba(51, 51, 51, 0.61);
+    border-radius: 2px 0 0 0;
+}
+.iTalk-user-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.iTalk-user-InfoBox{
+    margin-left: 50px;
+}
+.iTalk-user-name{
+    font-size: 12px;
+    color: #333333;
+    line-height: 20px;
+    height: 20px;
+    position: relative;
+}
+.iTalk-user-message{
+    line-height: 20px;
+    height: 20px;
+    color: #6a737d;
+    font-size: 12px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+}
+.iTalk-unReaderNum{
+    font-size: 12px;
+    height: 18px;
+    line-height: 18px;
+    padding: 0 6px;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: 10px;
+    background: #f56c6c;
+    position: absolute;
+    color: #FFFFFF;
+    right: 0;
+    top: 0;
+    transform: scale(0.8);
+}
+.iTalk-message-time{
+    position: absolute;
+    right: 0;
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    top: 0;
+    color: #6a737d;
+}
+.iTalk-no-user{
+    text-align: center;
+    font-size: 12px;
+    color: #a2adb9;
+    line-height: 30px;
+}
+/************连接日志样式*************/
+.iTalk-logBox{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #FFFFFF;
+    z-index: 999;
+    left: 0;
+    top: 0;
+}
+.iTalk-logHeader{
+    height: 30px;
+    padding: 0 10px;
+    font-size: 14px;
+    line-height: 30px;
+    color: #666666;
+    font-weight: bold;
+    position: relative;
+}
+.iTalk-log-closeBtn{
+    display: block;
+    width: 20px;
+    height: 20px;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    color: #8893a0;
+    cursor: pointer;
+}
+.iTalk-log-closeBtn:hover{
+    background: rgba(51, 51, 51, 0.1);
+    border-radius: 4px;
+}
+.iTalk-log-container{
+    padding: 10px 0;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    line-height: 20px;
+    font-size: 12px;
+    background: #333333;
+    color: #FFFFFF;
+}
+.iTalk-log-list{
+    width: 100%;
+    height: 100%;
+    padding: 0 10px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+.iTalk-log-time{
+    margin-left: 5px;
+}
+.iTalk-log-info{
+    color: #96ceff;
+}
+.iTalk-log-success{
+    color: #79ff78;
+}
+.iTalk-log-warning{
+    color: #ffb03c;
+}
+.iTalk-log-error{
+    color: #ff3d46;
+}
+/*******登录样式*********/
+.iTalk-loginBox{
+    background-image: url("../images/a1 (10).jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.iTalk-loginForm-box{
+    padding-top: 100px;
+}
+.iTalk-login-form{
+    display: inline-block;
+}
+.iTalk-login-form:after{
+    display: block;
+    content: "";
+    clear: both;
+}
+.iTalk-loginForm-box{
+    text-align: center;
+    border-radius: 0 0 4px 4px;
+}
+.iTalk-loginUser-avatarBox{
+    width: 70px;
+    height: 70px;
+    position: relative;
+    margin: 0 auto;
+}
+.iTalk-loginUser-avatarBox img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.iTalk-form-inputBox {
+    margin-top: 15px;
+}
+.iTalk-form-inputBox input{
+    font-size: 14px;
+    display: block;
+    line-height: 35px;
+    height: 35px;
+    padding: 0 10px;
+    border: 1px solid #C0C4CC;
+    box-sizing: border-box;
+    margin: -1px;
+    width: 220px;
+    outline: none;
+    position: relative;
+}
+.iTalk-formBtn{
+    margin-top: 15px;
+    display: block;
+    width: 100%;
+    line-height: 30px;
+    font-size: 12px;
+    background: #4db3ff;
+    color: #ffffff;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.iTalk-user-name{
+    border-radius: 4px 4px 0 0;
+}
+.iTalk-user-name:focus,.iTalk-user-password:focus{
+    border-color: #4db3ff;
+    z-index: 9;
+}
+.iTalk-user-password{
+    border-radius:0 0 4px 4px;
+}
+.iTalk-select-imgBox{
+    position: absolute;
+    width: 100%;
+    padding: 10px 0 0 0;
+    background: #ffffff;
+    border-radius: 4px 4px 0 0;
+    bottom: 0;
+    left: 0;
+}
+.iTalk-avatar-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.iTalk-avatar-list:after{
+    display: block;
+    content: "";
+    clear: both;
+}
+.iTalk-avatar-list li{
+    float: left;
+    margin: 5px;
+    width: 50px;
+    height: 50px;
+    position: relative;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    border-radius: 4px;
+    cursor: pointer;
+    overflow: hidden;
+}
+.iTalk-avatar-list li img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.iTalk-avatar-list li.active{
     border: 2px solid #4db3ff;
 }
-.img-list li.active:after{
+.iTalk-avatar-list li.active:after{
     display: block;
     position: absolute;
     width: 15px;
     height: 15px;
     background-color: #4db3ff;
-    content: '✔';
+    content:'✔';
     color: #fff;
     bottom: 0;
     right: 0;
@@ -513,51 +736,92 @@ body{
     font-size: 12px;
     border-radius: 10px 0 0 0;
 }
-.img-list li img{
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 4px;
+.iTalk-addAvatar-box{
+    margin: 0 10px;
 }
-.login-btn{
-    line-height: 40px;
-    height: 40px;
-    background-color: #4db3ff;
-    font-size: 15px;
-    color: #fff;
-    text-align: center;
-    border-radius: 4px;
-}
-.nick-name{
-    display: block;
+.iTalk-addAvatar-box input{
     width: 100%;
-    line-height: 40px;
-    height: 40px;
+    line-height: 30px;
+    height: 30px;
+    border-radius: 4px;
     outline: none;
+    border: 1px solid #C0C4CC;
+    font-size: 12px;
     padding: 0 10px;
     box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    color: #6a737d;
 }
-.form-row{
-    margin:0 15px 15px;
+.iTalk-addAvatar-box input:focus{
+    border: 1px solid #4db3ff;
 }
-.login-form-box{
-    padding: 40px 0 0;
-}
-#app{
-    width: 100%;
-    height: 100%;
-}
-.ui-error{
-    position: absolute;
-    bottom: 20px;
-    font-size: 12px;
-    line-height: 30px;
-    border-radius: 15px;
-    background: rgba(51, 51, 51, 0.64);
-    padding: 0 15px;
+/*******************/
+.iTalk-alert{
+    position: fixed;
+    top: 60px;
     left: 50%;
+    padding: 5px 15px;
+    border-radius: 4px;
+    background: rgba(51, 51, 51, 0.7);
     color: #f2f2f2;
-    transform: translateX(-50%);
+    font-size: 12px;
+    line-height: 20px;
+    z-index: 999;
+    transform: translateX(-50%) translateY(0);
+}
+/*******CSS动画***********/
+.slider-enter-active, .slider-leave-active {
+    transition: all .5s;
+}
+.slider-leave-to,.slider-enter{
+    opacity: 0;
+    transform: translateY(100%);
+}
+.alterSlider-enter-active, .alterSlider-leave-active {
+    transition: all .5s;
+}
+.alterSlider-leave-to,.alterSlider-enter{
+    opacity: 0;
+    transform: translateY(-40px) translateX(-50%);
+}
+.iTalk-flip{
+    position: fixed;
+    width: 600px;
+    border-radius: 4px;
+    background: #FFFFFF;
+    z-index: 999;
+    left: 50%;
+    margin-left: -300px;
+    top: 0;
+    perspective:1000px;
+    transform-style:preserve-3d;
+}
+.flip-enter-active, .flip-leave-active {
+    transition: all .5s ease;
+}
+.flip-leave-to,.flip-enter{
+    opacity: 0;
+    transform: rotateX(-75deg);
+}
+/********表情插件样式*********/
+.iTalk-expression-panel{
+    height: 120px;
+    padding: 5px 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.iTalk-expression-list:after{
+    display: block;
+    content: "";
+    clear: both;
+}
+.iTalk-expression-item{
+    width: 14.2857143%;
+    padding: 5px 0;
+    float: left;
+}
+.iTalk-expression-item img{
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;
 }

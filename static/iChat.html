@@ -9,146 +9,229 @@
   <meta name="author" content="cleverqin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <link rel="icon" sizes="any" mask href="/static/images/logo.png">
-  <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_737314_ykp1exp92.css">
   <link rel="stylesheet" href="/static/css/iChat.css">
 </head>
 <body>
-<!--应用挂载点-->
-<div id="bid"></div>
+<!--应用挂在点-->
+<div id="app"></div>
 <!--主界面模版-->
-<template id="iChat">
-  <section id="app">
-    <login v-show="!isLogin" @login="userLogin"></login>
-    <div class="ui-imChat" v-show="isLogin">
-      <div class="ui-iChat-panelBox" v-show="tab=='menu'">
-        <div class="ui-panelBody">
-          <div class="ui-panel-item" v-show="menu=='chat'">
-            <div class="ui-item-header">
-              <div class="ui-imgBox">
-                <img :src="loginUser.avatarUrl" alt="图片">
-              </div>
-              <div class="ui-searchInputBox">
-                <input type="text" placeholder="搜索" v-model="keyWord">
-              </div>
+<template id="chat">
+  <div class="iTalk-container-box">
+    <login @login="login" v-show="!loginUser.id"></login>
+    <div class="iTalk-container" v-show="loginUser.id">
+      <div class="iTalk-panel-box">
+        <div class="iTalk-panel" v-show="menu=='chat'">
+          <div class="iTalk-searchBox">
+            <div class="iTalk-login-avatarBox">
+              <img :src="loginUser.avatarUrl" alt="">
             </div>
-            <div class="ui-user-list">
-              <div class="ui-user-item" v-for="item in searchUser()" :class="{active:item.id==channelId}" @click="changeChannel(item.id)">
-                <img :src="item.avatarUrl" alt="">
-                <div class="ui-infoBox">
-                  <span class="ui-infoTime" v-if="getLastMsg(item.id).time" v-show="setting.isShowTime">{{getLastMsg(item.id).time| time}}</span>
-                  <div class="ui-name">{{item.name}}<span class="fa" :class="item.deviceType=='pc'?'fa-television':'fa-mobile-phone'" v-if="item.deviceType" style="margin-left: 5px"></span></div>
-                  <div class="ui-txt">{{getLastMsg(item.id).content}}<span class="ui-unReader-info" v-if="getUnReaderNum(item.id)>0">{{getUnReaderNum(item.id)}}</span></div>
-                </div>
-              </div>
+            <div class="iTalk-search-element">
+              <span class="iconfont icon-search"></span>
+              <input type="text" placeholder="搜索" v-model="keyWord">
             </div>
           </div>
-          <div class="ui-panel-item ui-menu-setting" v-show="menu=='setting'">
-            <div class="ui-user-banner">
-              <img :src="loginUser.avatarUrl" alt="图片" class="ui-loginAvatar">
+          <div class="iTalk-usersBox">
+            <div class="iTalk-userList">
+              <user :user="item"
+                    :messages="threads[item.id]?threads[item.id]:[]"
+                    :setting="setting"
+                    v-for="item in searchUser()"
+                    @click.native="changeChannel(item)"
+                    :class="{active:threadId==item.id}"></user>
+              <div class="iTalk-no-user" v-if="searchUser()==0">未查到相关数据</div>
             </div>
-            <ul class="ui-setting-list">
-              <li>
-                <span>用户：</span>{{loginUser.name}}
-                <span class="fa" :class="loginUser.deviceType=='pc'?'fa-television':'fa-mobile-phone'" v-if="loginUser.deviceType"></span>
-                <span v-if="loginUser.address">IP:{{loginUser.address}}</span>
-              </li>
+          </div>
+        </div>
+        <div class="iTalk-panel" v-show="menu=='setting'">
+          <div class="iTalk-bannerBox">
+            <div class="iTalk-user-avatarBox">
+              <img :src="loginUser.avatarUrl" alt="">
+            </div>
+          </div>
+          <div class="iTalk-userInfo-box">
+            <ul class="iTalk-userInfo-list">
+              <li>用户：{{loginUser.name}} <span v-if="loginUser.address">IP:{{loginUser.address}}</span></li>
               <li>
                 <span>消息提示音</span>
-                <div class='switch-wrap'>
-                  <input type='checkbox' id= 'switch' v-model="setting.isVoice">
-                  <label for='switch'></label>
-                </div>
+                <div class="switch-wrap"><input type="checkbox" id="switch" v-model="setting.isVoice"> <label for="switch"></label></div>
               </li>
               <li>
                 <span>显示用户名称</span>
-                <div class='switch-wrap'>
-                  <input type='checkbox' id= 'switch1' v-model="setting.isShowName">
-                  <label for='switch1'></label>
-                </div>
+                <div class="switch-wrap"><input type="checkbox" id="switch1" v-model="setting.isName"> <label for="switch1"></label></div>
               </li>
               <li>
                 <span>显示消息时间</span>
-                <div class='switch-wrap'>
-                  <input type='checkbox' id= 'switch2' v-model="setting.isShowTime">
-                  <label for='switch2'></label>
-                </div>
+                <div class="switch-wrap"><input type="checkbox" id="switch2" v-model="setting.isTime"> <label for="switch2"></label></div>
               </li>
             </ul>
           </div>
         </div>
-        <div class="ui-panel-footer">
-          <div class="ui-bar-item" :class="{active:menu=='chat'}" @click="menu='chat'">
-            <span class="fa fa-comments ui-baIcon"></span>
-            会话
+        <div class="iTalk-panel" v-show="menu=='about'">
+          <div class="iTalk-aboutInfo-box">
+            <div class="iTalk-about-header">关于</div>
+            <ul class="iTalk-aboutInfo-list">
+              <li><span>版本：v1.0</span></li>
+              <li><span>协议：MIT</span></li>
+              <li><span>GitHub：<a :href="author.repositoriesUrl" target="_blank">源码地址</a></span></li>
+              <li><span>邮箱：{{author.email}}</span></li>
+              <li>
+                  <span class="">
+                    <a :href="author.repositoriesUrl" target="_blank">
+                      <img :src="'https://img.shields.io/github/stars/'+author.userName+'/'+author.repositoriesName+'?label=Star&amp;style=flat&amp;logo=github'" alt="" style="vertical-align: middle;">
+                    </a>
+                    <a :href="author.repositoriesUrl" target="_blank">
+                      <img :src="'https://img.shields.io/github/forks/'+author.userName+'/'+author.repositoriesName+'?label=Fork&amp;style=flat&amp;logo=github'" alt="" style="vertical-align: middle;">
+                    </a>
+                  </span>
+              </li>
+            </ul>
           </div>
-          <div class="ui-bar-item" :class="{active:menu=='setting'}" @click="menu='setting'">
-            <span class="fa fa-cog ui-baIcon"></span>
-            设置
-          </div>
+        </div>
+        <span class="iconfont icon-wifi iTalk-status" :class="{success:isOnline}" v-show="menu!='chat'" @click="isShowLog=!isShowLog"></span>
+      </div>
+      <div class="iTalk-panel-footer">
+        <div class="iTalk-panel-col" :class="{active:menu=='chat'}" @click="menu='chat'">
+          <span class="iconfont icon-comments"></span>
+          <div>会话</div>
+        </div>
+        <div class="iTalk-panel-col " :class="{active:menu=='setting'}" @click="menu='setting'">
+          <span class="iconfont icon-cog"></span>
+          <div>设置</div>
+        </div>
+        <div class="iTalk-panel-col " :class="{active:menu=='about'}" @click="menu='about'">
+          <span class="iconfont icon-info"></span>
+          <div>关于</div>
         </div>
       </div>
-      <div class="ui-iChat-box" style="display: none" v-show="tab=='chat'">
-        <audio src="/static/images/8400.mp3" ref="audio"></audio>
-        <div class="ui-iChat-header">
-          <div class="ui-back fa fa-angle-left " @click="tab='menu'"></div>
-          {{channel.name}}
+    </div>
+    <div class="iTalk-container iTalk-sessionBox" v-show="isShowSession&&channel.id">
+      <div class="iTalk-sessionHeader">
+        <span class="iconfont icon-left" @click="isShowSession=!isShowSession"></span>
+        {{channel.name}}
+        <template v-if="channel.type=='room'">（{{onLineUsers.length}}）</template>
+      </div>
+      <div class="iTalk-messageBox">
+        <div class="iTalk-message-list" ref="messageList">
+          <wt-message :message="item" :login-user="loginUser" :setting="setting" v-for="item in messages"></wt-message>
         </div>
-        <div class="ui-iChat-body" ref="list" @click="isPicker=false">
-          <div class="ui-message-list">
-            <div class="ui-bubble-item" v-for="item in messages" :class="{'ui-bubble-right':loginUser.id==item.from.id}">
-              <div class="ui-avatarBox">
-                <img :src="item.from.avatarUrl" alt="">
-              </div>
-              <div class="ui-bubble-content">
-                <div class="ui-bubble-info" v-if="loginUser.id==item.from.id" v-show="setting.isShowName"> <span v-show="setting.isShowTime">{{item.time | time}}</span>{{item.from.name}}</div>
-                <div class="ui-bubble-info" v-else v-show="setting.isShowName">{{item.from.name}} <span v-show="setting.isShowTime">{{item.time | time}}</span></div>
-                <div class="ui-bubble-body" v-html="$parseExpression(item.content)"></div>
-              </div>
-            </div>
+      </div>
+      <div class="iTalk-sessionFooter">
+        <div class="iTalk-sendForm">
+          <span class="iconfont icon-face" @click.stop="toggleExpression"></span>
+          <div class="iTalk-inputBox">
+            <input type="text" v-model="text" @keyup.enter="send(text)">
           </div>
+          <span class="iTalk-sendBtn" @click="send(text)">发送</span>
         </div>
-        <div class="ui-iChat-footer">
-          <div class="ui-iChat-form">
-            <span class="ui-expressionBtn" @click="isPicker=!isPicker">
-              <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="703"><path d="M506.282667 803.925333c1.002667 0 2.069333-0.042667 3.114667-0.042667 170.261333-2.005333 238.528-150.869333 239.189333-152.341333L274.112 651.306667C276.949333 657.6 346.069333 803.925333 506.282667 803.925333z" p-id="704"></path><path d="M326.805333 478.506667c27.029333 0 48.789333-21.866667 48.789333-48.810667s-21.781333-48.789333-48.789333-48.789333c-26.922667-0.042667-48.746667 21.824-48.746667 48.789333C278.058667 456.618667 299.84 478.506667 326.805333 478.506667z" p-id="705"></path><path d="M697.749333 429.717333m-48.810667 0a2.288 2.288 0 1 0 97.621333 0 2.288 2.288 0 1 0-97.621333 0Z" p-id="706"></path><path d="M512 0C229.696 0 0 229.696 0 512c0 282.325333 229.696 512 512 512 282.325333 0 512-229.674667 512-512C1024 229.696 794.325333 0 512 0zM512 981.098667C253.333333 981.098667 42.88 770.666667 42.88 512S253.333333 42.88 512 42.88 981.077333 253.333333 981.077333 512 770.666667 981.098667 512 981.098667z" p-id="707"></path></svg>
-            </span>
-            <div class="ui-sendInput"><input type="text" v-model="text" @keyup.enter="send"></div>
-            <div class="ui-sendBtn" @click="send">发送</div>
-          </div>
-          <div class="ui-iChat-expressionBox" v-show="isPicker">
-            <ui-expression @picker-expression="picker"></ui-expression>
+        <expression @picker-expression="pickerExpression" ref="expression"></expression>
+      </div>
+    </div>
+    <div class="iTalk-logBox" v-show="isShowLog">
+      <div class="iTalk-logHeader">
+        连接日志
+        <span class="iTalk-log-closeBtn iconfont icon-close" @click.stop="isShowLog=false"></span>
+      </div>
+      <div class="iTalk-log-container" @click.stop="">
+        <div class="ui-scroll iTalk-log-list" id="log-container">
+          <div class="iTalk-log-item" v-for="log in logs">
+            <span :class="'iTalk-log-'+log.type">{{log.text}}</span>
+            <span class="iTalk-log-time">{{log.time|time}}</span>
           </div>
         </div>
       </div>
     </div>
-  </section>
+    <audio src="./img/8400.mp3"></audio>
+  </div>
 </template>
-<!--表情组件模版-->
-<template id="tpl">
-  <div class="ui-expression-list">
-    <div class="ui-expression-item" v-for="item in expressions">
-      <img :src="baseUrl+item.url" alt="表情" :title="item.title" @click="pickerExpression(item)">
+<!--消息模版-->
+<template id="message">
+  <div class="iTalk-message-item" :class="message.from.id==loginUser.id?'iTalk-message-send':'iTalk-message-receive'">
+    <div class="iTalk-avatarBox">
+      <img :src="message.from.avatarUrl" alt="">
+    </div>
+    <div class="iTalk-message-body">
+      <template v-if="setting.isName">
+        <div class="iTalk-from-info" v-if="message.from.id!=loginUser.id">
+          <span >{{message.from.name}}</span>
+          <span class="iTalk-time-span" v-if="setting.isTime">{{message.time|time}}</span>
+        </div>
+        <div class="iTalk-from-info" v-else>
+          <span class="iTalk-time-span" v-if="setting.isTime">{{message.time|time}}</span>
+          <span>{{message.from.name}}</span>
+        </div>
+      </template>
+      <div class="iTalk-message-text" v-html="$parserExpression(message.content)"></div>
+    </div>
+  </div>i
+</template>
+<!--登录模版-->
+<template id="login">
+  <div class="iTalk-container iTalk-loginBox">
+    <div class="iTalk-loginForm-box">
+      <form class="iTalk-login-form">
+        <div class="iTalk-loginUser-avatarBox">
+          <img :src="user.avatarUrl" alt="" @click.stop="isShow=!isShow">
+        </div>
+        <div class="iTalk-form-inputBox">
+          <input type="text" class="iTalk-user-name" placeholder="用户名" v-model="user.name">
+          <input type="text" class="iTalk-user-password" placeholder="密码">
+          <button type="button" class="iTalk-formBtn" @click="login(user)">登录</button>
+        </div>
+      </form>
+    </div>
+    <transition name="slider">
+      <div class="iTalk-select-imgBox" v-show="isShow">
+        <div class="iTalk-addAvatar-box">
+          <input type="text" v-model="QQ" placeholder="输入QQ号添加使用QQ头像" @click.stop="" @keyup.enter="addQQAvatar(QQ)">
+        </div>
+        <ul class="iTalk-avatar-list">
+          <li :class="{active:user.avatarUrl==item}" v-for="item in avatars">
+            <img :src="item" alt="" @click="user.avatarUrl=item">
+          </li>
+        </ul>
+      </div>
+    </transition>
+  </div>
+</template>
+<!--用户模版-->
+<template id="user">
+  <div class="iTalk-users-item">
+    <div class="iTalk-user-avatar">
+      <img :src="user.avatarUrl" alt="">
+      <i class="iconfont" :class="user.deviceType=='pc'?'icon-pc':'icon-phone'" v-if="user.deviceType" :title="user.address"></i>
+    </div>
+    <div class="iTalk-user-InfoBox">
+      <div class="iTalk-user-name">
+        {{user.name}}
+        <span class="iTalk-message-time">{{lastMessage.time|time}}</span>
+      </div>
+      <div class="iTalk-user-message">
+        {{lastMessage.content}}
+        <span class="iTalk-unReaderNum" v-if="unReaderNum!=0">{{unReaderNum}}</span>
+      </div>
     </div>
   </div>
 </template>
-<!--登录组件模版-->
-<template id="login">
-    <div class="login-box">
-      <div class="login-form-box">
-        <div class="form-row">
-          <ul class="img-list">
-            <li v-bind:class="{'active':item==user.avatarUrl}"  v-for="item in picList" @click="user.avatarUrl=item"><img v-bind:src="item"></li>
-          </ul>
-        </div>
-        <div class="form-row"><input type="text" v-model="user.name" placeholder="请输入昵称" class="nick-name"></div>
-        <div class="form-row"><div class="login-btn" @click="login">登录</div></div>
+<!--信息提示模版-->
+<template id="alter">
+  <transition name="alterSlider"
+              @after-leave="delELe">
+    <div :class="'iTalk-alert iTalk-alter-'+type" ref="alter" v-show="show">{{msg}}</div>
+  </transition>
+</template>
+<!--表情模版-->
+<template id="expression">
+  <div class="iTalk-expression-panel" v-show="isShow">
+    <div class="iTalk-expression-list">
+      <div class="iTalk-expression-item" v-for="item in expressions" @click.stop="pickerExpression(item)">
+        <img :src="item.url" :title="item.title">
       </div>
-      <div class="ui-error" v-show="text!=''">{{text}}</div>
     </div>
+  </div>
 </template>
 <script src="/static/js/vue.min.2.2.0.js"></script>
-<script src="/static/js/vue-resource.js"></script>
-<script src="/socket.io/socket.io.js"></script>
+<script src="/static/js/socket.io.js"></script>
 <script src="/static/js/iChat.js"></script>
 </body>
 </html>
