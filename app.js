@@ -5,6 +5,7 @@ const express = require('express'),
   //用于保存用户信息的数组
   PORT=3000,
   users = [];
+const log =require('./log');
 let kit = {
   //判断用户是否存在
   isHaveUser(user) {
@@ -57,7 +58,7 @@ io.sockets.on('connection',(socket)=>{
   //创建用户链接
   socket.on('login', (user)=> {
     if (kit.isHaveUser(user)) {
-      console.log("登录失败！", user)
+      console.log("登录失败,昵称<"+user.name+">已存在！")
       socket.emit('loginFail', "登录失败,昵称已存在!");
     } else {
       user.id = socket.id;
@@ -68,18 +69,18 @@ io.sockets.on('connection',(socket)=>{
       user.deviceType=deviceType;
       user.loginTime=new Date().getTime();
       socket.user = user;
-      console.log("登录成功！", user)
       socket.emit('loginSuccess', user, users);
       users.push(user)
       socket.broadcast.emit('system', user, 'join');
+      log.logLoginMessage(user,'join');
     }
   });
   //用户注销链接
   socket.on('disconnect',()=> {
     if (socket.user != null) {
       kit.delUser(socket.user.id);
-      console.log("用户退出！", socket.user)
       socket.broadcast.emit('system', socket.user, 'logout');
+      log.logLoginMessage(socket.user,'logout');
     }
   });
   //群发消息
@@ -93,6 +94,7 @@ io.sockets.on('connection',(socket)=>{
       socket.emit('loginSuccess', from, []);
     }
     socket.broadcast.emit('groupMessage', socket.user, to,message,type);
+    log.logUserMessage(socket.user,to,message,type)
   });
   //发送私信
   socket.on('message',(from, to,message,type)=> {
@@ -105,6 +107,7 @@ io.sockets.on('connection',(socket)=>{
       socket.emit('loginSuccess', from, []);
     }
     socket.broadcast.to(to.roomId).emit('message', socket.user, to,message,type);
+    log.logUserMessage(socket.user,to,message,type)
   });
   //判断用户重新连接
   if(socket.handshake.query.User){
@@ -112,7 +115,7 @@ io.sockets.on('connection',(socket)=>{
     socket.user = user;
     user.roomId = socket.id;
     user.address = socket.handshake.address.replace(/::ffff:/,"");
-    console.log("重新连接成功！", user)
+    console.log("用户<"+user.name+">重新连接成功！")
     socket.emit('loginSuccess', user, users);
     users.push(user)
     socket.broadcast.emit('system', user, 'join');
