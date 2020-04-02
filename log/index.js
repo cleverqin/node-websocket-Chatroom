@@ -3,7 +3,7 @@ module.exports ={
   logLoginMessage(user,status){
     console.log(JSON.stringify(user),status);
     if(status=='join'){
-      User.addOne(user)
+      // User.addOne(user)
     }
   },
   logUserMessage(from,to,message,type){
