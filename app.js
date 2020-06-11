@@ -39,6 +39,21 @@ let kit = {
     } else {
       return "pc";
     }
+  },
+  addUser(user){
+    if(!user.id){
+      return
+    }
+    let id=user.id;
+    let index=-1;
+    users.forEach((item,i)=>{
+      if(item.id==id){
+        index=i;
+      }
+    })
+    if(index==-1){
+      users.push(user);
+    }
   }
 }
 //设置静态资源
@@ -112,13 +127,17 @@ io.sockets.on('connection',(socket)=>{
   //判断用户重新连接
   if(socket.handshake.query.User){
     let user=JSON.parse(socket.handshake.query.User);
-    socket.user = user;
-    user.roomId = socket.id;
-    user.address = socket.handshake.address.replace(/::ffff:/,"");
-    console.log("用户<"+user.name+">重新连接成功！")
-    socket.emit('loginSuccess', user, users);
-    users.push(user)
-    socket.broadcast.emit('system', user, 'join');
+    if(user.id){
+      socket.user = user;
+      user.roomId = socket.id;
+      user.address = socket.handshake.address.replace(/::ffff:/,"");
+      console.log("用户<"+user.name+">重新连接成功！")
+      socket.emit('loginSuccess', user, users);
+      kit.addUser(user)
+      socket.broadcast.emit('system', user, 'join');
+    }else {
+      console.log("非法链接用户")
+    }
   }
 });
 //启动服务器
