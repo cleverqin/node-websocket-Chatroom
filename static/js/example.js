@@ -875,11 +875,11 @@ new Vue({
         email:""
       },
       sessionList:[],
-      sessionId:"",
+      sessionId:"user_001",
       messages:{},
       text:"",
       qqExpression:QQ,
-      baseUrl:"/static/images/qq",
+      baseUrl:"../static/images/qq",
       isShow:false,
       keyword:"",
       isShowLog:false,
@@ -1106,7 +1106,7 @@ new Vue({
     },
     initSocket(){
       let _this=this;
-      _this.socket=io();
+      _this.socket=io("http://39.96.75.1");
       _this.socket.on("message",(from,to,message,type)=>{
         _this.receiveMessage(from,to,message,type)
       })

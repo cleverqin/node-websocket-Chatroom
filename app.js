@@ -4,7 +4,14 @@ const express = require('express'),
   io = require('socket.io').listen(server),
   //用于保存用户信息的数组
   PORT=3000,
-  users = [];
+  users = [
+    {
+      id:"group_001",
+      name:"群聊天室",
+      avatarUrl:"/static/images/group-icon.png",
+      type:"group"
+    }
+  ];
 const log =require('./log');
 let kit = {
   //判断用户是否存在
@@ -54,6 +61,22 @@ let kit = {
     if(index==-1){
       users.push(user);
     }
+  },
+  loginSuccess(socket,user){
+    socket.emit('loginSuccess', user, users);
+    users.push(user)
+    socket.broadcast.emit('system', user, 'join');
+    log.logLoginMessage(user,'join');
+    //发送消息
+    socket.on('message',(from, to,message,type)=> {
+      if(to.type=='user'){
+        socket.broadcast.to(to.roomId).emit('message', socket.user, to,message,type);
+      }
+      if(to.type=='group'){
+        socket.broadcast.emit('message', socket.user, to,message,type);
+      }
+      log.logUserMessage(socket.user,to,message,type)
+    });
   }
 }
 //设置静态资源
@@ -62,10 +85,10 @@ app.use('/static', express.static(__dirname + '/static'));
 app.get("/", (req, res) => {
   let userAgent = req.headers['user-agent'].toLowerCase();
   if (kit.getDeviceType(userAgent)=='touch') {
-    let path = __dirname + '/static/iChat.html';
+    let path = __dirname + '/views/iTalk.html';
     res.sendFile(path);
   } else {
-    let path = __dirname + '/static/index.html';
+    let path = __dirname + '/views/index.html';
     res.sendFile(path);
   }
 })
@@ -84,10 +107,8 @@ io.sockets.on('connection',(socket)=>{
       user.deviceType=deviceType;
       user.loginTime=new Date().getTime();
       socket.user = user;
-      socket.emit('loginSuccess', user, users);
-      users.push(user)
-      socket.broadcast.emit('system', user, 'join');
-      log.logLoginMessage(user,'join');
+      user.type="user";
+      kit.loginSuccess(socket,user)
     }
   });
   //用户注销链接
@@ -98,32 +119,6 @@ io.sockets.on('connection',(socket)=>{
       log.logLoginMessage(socket.user,'logout');
     }
   });
-  //群发消息
-  socket.on('groupMessage',(from, to,message,type)=>{
-    //用户登录状态掉线，重置用户登录状态
-    if (!socket.user) {
-      from.roomId = socket.id;
-      socket.user = from;
-      users.push(from);
-      socket.broadcast.emit('system', from, 'join');
-      socket.emit('loginSuccess', from, []);
-    }
-    socket.broadcast.emit('groupMessage', socket.user, to,message,type);
-    log.logUserMessage(socket.user,to,message,type)
-  });
-  //发送私信
-  socket.on('message',(from, to,message,type)=> {
-    //用户登录状态掉线，重置用户登录状态
-    if (!socket.user) {
-      from.roomId = socket.id;
-      socket.user = from;
-      users.push(from);
-      socket.broadcast.emit('system', from, 'join');
-      socket.emit('loginSuccess', from, []);
-    }
-    socket.broadcast.to(to.roomId).emit('message', socket.user, to,message,type);
-    log.logUserMessage(socket.user,to,message,type)
-  });
   //判断用户重新连接
   if(socket.handshake.query.User){
     let user=JSON.parse(socket.handshake.query.User);
@@ -132,9 +127,7 @@ io.sockets.on('connection',(socket)=>{
       user.roomId = socket.id;
       user.address = socket.handshake.address.replace(/::ffff:/,"");
       console.log("用户<"+user.name+">重新连接成功！")
-      socket.emit('loginSuccess', user, users);
-      kit.addUser(user)
-      socket.broadcast.emit('system', user, 'join');
+      kit.loginSuccess(socket,user)
     }else {
       console.log("非法链接用户")
     }
