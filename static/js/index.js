@@ -717,6 +717,7 @@ Vue.component("aPlayer",{
 })
 new Vue({
   el:"#app",
+  template:"#tpl",
   data(){
     let QQ=[
       {title:"微笑]",url: "/微笑.gif"},
