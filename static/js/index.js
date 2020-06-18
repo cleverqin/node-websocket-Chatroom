@@ -973,7 +973,9 @@ new Vue({
         this.scrollFooter();
       }else{
         if(this.setting.isVoice&&this.$refs.audio){
-          this.$refs.audio.play();
+          if(to.type!='group'){
+            this.$refs.audio.play();
+          }
         }
       }
     },
@@ -1155,10 +1157,12 @@ new Vue({
         _this.saveLog("重新连接！"+JSON.stringify(data)+ ' - reconnect',"info");
       })
       _this.socket.on("reconnect_attempt",(data)=>{
-        _this.socket.io.opts.query={
-          User:_this.loginUser.id?JSON.stringify(_this.loginUser):''
+        if(_this.loginUser){
+          _this.socket.io.opts.query={
+            User:_this.loginUser.id?JSON.stringify(_this.loginUser):''
+          }
+          _this.saveLog("尝试重新连接！"+JSON.stringify(data)+ ' - reconnect_attempt',"info");
         }
-        _this.saveLog("尝试重新连接！"+JSON.stringify(data)+ ' - reconnect_attempt',"info");
       })
       _this.socket.on("loginSuccess",(user,users)=>{
         _this.loginUser=user;
