@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>聊天室</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  <link rel="SHORTCUT ICON" href="/static/images/logo.png" >
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_802715_2hjg77fzx1v.css">
+  <link rel="stylesheet" href="/static/css/common.css">
+</head>
+<body>
+  <div id="app"></div>
+  <!--主界面模版-->
+  <template id="webChat">
+    <div class="webChat-warp">
+      <div class="webChat-container webChat-clear" v-if="loginUser.id">
+        <div class="webChat-menu-warp">
+          <div class="webChat-login-avatar">
+            <img :src="loginUser.avatarUrl" alt="">
+          </div>
+          <ul class="webChat-menu-list">
+            <li :class="{active:curMenu==='chat'}"><span class="iconfont icon-comments" @click="curMenu='chat'"></span></li>
+            <li :class="{active:curMenu==='cog'}"><span class="iconfont icon-cog" @click="curMenu='cog'"></span></li>
+            <li :class="{active:curMenu==='cog'}"><span class="iconfont icon-info" @click="curMenu='about'"></span></li>
+          </ul>
+        </div>
+        <div class="webChat-panel">
+          <div class="webChat-clear webChat-panel-item" v-show="curMenu=='chat'">
+            <div class="webChat-users-warp">
+              <div class="webChat-search-container">
+                <span class="iconfont icon-search"></span>
+                <input type="text" placeholder="搜索" v-model="keyword" class="webChat-search-input">
+              </div>
+              <div class="webChat-users-container">
+                <div class="webChat-user-list scroll">
+                  <user-item :user="item"
+                             @click.native="changeSession(item)"
+                             :class="{active:item.id===curSession.id}"
+                             v-for="item in searchUser(keyword)"
+                             :num="getUnReadNum(item.id)"
+                             :key="item.id">
+                    <div slot="time" v-if="getLatestMessage(item.id).time">{{getLatestMessage(item.id).time | friendlyTime}}</div>
+                    <span slot="message" v-if="getLatestMessage(item.id).type==='text'" v-html="renderExpression(getLatestMessage(item.id).content,baseUrl)"></span>
+                    <div slot="message" v-if="getLatestMessage(item.id).type==='image'">【图片】</div>
+                  </user-item>
+                </div>
+              </div>
+            </div>
+            <div class="webChat-session-panel" v-if="curSession.id">
+              <div class="webChat-session-header">
+                <img :src="curSession.avatarUrl" alt="" class="webChat-session-avatar">
+                <span class="webChat-session-name">{{curSession.name}}</span>
+                <span class="webChat-session-text" v-if="curSession.type==='group'">({{onlineUsers.length}})</span>
+                <span class="iconfont user-device" v-if="curSession.deviceType" :class="{'icon-phone':curSession.deviceType==='phone','icon-pc':curSession.deviceType==='pc'}"></span>
+                <span class="webChat-session-text" v-if="curSession.ip">({{curSession.ip}})</span>
+              </div>
+              <div class="webChat-session-messages">
+                <div class="webChat-message-list scroll" ref="message-list">
+                  <message-item v-for="(item,i) in messages" :is-send="loginUser.id===item.from.id" :setting="setting" :key="i" :message="item">
+                    <div class="message-content-container" v-html="renderExpression(item.content,baseUrl)" slot="message" v-if="item.type==='text'"></div>
+                    <div class="message-image-warp" slot="message" v-if="item.type==='image'" v-html="item.content"></div>
+                  </message-item>
+                </div>
+              </div>
+              <div class="webChat-session-tool">
+                <span class="iconfont icon-expression" @click.stop="toggleExpression"></span>
+                <label class="iconfont icon-img">
+                  <input type="file" class="webChat-img-file" accept="image/png, image/jpeg" @change="fileChange">
+                </label>
+                <transition name="slide">
+                  <div class="expression-panel-warp" v-show="isShowExpression">
+                    <div class="expression-panel-container">
+                      <div class="expression-item"
+                           v-for="item in expressions"
+                           :title="item.title"
+                           @click.stop="pickerExpression(item)"
+                           :key="item.title">
+                        <img :src="baseUrl+item.url" alt="">
+                      </div>
+                    </div>
+                  </div>
+                </transition>
+              </div>
+              <div class="webChat-session-footer">
+                <div class="webChat-textarea-warp">
+                  <textarea class="webChat-textarea scroll" placeholder="请输入信息" v-model="text" @keypress.enter="sendText(text)"></textarea>
+                </div>
+                <div class="webChat-sendBtn-warp">
+                  <button class="webChat-session-sendBtn" @click="sendText(text)">发送</button>
+                </div>
+              </div>
+            </div>
+            <div class="webChat-session-panel" v-else>
+              <span class="iconfont icon-wechat"></span>
+            </div>
+          </div>
+          <div class="webChat-clear webChat-panel-item" v-show="curMenu=='cog'">
+            <div class="webChat-setting-warp">
+              <div class="webChat-setting-header">设置</div>
+              <div class="webChat-setting-card webChat-clear">
+                <div class="webChat-card-avatar">
+                  <img :src="loginUser.avatarUrl" alt="">
+                </div>
+                <div class="webChat-card-info">
+                  <div class="webChat-card-infoRow webChat-card-name">{{loginUser.name}}</div>
+                  <div class="webChat-card-infoRow webChat-card-text">
+                    <span class="iconfont" :class="{'icon-phone':loginUser.deviceType==='phone','icon-pc':loginUser.deviceType==='pc'}"></span>
+                    {{loginUser.ip}}
+                  </div>
+                  <div class="webChat-card-infoRow webChat-card-text">{{loginUser.time | formatTime}}</div>
+                </div>
+              </div>
+              <ul class="webChat-setting-list">
+                <li><input type="checkbox" v-model="setting.isVoice"><span>消息声音</span></li>
+                <li><input type="checkbox" v-model="setting.isName"><span>显示昵称</span></li>
+                <li><input type="checkbox" v-model="setting.isTime"><span>消息时间</span></li>
+              </ul>
+            </div>
+          </div>
+          <div class="webChat-clear webChat-panel-item" v-show="curMenu=='about'">
+            <div class="webChat-about-warp">
+              <div class="webChat-about-header">关于</div>
+              <ul class="webChat-about-list">
+                <li>
+                  <span class="about-label">版本：</span>
+                  <span class="about-text">{{about.version}}</span>
+                </li>
+                <li>
+                  <span class="about-label">协议：</span>
+                  <span class="about-text">{{about.license}}</span>
+                </li>
+                <li>
+                  <span class="about-label">作者：</span>
+                  <span class="about-text">{{about.author}}</span>
+                </li>
+                <li>
+                  <span class="about-label">邮箱：</span>
+                  <span class="about-text">{{about.email}}</span>
+                </li>
+                <li>
+                  <span class="about-label">仓库：</span>
+                  <a class="about-link" :href="about.github" target="_blank">{{about.github}}</a>
+                </li>
+                <li>
+                  <a :href="about.github" class="about-link" target="_blank">
+                    <img src="https://img.shields.io/github/stars/cleverqin/node-websocket-Chatroom?label=Star&style=flat&logo=github" alt="">
+                  </a>
+                  <a :href="about.github" class="about-link" target="_blank">
+                    <img src="https://img.shields.io/github/forks/cleverqin/node-websocket-Chatroom?label=Fork&style=flat&logo=github" alt="">
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <span class="is-connect iconfont icon-09" v-if="socket&&!isConnect" title="断线重连"></span>
+        </div>
+      </div>
+      <login @login="login" ref="login" v-else></login>
+      <audio :src="audioUrl" ref="audio"></audio>
+    </div>
+  </template>
+  <!--消息组件模版-->
+  <template id="message-item">
+    <div class="message-item-warp webChat-clear" :class="isSend?'message-item-send':'message-item-receive'">
+      <div class="message-avatar">
+        <img :src="message.from.avatarUrl" alt="">
+      </div>
+      <div class="message-item-container">
+        <div class="message-info-container" v-if="setting.isName">
+          <span class="message-info-time" v-if="isSend&&setting.isTime">{{message.time | friendlyTime}}</span>
+          <span class="message-info-name">{{message.from.name}}</span>
+          <span class="message-info-time" v-if="!isSend&&setting.isTime">{{message.time | friendlyTime}}</span>
+        </div>
+        <div class="message-content-warp">
+          <slot name="message">
+            <div class="message-content-container" v-html="message.content"></div>
+          </slot>
+        </div>
+      </div>
+    </div>
+  </template>
+  <!--用户组件模版-->
+  <template id="user-item">
+    <div class="user-item-warp webChat-clear">
+      <div class="user-item-avatar">
+        <img :src="user.avatarUrl" alt="">
+      </div>
+      <div class="user-info-warp">
+        <div class="user-item-infoRow">
+          <div class="user-item-name">{{user.name}}</div>
+          <span class="user-item-time">
+            <slot name="time"></slot>
+          </span>
+        </div>
+        <div class="user-item-infoRow">
+          <div class="user-item-message">
+            <slot name="message"></slot>
+          </div>
+          <span class="user-item-num" v-if="num>0">{{num>99?'99+':num}}</span>
+        </div>
+      </div>
+    </div>
+  </template>
+  <!--登录组件模版-->
+  <template id="login">
+    <div class="user-login-warp">
+      <div class="user-login-container">
+        <div class="user-login-banner"></div>
+        <div class="user-login-form-warp">
+          <div class="user-login-form">
+            <div class="user-login-avatar">
+              <img :src="user.avatarUrl" alt="" class="login-avatar" @click.stop="toggleAvatarSelect">
+              <transition name="slide">
+                <div class="select-avatar-warp" v-show="isShow">
+                  <div class="avatar-input-warp">
+                    <input type="text" class="avatar-input" @keypress.enter="addQQAvatar(qq)" v-model="qq" @click.stop="" placeholder="请输入QQ号码">
+                  </div>
+                  <ul class="avatar-list-warp">
+                    <li v-for="(item,i) in avatarList" :key="i" :class="{active:user.avatarUrl===item}" @click="user.avatarUrl=item">
+                      <img :src="item" alt="">
+                    </li>
+                  </ul>
+                </div>
+              </transition>
+            </div>
+            <div class="form-input-warp">
+              <div class="form-group">
+                <input type="text" class="form-input input-text" placeholder="用户名" v-model="user.name">
+              </div>
+              <div class="form-group">
+                <input type="password" class="form-input input-pass" placeholder="密码">
+              </div>
+              <div class="form-group form-btn-warp">
+                <button class="form-btn" type="button" @click="login">登录</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  <!--弹窗消息组件模版-->
+  <template id="alter-message">
+    <transition name="alter-slide" @after-leave="delELe">
+      <div :class="'alter-message alter-message-'+type" ref="alter" v-show="show">{{msg}}</div>
+    </transition>
+  </template>
+  <!--移动端主界面样式-->
+  <template id="iChat">
+    <div class="iChat-container">
+      <div class="iChat-app-warp" v-if="loginUser.id">
+        <div class="iChat-app-container">
+          <div class="iChat-app-panel" v-show="curMenu==='chat'">
+            <div class="iChat-search-header">
+              <div class="search-avatar">
+                <img :src="loginUser.avatarUrl" alt="">
+              </div>
+              <div class="search-input-warp">
+                <input type="text" placeholder='搜索' class="search-input" v-model="keyword">
+                <span class="iconfont icon-search"></span>
+              </div>
+            </div>
+            <div class="iChat-user-list scroll">
+              <user-item :user="item"
+                         @click.native="changeSession(item)"
+                         :class="{active:item.id===curSession.id}"
+                         v-for="item in searchUser(keyword)"
+                         :num="getUnReadNum(item.id)"
+                         :key="item.id">
+                <div slot="time" v-if="getLatestMessage(item.id).time">{{getLatestMessage(item.id).time | friendlyTime}}</div>
+                <span slot="message" v-if="getLatestMessage(item.id).type==='text'" v-html="renderExpression(getLatestMessage(item.id).content,baseUrl)"></span>
+                <div slot="message" v-if="getLatestMessage(item.id).type==='image'">【图片】</div>
+              </user-item>
+            </div>
+          </div>
+          <div class="iChat-app-panel scroll" v-show="curMenu==='cog'">
+            <div class="iChat-cog-banner">
+              <div class="banner-user">
+                <img :src="loginUser.avatarUrl" alt="">
+              </div>
+            </div>
+            <ul class="iChat-cog-list">
+              <li>
+                <span class="cog-label">用户</span>
+                <span class="cog-text">{{loginUser.name}}</span>
+              </li>
+              <li>
+                <span class="cog-label">设备</span>
+                <span class="cog-text iconfont" :class="{'icon-pc':loginUser.deviceType==='pc','icon-phone':loginUser.deviceType==='phone'}"></span>
+              </li>
+              <li>
+                <span class="cog-label">IP</span>
+                <span class="cog-text">{{loginUser.ip}}</span>
+              </li>
+              <li>
+                <span class="cog-label">登录时间</span>
+                <span class="cog-text">{{loginUser.time | formatTime}}</span>
+              </li>
+              <li>
+                <span class="cog-label">消息声音</span>
+                <label class="iChat-checkbox">
+                  <input type="checkbox" v-model="setting.isVoice">
+                  <i></i>
+                </label>
+              </li>
+              <li>
+                <span class="cog-label">显示昵称</span>
+                <label class="iChat-checkbox">
+                  <input type="checkbox" v-model="setting.isName">
+                  <i></i>
+                </label>
+              </li>
+              <li>
+                <span class="cog-label">消息时间</span>
+                <label class="iChat-checkbox">
+                  <input type="checkbox" v-model="setting.isTime">
+                  <i></i>
+                </label>
+              </li>
+            </ul>
+          </div>
+          <div class="iChat-app-panel scroll" v-show="curMenu==='about'">
+            <div class="about-header">关于</div>
+            <ul class="about-list">
+              <li>
+                <span class="about-label">版本：</span>
+                <span class="about-text">{{about.version}}</span>
+              </li>
+              <li>
+                <span class="about-label">协议：</span>
+                <span class="about-text">{{about.license}}</span>
+              </li>
+              <li>
+                <span class="about-label">作者：</span>
+                <span class="about-text">{{about.author}}</span>
+              </li>
+              <li>
+                <span class="about-label">邮箱：</span>
+                <span class="about-text">{{about.email}}</span>
+              </li>
+              <li>
+                <span class="about-label">仓库：</span>
+                <a class="about-link" :href="about.github" target="_blank">仓库地址</a>
+              </li>
+              <li>
+                <a :href="about.github" class="about-link" target="_blank">
+                  <img src="https://img.shields.io/github/stars/cleverqin/node-websocket-Chatroom?label=Star&style=flat&logo=github" alt="">
+                </a>
+                <a :href="about.github" class="about-link" target="_blank">
+                  <img src="https://img.shields.io/github/forks/cleverqin/node-websocket-Chatroom?label=Fork&style=flat&logo=github" alt="">
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="iChat-menu-warp">
+          <div class="iChat-menu-item" :class="{active:curMenu==='chat'}" @click="curMenu='chat'">
+            <span class="iconfont icon-comments"></span>
+            <div class="menu-text">会话</div>
+          </div>
+          <div class="iChat-menu-item" :class="{active:curMenu==='cog'}" @click="curMenu='cog'">
+            <span class="iconfont icon-cog"></span>
+            <div class="menu-text">设置</div>
+          </div>
+          <div class="iChat-menu-item" :class="{active:curMenu==='about'}" @click="curMenu='about'">
+            <span class="iconfont icon-info"></span>
+            <div class="menu-text">关于</div>
+          </div>
+        </div>
+        <div class="iChat-session-warp" v-if="curSession.id">
+          <div class="iChat-session-header">
+            <span class="iconfont icon-left" @click="curSession={}"></span>
+            <div class="session-info-warp">
+              <img :src="curSession.avatarUrl" alt="" class="session-avatar">
+              <span class="session-info-name">{{curSession.name}}</span>
+              <span class="user-num" v-if="curSession.type==='room'">({{onlineUsers.length}})</span>
+              <span class="iconfont" v-if="curSession.deviceType" :class="{'icon-phone':curSession.deviceType==='phone','icon-pc':curSession.deviceType==='pc'}"></span>
+              <span class="ip-text" v-if="curSession.ip">({{curSession.ip}})</span>
+            </div>
+          </div>
+          <div class="iChat-session-container" :class="{'with-panel':isShowTool||isShowExpression}">
+            <div class="iChat-message-list scroll" ref="message-list">
+              <message-item v-for="(item,i) in messages" :is-send="loginUser.id===item.from.id" :setting="setting" :key="i" :message="item">
+                <div class="message-content-container" v-html="renderExpression(item.content,baseUrl)" slot="message" v-if="item.type==='text'"></div>
+                <div class="message-image-warp" slot="message" v-if="item.type==='image'" v-html="item.content"></div>
+              </message-item>
+            </div>
+          </div>
+          <div class="iChat-session-footer">
+            <div class="iChat-message-form" :class="{'focus-form':text!==''||isFocus}">
+              <div class="iChat-send-warp">
+                <button class="iChat-send-btn" style="display: none" v-show="text!==''||isFocus" @click="sendText(text)">发送</button>
+                <span class="iconfont icon-plus-o" v-show="text===''&&!isFocus" @click.stop="toggleTool"></span>
+              </div>
+              <div class="iChat-expression-btn" @click.stop="toggleExpression">
+                <span class="iconfont icon-expression"></span>
+              </div>
+              <div class="iChat-input-warp">
+                <input type="text" @focus="isFocus=true" @keypress.enter="sendText(text)" @focusout="isFocus=false" class="iChat-message-input" v-model="text">
+              </div>
+            </div>
+            <div class="iChat-expression-panel scroll" v-show="isShowExpression">
+              <ul class="expression-list">
+                <li v-for="item in expressions" :key="item.title" @click.stop="pickerExpression(item)">
+                  <img :src="baseUrl+item.url" alt="">
+                </li>
+              </ul>
+            </div>
+            <div class="iChat-tool-panel scroll" v-show="isShowTool">
+              <ul class="iChat-tool-list">
+                <li>
+                  <label class="iChat-tool-item">
+                    <span class="iconfont icon-img"></span>
+                    <input type="file" accept="image/png, image/jpeg" @change="fileChange">
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Login v-else @login="login"></Login>
+      <audio :src="audioUrl" ref="audio"></audio>
+    </div>
+  </template>
+  <!--移动端登录界面样式-->
+  <template id="login-phone">
+    <div class="iChat-login-warp">
+      <div class="iChat-login-container">
+        <div class="login-form-warp">
+          <div class="login-form">
+            <div class="login-user-avatar">
+              <img :src="user.avatarUrl" alt="" class="login-avatar" @click.stop="toggleAvatarSelect">
+            </div>
+            <div class="form-input-warp">
+              <div class="form-group">
+                <input type="text" class="form-input input-text" placeholder="用户名" v-model="user.name">
+              </div>
+              <div class="form-group">
+                <input type="password" class="form-input input-pass" placeholder="密码">
+              </div>
+              <div class="form-group form-btn-warp">
+                <button class="form-btn" type="button" @click="login">登录</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <transition name="slide">
+        <div class="iChat-avatar-warp" v-show="isShow">
+          <div class="avatar-input-warp">
+            <input type="text" class="avatar-input" @keypress.enter="addQQAvatar(qq)" v-model="qq" @click.stop="" placeholder="请输入QQ号码">
+            <svg @click.stop="randomQQ"  t="1603258241849" class="icon-touzi" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3923" width="200" height="200"><path d="M513.033 512.578m-448.821 0a448.821 448.821 0 1 0 897.642 0 448.821 448.821 0 1 0-897.642 0Z" fill="#76C2AF" p-id="3924"></path><path d="M757.434 339.373L565.122 228.339c-27.942-16.135-76.237-16.135-104.179 0L268.632 339.373c-28.722 16.58-52.096 57.055-52.096 90.228v222.054c0 33.174 23.374 73.648 52.096 90.228l192.312 111.034c13.971 8.067 32.469 12.512 52.089 12.512 19.621 0 38.118-4.445 52.089-12.512l192.312-111.034c28.722-16.58 52.096-57.055 52.096-90.228V429.602c0-33.174-23.374-73.648-52.096-90.229z" fill="#231F20" p-id="3925"></path><path d="M561.619 206.364c-26.722-15.428-70.45-15.428-97.172 0l-192.309 111.03c-26.722 15.428-48.586 53.298-48.586 84.154v222.06c0 30.856 21.864 68.726 48.586 84.154l192.309 111.03c26.722 15.428 70.45 15.428 97.173 0l192.309-111.03c26.722-15.428 48.586-53.297 48.586-84.154v-222.06c0-30.856-21.864-68.726-48.586-84.154l-192.31-111.03z" fill="#E0E0D1" p-id="3926" data-spm-anchor-id="a313x.7781069.0.i0"></path><path d="M513.033 837.373c-19.621 0-38.119-4.438-52.089-12.519L268.632 713.827c-28.722-16.573-52.096-57.048-52.096-90.222V401.551c0-33.174 23.374-73.648 52.096-90.222l192.312-111.027c27.942-16.162 76.237-16.162 104.179 0l192.312 111.027c28.722 16.573 52.096 57.048 52.096 90.222v222.054c0 33.174-23.374 73.648-52.096 90.222L565.122 824.854c-13.971 8.081-32.468 12.519-52.089 12.519z m0-635.565c-17.197 0-33.201 3.78-45.077 10.629L275.645 323.465c-24.435 14.108-45.083 49.87-45.083 78.086v222.054c0 28.216 20.648 63.978 45.083 78.086l192.312 111.027c23.75 13.697 66.403 13.697 90.153 0l192.312-111.027c24.435-14.108 45.083-49.87 45.083-78.086V401.551c0-28.216-20.648-63.978-45.083-78.086L558.109 212.437c-11.875-6.848-27.88-10.629-45.076-10.629z" fill="#E0E0D1" p-id="3927"></path><path d="M513.033 482.075c-15.751 0-30.9-3.534-41.57-9.691L279.151 361.351c-8.28-4.78-13.033-10.574-13.033-15.909 0.007-5.321 4.753-11.122 13.033-15.895l192.312-111.034c10.67-6.164 25.819-9.697 41.57-9.697 15.751 0 30.9 3.534 41.57 9.691l192.312 111.041c8.28 4.773 13.026 10.574 13.033 15.895 0 5.335-4.753 11.129-13.033 15.909L554.603 472.378c-10.67 6.163-25.819 9.697-41.57 9.697zM483.699 811.349c-4.205 0-9.245-1.623-14.574-4.698L276.814 695.61c-22.538-13.005-41.577-45.981-41.577-72.005V401.551c0-6.198 1.267-20.614 12.978-20.614 4.198 0 9.239 1.63 14.574 4.712l192.312 111.027c22.531 13.012 41.57 45.987 41.57 72.005v222.061c0 7.253-1.568 13.204-4.424 16.758-2.111 2.63-4.83 3.849-8.548 3.849zM540.036 811.349c-11.711 0-12.978-14.409-12.978-20.607V568.681c0-26.017 19.039-58.993 41.57-72.012l192.312-111.02c5.335-3.082 10.375-4.712 14.574-4.712 11.711 0 12.978 14.416 12.978 20.614v222.054c0 26.024-19.039 58.999-41.577 72.005L554.603 806.644c-5.328 3.082-10.369 4.705-14.567 4.705z" fill="#FFFFFF" p-id="3928"></path><path d="M513.033 365.309c-17.738 0-32.729-9.095-32.729-19.861s14.991-19.867 32.729-19.867c17.737 0 32.729 9.102 32.729 19.867s-14.992 19.861-32.729 19.861zM276.642 657.998c-10.766 0-19.861-13.336-19.861-29.123 0-15.786 9.095-29.129 19.861-29.129s19.861 13.342 19.861 29.129-9.095 29.123-19.861 29.123zM742.411 657.998c-10.766 0-19.861-13.336-19.861-29.123 0-15.786 9.095-29.129 19.861-29.129s19.861 13.342 19.861 29.129c-0.001 15.787-9.096 29.123-19.861 29.123zM276.642 490.567c-10.766 0-19.861-13.336-19.861-29.123 0-15.786 9.095-29.129 19.861-29.129s19.861 13.342 19.861 29.129-9.095 29.123-19.861 29.123zM441.74 598.393c-10.766 0-19.861-13.342-19.861-29.129 0-15.786 9.095-29.129 19.861-29.129s19.867 13.342 19.867 29.129c0.001 15.787-9.101 29.129-19.867 29.129zM582.581 598.393c-10.766 0-19.861-13.342-19.861-29.129 0-15.786 9.095-29.129 19.861-29.129s19.867 13.342 19.867 29.129c0.001 15.787-9.101 29.129-19.867 29.129zM441.74 752.968c-10.766 0-19.861-13.342-19.861-29.129s9.095-29.129 19.861-29.129 19.867 13.342 19.867 29.129-9.101 29.129-19.867 29.129z" fill="#4F5D73" p-id="3929"></path></svg>
+          </div>
+          <ul class="avatar-list-warp">
+            <li v-for="(item,i) in avatarList" :key="i" :class="{active:user.avatarUrl===item}" @click="user.avatarUrl=item">
+              <img :src="item" alt="">
+            </li>
+          </ul>
+        </div>
+      </transition>
+    </div>
+  </template>
+  <script src="/static/js/vue.min.2.2.0.js"></script>
+  <script src="/static/js/socket.io.js"></script>
+  <script src="/static/js/index.js"></script>
+</body>
+</html>

@@ -27,6 +27,10 @@ WebChat聊天室是一个基于nodejs+express+socket.io模块构建的
 
 [✔]未读消息条数显示
 
+[✔]支持发送小于1M的图片
+
+[✔]支持移动端
+
 相关技术站点
 ---
 [Vue官方文档](https://cn.vuejs.org/v2/api/)
@@ -50,5 +54,8 @@ WebChat聊天室是一个基于nodejs+express+socket.io模块构建的
 
 <img src='./static/images/screenshot/screen_04.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_05.png' width='400px'>
+<img src='./static/images/screenshot/screen_pc_01.png' width='400px'>
 
+<img src='./static/images/screenshot/screen_pc_02.png' width='400px'>
+
+<img src='./static/images/screenshot/screen_pc_03.png' width='400px'>

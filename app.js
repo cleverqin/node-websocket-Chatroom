@@ -1,10 +1,11 @@
-const express = require('express'),
-  app = express(),
-  server = require('http').createServer(app),
-  io = require('socket.io').listen(server),
-  //用于保存用户信息的数组
-  PORT=3000,
-  users = [
+const express = require('express');
+const store=require("./store");
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+const PORT=3000;
+//用于保存用户信息的数组
+let users = [
     {
       id:"group_001",
       name:"群聊天室",
@@ -12,26 +13,8 @@ const express = require('express'),
       type:"group"
     }
   ];
-const log =require('./log');
-let kit = {
-  //判断用户是否存在
-  isHaveUser(user) {
-    let flag = false;
-    users.forEach(function (item) {
-      if (item.name == user.name) {
-        flag = true;
-      }
-    })
-    return flag;
-  },
-  //删除某一用户
-  delUser(id) {
-    users.forEach(function (item, index) {
-      if (item.id == id) {
-        users.splice(index, 1);
-      }
-    })
-  },
+let util={
+  //判读用户是否已经登录
   getDeviceType(userAgent){
     let bIsIpad = userAgent.match(/ipad/i) == "ipad";
     let bIsIphoneOs = userAgent.match(/iphone os/i) == "iphone os";
@@ -42,95 +25,88 @@ let kit = {
     let bIsCE = userAgent.match(/windows ce/i) == "windows ce";
     let bIsWM = userAgent.match(/windows mobile/i) == "windows mobile";
     if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
-      return "touch";
+      return "phone";
     } else {
       return "pc";
     }
   },
-  addUser(user){
-    if(!user.id){
-      return
-    }
-    let id=user.id;
-    let index=-1;
-    users.forEach((item,i)=>{
-      if(item.id==id){
-        index=i;
+  //判读用户是否已经存在
+  isHaveName(name){
+    return users.some(item => item.name===name)
+  },
+  //处理用户登录
+  login(socket,user,isReconnect){
+    let ip=socket.handshake.address.replace(/::ffff:/,"");
+    let deviceType=this.getDeviceType(socket.handshake.headers["user-agent"].toLowerCase());
+    user.ip=ip;
+    user.deviceType=deviceType;
+    user.roomId=socket.id;
+    user.type='user';
+    if(isReconnect){
+      socket.emit('loginSuccess', user, users);
+      this.loginSuccess(socket,user)
+    }else {
+      if(!this.isHaveName(user.name)){
+        user.id=socket.id;
+        user.time=new Date().getTime();
+        socket.emit('loginSuccess', user,users);
+        util.loginSuccess(socket,user);
+      }else {
+        socket.emit('loginFail','登录失败,昵称已存在!')
       }
-    })
-    if(index==-1){
-      users.push(user);
     }
   },
+  //用户登录成功
   loginSuccess(socket,user){
-    socket.emit('loginSuccess', user, users);
-    users.push(user)
     socket.broadcast.emit('system', user, 'join');
-    log.logLoginMessage(user,'join');
-    //发送消息
     socket.on('message',(from, to,message,type)=> {
-      if(to.type=='user'){
+      if(to.type==='user'){
         socket.broadcast.to(to.roomId).emit('message', socket.user, to,message,type);
       }
-      if(to.type=='group'){
-        socket.broadcast.emit('message', socket.user, to,message,type);
+      if(to.type==='group'){
+        socket.broadcast.emit('message', socket.user,to,message,type);
       }
-      log.logUserMessage(socket.user,to,message,type)
+      store.saveMessage(from,to,message,type)
     });
+    socket.user=user;
+    users.push(user);
+    store.saveUser(user,"login");
+  },
+  //删除储存的用户
+  removeUser(id){
+    users.forEach((item,i)=>{
+      if (item.id===id){
+        users.splice(i,1)
+      }
+    })
   }
-}
-//设置静态资源
-app.use('/static', express.static(__dirname + '/static'));
-//用户访问网站页面会根据浏览器userAgent返回不同的页面
-app.get("/", (req, res) => {
-  let userAgent = req.headers['user-agent'].toLowerCase();
-  if (kit.getDeviceType(userAgent)=='touch') {
-    let path = __dirname + '/views/iTalk.html';
-    res.sendFile(path);
-  } else {
-    let path = __dirname + '/views/index.html';
-    res.sendFile(path);
-  }
-})
+};
+app.use("/static",express.static('static'));
+app.get("/",(req,res)=>{
+  const path = __dirname + '/static/index.html';
+  res.sendFile(path)
+});
 io.sockets.on('connection',(socket)=>{
-  //创建用户链接
-  socket.on('login', (user)=> {
-    if (kit.isHaveUser(user)) {
-      console.log("登录失败,昵称<"+user.name+">已存在！")
-      socket.emit('loginFail', "登录失败,昵称已存在!");
-    } else {
-      user.id = socket.id;
-      user.roomId=socket.id;
-      user.address = socket.handshake.address.replace(/::ffff:/,"");
-      let userAgent=socket.handshake.headers["user-agent"].toLowerCase();
-      let deviceType=kit.getDeviceType(userAgent);
-      user.deviceType=deviceType;
-      user.loginTime=new Date().getTime();
-      socket.user = user;
-      user.type="user";
-      kit.loginSuccess(socket,user)
-    }
-  });
-  //用户注销链接
-  socket.on('disconnect',()=> {
-    if (socket.user != null) {
-      kit.delUser(socket.user.id);
+  socket.on("disconnect",()=>{
+    //判断是否是已登录用户
+    if (socket.user&&socket.user.id) {
+      //删除登录用户信息,并通知所有在线用户
+      util.removeUser(socket.user.id);
       socket.broadcast.emit('system', socket.user, 'logout');
-      log.logLoginMessage(socket.user,'logout');
+      store.saveUser(user,"logout");
     }
   });
-  //判断用户重新连接
-  if(socket.handshake.query.User){
-    let user=JSON.parse(socket.handshake.query.User);
-    if(user.id){
-      socket.user = user;
-      user.roomId = socket.id;
-      user.address = socket.handshake.address.replace(/::ffff:/,"");
-      console.log("用户<"+user.name+">重新连接成功！")
-      kit.loginSuccess(socket,user)
-    }else {
-      console.log("非法链接用户")
-    }
+  let userJson=socket.handshake.query.User;
+  let user=userJson?JSON.parse(userJson):{};
+  //判断链接用户是否已经登录
+  if(user&&user.id){
+    //已登录的用户重新登录
+    util.login(socket,user,true)
+  }else {
+    //监听用户登录事件
+    socket.on('login',(user)=>{
+      util.login(socket,user,false)
+    });
   }
 });
 //启动服务器

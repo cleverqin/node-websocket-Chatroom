@@ -1,0 +1,1441 @@
+@charset "utf-8";
+/****全局公共样式*****/
+html,body{
+    display: block;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../images/a1 (10).jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.webChat-clear::after{
+    display: inline;
+    content: '';
+    clear: both;
+}
+/*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
+.scroll::-webkit-scrollbar{
+    width: 5px;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.13);
+    position: absolute;
+}
+/*定义滚动条的轨道，内阴影及圆角*/
+.scroll::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 6px rgba(240, 240, 240, 0);
+    border-radius: 10px;
+    background-color: rgba(0, 89, 255, 0);
+}
+/*定义滑块，内阴影及圆角*/
+.scroll::-webkit-scrollbar-thumb{
+    height: 20px;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(236, 236, 236, 0.3);
+    background-color: rgba(203, 203, 203, 0.54);
+    transition: all 0.5s;
+}
+.slide-enter-active, .slide-leave-active {
+    transition: all .5s;
+}
+.slide-leave-to,.slide-enter{
+    opacity: 0;
+    transform: translateY(-40px);
+}
+.fade-enter-active,
+.fade-leave-active {
+    transition: all .5s;
+}
+.fade-leave-to,.fade-enter{
+    opacity: 0;
+}
+/*****pc端主界面样式******/
+.webChat-warp{
+    width: 740px;
+    height: 600px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+}
+.webChat-container{
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #f2f2f2;
+}
+.webChat-menu-warp{
+    width: 60px;
+    height: 100%;
+    position: relative;
+    float: left;
+    background-color: #26292e;
+}
+.webChat-panel{
+    margin-left: 60px;
+    height: 100%;
+}
+.webChat-login-avatar{
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    position: relative;
+    padding: 10px;
+}
+.webChat-login-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.webChat-menu-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.webChat-menu-list li{
+    text-align: center;
+    line-height: 40px;
+}
+.webChat-menu-list li span{
+    font-size: 22px;
+    color: #f2f2f2;
+    cursor: pointer;
+}
+.webChat-menu-list li:hover span,
+.webChat-menu-list li.active span{
+    color: #b2e281;
+}
+.webChat-panel-item{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.webChat-users-warp{
+    float: left;
+    width: 220px;
+    background-color: #ffffff;
+    height: 100%;
+}
+.webChat-search-container{
+    height: 30px;
+    padding: 10px;
+    position: relative;
+}
+.webChat-users-container{
+    height: calc(100% - 65px);
+}
+.webChat-user-list{
+    height: 100%;
+    overflow-y: auto;
+}
+.webChat-user-list .user-item-warp:hover{
+    background-color: #f2f2f2;
+}
+.webChat-user-list .user-item-warp.active{
+    background-color: #ebebeb;
+}
+.webChat-search-input{
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 20px;
+    padding-right: 10px;
+    font-size: 14px;
+    color: #606266;
+}
+.webChat-search-container .icon-search{
+    position: absolute;
+    height: 30px;
+    left: 10px;
+    font-size: 16px;
+    color: #606266;
+    line-height: 30px;
+    top: 10px;
+    width: 20px;
+    text-align: center;
+}
+.is-connect{
+    display: block;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    color: #e64b15;
+    font-weight: 500;
+    text-align: center;
+    line-height: 40px;
+    z-index: 10;
+    animation: shake 2s linear infinite alternate;
+}
+@keyframes shake {
+    0%{
+        opacity: 0.2;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+/****消息组件样式*****/
+.message-avatar{
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    position: relative;
+}
+.message-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.message-item-container{
+    margin-left: 50px;
+    margin-right: 50px;
+}
+.message-content-container{
+    line-height: 20px;
+    min-height: 20px;
+    padding: 10px;
+    display: inline-block;
+    background-color: #ffffff;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: left;
+    color: #606266;
+}
+.message-content-container .expression-img{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    line-height: 20px;
+    position: relative;
+    top: -1px;
+}
+.message-info-container{
+    line-height: 20px;
+}
+.message-info-container .message-info-name{
+    font-size: 14px;
+    color: #333333;
+}
+.message-image-warp{
+    width: 100%;
+}
+.message-image-warp img{
+    max-width: 100%;
+}
+.message-info-container .message-info-time{
+    font-size: 12px;
+    color: #606266;
+    margin: 0 5px;
+}
+.message-item-send .message-avatar{
+    float: right;
+}
+.message-item-send .message-content-warp,
+.message-item-send .message-info-container{
+    text-align: right;
+}
+.message-item-send .message-content-container{
+    background-color: #0087f7;
+    color: #f2f2f2;
+}
+.message-item-receive .message-avatar{
+    float: left;
+}
+/****用户组件样式****/
+.user-item-avatar{
+    display: block;
+    width: 40px;
+    height: 40px;
+    float: left;
+}
+.user-item-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.user-info-warp{
+    margin-left: 45px;
+}
+.user-item-infoRow{
+    position: relative;
+}
+.user-item-name{
+    font-size: 14px;
+    color: #333333;
+    height: 20px;
+    margin-right: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.user-item-num{
+    position: absolute;
+    right: 0;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #f2f2f2;
+    background-color: #e64b15;
+    top: 2px;
+    min-width: 12px;
+    height: 16px;
+    text-align: center;
+    line-height: 16px;
+    padding: 0 3px;
+}
+.user-item-message{
+    font-size: 12px;
+    color: #606266;
+    height: 20px;
+    margin-right: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.user-item-message .expression-img{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    line-height: 20px;
+    position: relative;
+    top: -1px;
+}
+.user-item-time{
+    font-size: 12px;
+    color: #606266;
+    position: absolute;
+    height: 20px;
+    line-height: 20px;
+    right: 0;
+    top: 0;
+}
+.user-item-warp{
+    padding: 6px 10px;
+    cursor: pointer;
+}
+/*****pc会话面板样式******/
+.webChat-session-panel{
+    display: block;
+    margin-left: 220px;
+    position: relative;
+    height: 100%;
+}
+.webChat-session-panel .icon-wechat{
+    display: block;
+    width: 100px;
+    height: 100px;
+    font-size: 80px;
+    color: #d9dce0;
+    line-height: 100px;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -50px;
+    margin-top: -50px;
+}
+.webChat-session-header{
+    height: 30px;
+    padding: 10px 0;
+    margin: 0 10px;
+    border-bottom: 1px solid #d1d1d1;
+}
+.webChat-session-avatar{
+    display: inline-block;
+    border: 0;
+    margin: 0;
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    line-height: 30px;
+    border-radius: 4px;
+}
+.webChat-session-name{
+    font-size: 14px;
+    color: #26292e;
+    line-height: 30px;
+}
+.webChat-session-text{
+    font-size: 12px;
+    color: #606266;
+}
+.webChat-session-messages{
+    height: calc(100% - 210px);
+}
+.user-device{
+    vertical-align: middle;
+    color: #d33a1f;
+}
+.webChat-message-list{
+    padding: 10px;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+.webChat-message-list .message-item-warp{
+    margin-top: 10px;
+}
+.webChat-message-list .message-item-warp:first-child{
+    margin-top: 0;
+}
+.webChat-session-tool{
+    border-top: 1px solid #d1d1d1;
+    margin: 0 10px;
+    height: 36px;
+    line-height: 36px;
+    vertical-align: middle;
+    position: relative;
+}
+.webChat-session-tool .iconfont{
+    font-size: 24px;
+    color: #606266;
+    margin-right: 3px;
+    cursor: pointer;
+}
+.webChat-img-file{
+    display: none;
+}
+.webChat-session-footer{
+    margin: 0 10px;
+}
+.webChat-textarea{
+    height: 60px;
+    resize: none;
+    overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 5px;
+}
+.webChat-sendBtn-warp{
+    text-align: right;
+    padding: 10px 0;
+}
+.webChat-session-sendBtn{
+    display: inline-block;
+    border: 1px solid #c1c1c1;
+    border-radius: 4px;
+    padding: 3px 30px;
+    font-size: 14px;
+    text-decoration: none;
+    background-color: #fff;
+    color: #222;
+    cursor: pointer;
+    outline: none;
+}
+/*********弹出消息组件样式************/
+.alter-message{
+    position: fixed;
+    z-index: 999;
+    background-color: rgba(51, 51, 51, 0.8);
+    font-size: 12px;
+    line-height: 20px;
+    color: #f2f2f2;
+    border-radius: 4px;
+    padding: 5px 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 40px;
+}
+.alter-message-success{
+    color: #67c23a;
+    background-color: #f0f9eb;
+}
+.alter-message-warning{
+    color: #e6a23c;
+    background: #fdf6ec;
+}
+.alter-message-error{
+    color: #f56c6c;
+    background: #fef0f0;
+}
+.alter-slide-enter-active,
+.alter-slide-leave-active {
+    transition: all .5s;
+}
+.alter-slide-leave-to,
+.alter-slide-enter{
+    margin-top: -40px;
+    opacity: 0;
+}
+/*********pc端会话样式**************/
+.webChat-session-panel{
+    display: block;
+    margin-left: 220px;
+    position: relative;
+    height: 100%;
+}
+.webChat-session-panel .icon-wechat{
+    display: block;
+    width: 100px;
+    height: 100px;
+    font-size: 80px;
+    color: #d9dce0;
+    line-height: 100px;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -50px;
+    margin-top: -50px;
+}
+.webChat-session-header{
+    height: 30px;
+    padding: 10px 0;
+    margin: 0 10px;
+    border-bottom: 1px solid #d1d1d1;
+}
+.webChat-session-avatar{
+    display: inline-block;
+    border: 0;
+    margin: 0;
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    line-height: 30px;
+    border-radius: 4px;
+}
+.webChat-session-name{
+    font-size: 14px;
+    color: #26292e;
+    line-height: 30px;
+}
+.webChat-session-text{
+    font-size: 12px;
+    color: #606266;
+}
+.webChat-session-messages{
+    height: calc(100% - 210px);
+}
+.user-device{
+    vertical-align: middle;
+    color: #d33a1f;
+}
+.webChat-message-list{
+    padding: 10px;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+.webChat-message-list .message-item-warp{
+    margin-top: 10px;
+}
+.webChat-message-list .message-item-warp:first-child{
+    margin-top: 0;
+}
+.webChat-session-tool{
+    border-top: 1px solid #d1d1d1;
+    margin: 0 10px;
+    height: 36px;
+    line-height: 36px;
+    vertical-align: middle;
+    position: relative;
+}
+.webChat-session-tool .iconfont{
+    font-size: 24px;
+    color: #606266;
+    margin-right: 3px;
+    cursor: pointer;
+}
+.webChat-img-file{
+    display: none;
+}
+.webChat-session-footer{
+    margin: 0 10px;
+}
+.webChat-textarea{
+    height: 60px;
+    resize: none;
+    overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 5px;
+}
+.webChat-sendBtn-warp{
+    text-align: right;
+    padding: 10px 0;
+}
+.webChat-session-sendBtn{
+    display: inline-block;
+    border: 1px solid #c1c1c1;
+    border-radius: 4px;
+    padding: 3px 30px;
+    font-size: 14px;
+    text-decoration: none;
+    background-color: #fff;
+    color: #222;
+    cursor: pointer;
+    outline: none;
+}
+/*******pc设置样式***********/
+.webChat-setting-warp{
+    padding: 0 15px;
+}
+.webChat-setting-header{
+    line-height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #26292e;
+}
+.webChat-card-avatar{
+    display: block;
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    float: left;
+}
+.webChat-card-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.webChat-card-info{
+    margin-left: 70px;
+}
+.webChat-card-infoRow{
+    line-height: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+.webChat-card-name{
+    font-size: 14px;
+    color: #26292e;
+}
+.webChat-card-text{
+    font-size: 12px;
+    color: #606266;
+}
+.webChat-card-infoRow .iconfont{
+    color: #d33a1f;
+}
+.webChat-setting-list{
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0;
+}
+.webChat-setting-list li{
+    line-height: 36px;
+    vertical-align: middle;
+    border-bottom: 1px dotted #d1d1d1;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #606266;
+}
+.webChat-setting-list li input[type='checkbox']{
+    display: inline-block;
+    margin: 0 10px 0 0;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 2px;
+    vertical-align: middle;
+}
+/**********pc关于面板样式***********/
+.webChat-about-warp{
+    padding: 0 15px;
+}
+.webChat-about-header{
+    line-height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #26292e;
+}
+.webChat-about-list{
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0;
+}
+.webChat-about-list li{
+    line-height: 36px;
+    vertical-align: middle;
+    border-bottom: 1px dotted #d1d1d1;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #606266;
+}
+.webChat-about-list li .about-label{
+    font-size: 12px;
+    color: #3a3c3e;
+}
+.webChat-about-list li .about-text,
+.webChat-about-list li .about-link{
+    font-size: 12px;
+    color: #606266;
+    text-decoration: none;
+    margin-right: 5px;
+}
+.webChat-about-list li .about-link img{
+    vertical-align: middle;
+}
+.webChat-about-list li .about-link:hover{
+    color: #3a8ee6;
+}
+/******pc表情样式*******/
+.expression-panel-warp{
+    position: absolute;
+    background-color: #ffffff;
+    border-radius: 4px;
+    bottom: 100%;
+    left: -40px;
+    width: 420px;
+    padding: 10px;
+    box-shadow: 0 0 3px #d1dbe5;
+    margin-bottom: 5px;
+}
+.expression-panel-container:after{
+    display: table;
+    content: '';
+    clear: both;
+}
+.expression-item{
+    float: left;
+    width: 26px;
+    height: 26px;
+    padding: 2px;
+    cursor: pointer;
+    user-select: none;
+}
+.expression-item:hover{
+    background-color: #eaeaea;
+    border-radius: 4px;
+}
+.expression-item img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+/*******pc用户登录面板样式***********/
+.user-login-warp{
+    position: fixed;
+    width: 360px;
+    left: 50%;
+    top: 50%;
+    margin-left: -180px;
+    margin-top: -140px;
+    box-shadow: 0 1px 3px #3a3c3e;
+    border-radius: 4px;
+}
+.user-login-banner{
+    background-color: #f5f5f5;
+    background-image: url("../images/ceCo1gMpzZoQ.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    overflow: auto;
+    height: 140px;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+}
+.login-error{
+    position: absolute;
+    bottom: 0;
+    line-height: 30px;
+    font-size: 12px;
+    text-align: left;
+    width: 100%;
+    padding: 0 10px;
+    background-color: rgba(254, 240, 240, 0.81);
+    color: #f56c6c;
+}
+.user-login-form-warp{
+    text-align: center;
+    background-color: #ffffff;
+    padding: 20px 30px;
+    border-radius: 0 0 4px 4px;
+}
+.user-login-form{
+    display: inline-block;
+    text-align: left;
+}
+.user-login-form:after,
+.avatar-list-warp:after{
+    display: block;
+    content: '';
+    clear: both;
+}
+.user-login-avatar{
+    display: block;
+    width: 60px;
+    height: 60px;
+    float: left;
+    position: relative;
+}
+.user-login-avatar .login-avatar{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.form-input-warp{
+    margin-left: 70px;
+}
+.form-group{
+    position: relative;
+}
+.form-group .form-input{
+    display: block;
+    width: 100%;
+    height: 30px;
+    outline: none;
+    border: 1px solid #d1d1d1;
+    margin: -1px;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #333333;
+    box-sizing: border-box;
+    position: relative;
+}
+.form-group .form-input:focus{
+    border-color: #3a8ee6;
+    z-index: 9;
+}
+.form-group .input-text{
+    border-radius: 4px 4px 0 0;
+}
+.form-group .input-pass{
+    border-radius: 0 0 4px 4px;
+}
+.form-group .form-btn{
+    display: block;
+    width: 100%;
+    line-height: 30px;
+    font-size: 14px;
+    border: none;
+    color: #f2f2f2;
+    background-color: #3a8ee6;
+    border-radius: 4px;
+    outline: none;
+}
+.form-group.form-btn-warp{
+    margin-top: 10px;
+}
+.avatar-input-warp{
+    margin: 0 15px;
+    padding-top: 15px;
+    border-radius: 4px;
+    position: relative;
+}
+.avatar-input-warp .avatar-input{
+    display: block;
+    line-height: 30px;
+    border: 1px solid #d1d1d1;
+    color: #3a3c3e;
+    font-size: 14px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    outline: none;
+    width: 100%;
+    border-radius: 4px;
+}
+.select-avatar-warp{
+    position: absolute;
+    background-color: #ffffff;
+    width: 320px;
+    border-radius: 4px;
+    top: 100%;
+    left: -40px;
+    border: 1px solid #d1d1d1;
+    margin-top: 15px;
+    z-index: 999;
+}
+.select-avatar-warp:after{
+    display: block;
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    bottom: 100%;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ffffff;
+    left: 40px;
+    z-index: 99;
+    margin-bottom: -1px;
+
+}
+.select-avatar-warp:before{
+    display: block;
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    bottom: 100%;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    left: 40px;
+    z-index: 99;
+    border-bottom: 10px solid #d1d1d1;
+    margin-bottom: 0;
+}
+.avatar-list-warp{
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+}
+.avatar-list-warp li{
+    float: left;
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    box-sizing: border-box;
+    position: relative;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.avatar-list-warp li.active{
+    border-color: #3a8ee6;
+}
+.avatar-list-warp li.active:after{
+    display: block;
+}
+.avatar-list-warp li:after{
+    display: none;
+    width: 12px;
+    height: 12px;
+    padding: 2px 1px 0;
+    text-align: right;
+    line-height: 12px;
+    font-size: 12px;
+    color: #f2f2f2;
+    background-color: #3a8ee6;
+    content: '\2714';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    border-radius: 10px 0 0 0;
+}
+.avatar-list-warp li img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+/*******移动端主界面样式*********/
+.iChat-container,
+.iChat-app-warp{
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: #ffffff;
+}
+.iChat-menu-warp:after,
+.iChat-search-header:after{
+    display: block;
+    content: '';
+    clear: both;
+}
+.iChat-menu-item{
+    float: left;
+    width: 33.3333333%;
+    text-align: center;
+    padding: 7px 0;
+    color: #87898f;
+}
+.iChat-menu-item.active{
+    color: #3a8ee6;
+}
+.iChat-menu-item .iconfont{
+    font-size: 22px;
+}
+.menu-text{
+    font-size: 14px;
+}
+.iChat-menu-warp{
+    border-top: 1px solid #d1d1d1;
+}
+.iChat-app-container{
+    display: block;
+    height: calc(100% - 60px);
+    width: 100%;
+    position: relative;
+}
+.iChat-app-panel{
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.iChat-search-header{
+    padding: 10px;
+    background-color: #3a8ee6;
+}
+.search-avatar{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    float: left;
+}
+.search-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.search-input-warp{
+    margin-left: 50px;
+    position: relative;
+}
+.search-input-warp .iconfont{
+    position: absolute;
+    left: 0;
+    font-size: 16px;
+    line-height: 40px;
+    height: 40px;
+    width: 30px;
+    text-align: center;
+    color: #ddd;
+}
+.search-input{
+    height: 40px;
+    width: 100%;
+    line-height: 40px;
+    font-size: 14px;
+    box-sizing: border-box;
+    padding: 0 10px 0 30px;
+    outline: none;
+    border: none;
+    background: rgba(0,0,0,.11);
+    border-radius: 7px;
+    vertical-align: middle;
+    color: #f2f2f2;
+}
+.search-input::-webkit-input-placeholder{
+    color: #ddd;
+}
+.iChat-user-list{
+    height: calc(100% - 60px);
+    width: 100%;
+    position: relative;
+}
+.iChat-user-item{
+    border-bottom: 1px solid #f6f3f0;
+}
+.iChat-cog-banner{
+    height: 160px;
+    background-color: #d1d1d1;
+    background-image: url("../images/ceCo1gMpzZoQ.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    position: relative;
+}
+.banner-user{
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid #ffffff;
+    bottom: 0;
+    left: 50%;
+    margin-left: -44px;
+    margin-bottom: -20px;
+}
+.banner-user img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.iChat-cog-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.iChat-cog-list li{
+    line-height: 30px;
+    font-size: 14px;
+    height: 30px;
+    vertical-align: middle;
+    padding: 7px 10px;
+    border-bottom: 1px solid #e2e2e2;
+    margin: 0 15px;
+}
+.iChat-checkbox i{
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    border: 1px solid #d1d1d1;
+    outline: none;
+    border-radius: 16px;
+    background: #f2f2f2;
+    transition: border-color .3s,background-color .3s;
+    vertical-align: middle;
+    position: relative;
+}
+.iChat-checkbox input[type=checkbox] {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
+}
+.iChat-checkbox input:checked + i {
+    background: #33DB70;
+}
+.iChat-checkbox input:checked + i:before {
+    transform: translateX(20px);
+}
+.iChat-checkbox i::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    background-color: #fff;
+}
+.cog-text,.iChat-checkbox{
+    float: right;
+    color: #606266;
+}
+.iChat-cog-list li .cog-label{
+    color: #525457;
+}
+.iChat-cog-list li .icon-phone{
+    font-size: 16px;
+    color: #e66633;
+}
+.iChat-cog-list li .icon-pc{
+    font-size: 16px;
+    color: #22a7ff;
+}
+.about-header{
+    line-height: 40px;
+    font-size: 18px;
+    color: #333333;
+    font-weight: bold;
+    padding: 0 15px;
+}
+.about-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.about-list li{
+    font-size: 14px;
+    line-height: 30px;
+    padding: 5px;
+    margin: 0 15px;
+    border-bottom: 1px dotted #e7e7e7;
+    vertical-align: middle;
+}
+.about-label{
+    color: #3a3c3e;
+    margin-right: 10px;
+}
+.about-text{
+    color: #606266;
+}
+.about-link{
+    line-height: 30px;
+    vertical-align: middle;
+    margin-right: 10px;
+    text-decoration: none;
+    color: #3a8ee6;
+}
+.about-link img{
+    vertical-align: middle;
+}
+/***会话窗口样式***/
+.iChat-session-warp{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    left: 0;
+    top: 0;
+    background-color: #ffffff;
+}
+.iChat-session-header{
+    padding: 10px;
+    position: relative;
+    background-color: #3a8ee6;
+    color: #f2f2f2;
+}
+.iChat-session-header .icon-left{
+    position: absolute;
+    line-height: 30px;
+    height: 30px;
+    font-size: 18px;
+    width: 30px;
+    text-align: center;
+    vertical-align: middle;
+}
+.session-info-warp{
+    line-height: 30px;
+    height: 30px;
+    text-align: center;
+}
+.session-avatar{
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    vertical-align: middle;
+    border: none;
+    margin: 0;
+    line-height: 30px;
+}
+.session-info-name{
+    font-size: 14px;
+    margin-left: 5px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.user-num,.ip-text{
+    line-height: 30px;
+    font-size: 12px;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+.session-info-warp .iconfont{
+    font-size: 18px;
+    line-height: 30px;
+    vertical-align: middle;
+}
+.session-info-warp .icon-phone{
+    color: #e6ca03;
+}
+.session-info-warp .icon-pc{
+    color: #e66f6a;
+}
+.iChat-session-footer{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+.iChat-message-form{
+    padding: 10px;
+    border-top: 1px solid #d1d1d1;
+}
+.iChat-message-form:after,
+.expression-list:after,
+.iChat-tool-panel:after{
+    display: block;
+    clear: both;
+    content: '';
+}
+.iChat-expression-btn{
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    width: 30px;
+    text-align: center;
+}
+.iChat-expression-btn .iconfont,
+.iChat-send-warp .iconfont{
+    line-height: 40px;
+    font-size: 30px;
+    color: #7d8085;
+    vertical-align: middle;
+}
+.iChat-send-warp{
+    float: right;
+}
+.iChat-input-warp{
+    margin-left: 45px;
+    margin-right: 45px;
+    padding: 5px 0;
+    transition: all .2s;
+}
+.iChat-input-warp .iChat-message-input{
+    display: block;
+    box-sizing: border-box;
+    line-height: 30px;
+    font-size: 14px;
+    color: #7d8085;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #d1d1d1;
+}
+.iChat-message-input:focus{
+    border-bottom: 1px solid #67c23a;
+}
+.iChat-send-warp{
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    vertical-align: middle;
+    transition: all .2s;
+}
+.focus-form .iChat-send-warp{
+    width: 50px;
+}
+.focus-form .iChat-input-warp{
+    margin-right: 60px;
+}
+.iChat-send-btn{
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    background-color: #67c23a;
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    color: #f2f2f2;
+    vertical-align: middle;
+}
+.iChat-expression-panel,
+.iChat-tool-list{
+    height: 200px;
+    overflow-y: auto;
+}
+.expression-list {
+    list-style: none;
+    padding: 0 5px;
+    margin: 0;
+}
+.expression-list li{
+    float: left;
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+}
+.expression-list li img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.iChat-tool-list{
+    list-style: none;
+    padding: 0 5px;
+    margin: 0;
+}
+.iChat-tool-list li{
+    padding: 10px;
+}
+.iChat-tool-item{
+    display: block;
+    width: 50px;
+    height: 50px;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    line-height: 50px;
+    text-align: center;
+    vertical-align: middle;
+}
+.iChat-tool-item .iconfont{
+    font-size: 25px;
+    color: #606266;
+}
+.iChat-tool-item input[type='file']{
+    display: none;
+}
+.iChat-session-container{
+    width: 100%;
+    height: calc(100% - 112px);
+    background-color: #eeeeee;
+}
+.iChat-session-container.with-panel{
+    height: calc(100% - 312px);
+}
+.iChat-message-list{
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+.message-item{
+    margin-top: 10px;
+}
+.iChat-message-list .message-item:first-child{
+    margin-top: 0;
+}
+/***********移动端登录界面样式*************/
+.iChat-login-warp{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-image: url("../images/a1 (10).jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.login-form-warp{
+    display: block;
+    width: 240px;
+    text-align: center;
+    padding: 30px 20px;
+    margin: 0 auto;
+    position: relative;
+    top: 100px;
+    background-color: #ffffff;
+    border-radius: 4px;
+}
+.icon-touzi{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 20px;
+    right: 10px;
+}
+.login-user-avatar{
+    display: block;
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    float: left;
+}
+.login-user-avatar img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+.iChat-avatar-warp{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+}
+.iChat-user-list .user-item-warp{
+    border-bottom: 1px solid #f3f3f4;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);/*CSS3去除手机浏览器按钮点击出现的高亮框*/
+    -webkit-tap-highlight-color: transparent;
+    -moz-tap-highlight-color: transparent;
+}
+.message-item-warp{
+    margin-top: 10px;
+}
+.message-item-warp:first-child{
+    margin-top: 0;
+}
