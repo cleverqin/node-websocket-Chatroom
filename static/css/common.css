@@ -252,9 +252,35 @@ html,body{
 .message-item-send .message-content-container{
     background-color: #0087f7;
     color: #f2f2f2;
+    position: relative;
+}
+.message-item-send .message-content-container:after{
+    display: block;
+    content: '';
+    position: absolute;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid #0087f7;
+    top: 15px;
+    left: 100%;
+}
+.message-item-receive .message-content-container{
+    position: relative;
+    background-color: #ffffff;
+    color: #606266;
 }
 .message-item-receive .message-avatar{
     float: left;
+}
+.message-item-receive .message-content-container:before{
+    display: block;
+    content: '';
+    position: absolute;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-right: 5px solid #ffffff;
+    top: 15px;
+    right: 100%;
 }
 /****用户组件样式****/
 .user-item-avatar{

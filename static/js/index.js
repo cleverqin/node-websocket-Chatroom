@@ -346,27 +346,40 @@
     {title:"[飞机]",url: "/飞机.gif"},
     {title:"[气球]",url: "/气球.gif"}
   ];
+  let mapData=[];
+  expressions.forEach((item)=>{
+    mapData[item.title]=item.url;
+  });
 //渲染解析表情
-  const renderExpression=function(text,baseUrl){
-    let expressionMap={};
-    expressions.forEach((item,i)=>{
-      expressionMap[item.title]=i;
-    });
-    if(typeof (text) != "undefined") {
-      let arr = text.match(/\[.*?\]/g);
-      if(arr&&arr.length>0){
-        for(let i = 0; i < arr.length; i++){
-          let index=expressionMap[arr[i]];
-          if(index!==undefined) {
-            let url=baseUrl+expressions[index].url;
-            const img = "<img src="+url +" class='expression-img'/>";
-            text = text.replace(arr[i],img);
-          }
-        }
+  const MessageText=Vue.extend({
+    props:{
+      text:{
+        type:String,
+        default:""
       }
+    },
+    render(h){
+      const reg=/\[.*?\]/g;
+      let result=this.text.replace(reg,(word)=>{
+        return "|"+word+"|";
+      });
+      let arr=result.split('|');
+      return h('span',
+        arr.map((item)=>{
+          if(reg.test(item)&&mapData[item]){
+            return h('img',{
+              class:"expression-img",
+              attrs:{
+                src:mixin.data().baseUrl+mapData[item]
+              }
+            })
+          }else {
+            return item;
+          }
+        })
+      )
     }
-    return text;
-  };
+  });
 //消息组件
   const MessageItem=Vue.extend({
     template:"#message-item",
@@ -531,7 +544,7 @@
   new Vue({
     template: mainTpl,
     el:"#app",
-    components:{MessageItem,UserItem,Login},
+    components:{MessageItem,UserItem,Login,MessageText},
     mixins:[mixin],
     data(){
       return {
@@ -560,7 +573,6 @@
       pickerExpression(item){
         this.text+=item.title;
       },
-      renderExpression,
       fileChange(e){
         let file=e.target.files[0];
         let maxSize=1*1024*1024;
@@ -639,7 +651,7 @@
         _this.socket.on("loginSuccess",(user,users)=>{
           _this.loginUser=user;
           _this.onlineUsers=users;
-          document.title="聊天室 | "+user.name;
+          document.title=user.name+" ｜ 聊天室";
         });
         _this.socket.on("loginFail",(message)=>{
           AlterMessage(message,'error')

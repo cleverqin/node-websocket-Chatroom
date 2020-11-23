@@ -44,7 +44,9 @@
                              :num="getUnReadNum(item.id)"
                              :key="item.id">
                     <div slot="time" v-if="getLatestMessage(item.id).time">{{getLatestMessage(item.id).time | friendlyTime}}</div>
-                    <span slot="message" v-if="getLatestMessage(item.id).type==='text'" v-html="renderExpression(getLatestMessage(item.id).content,baseUrl)"></span>
+                    <span slot="message" v-if="getLatestMessage(item.id).type==='text'">
+                      <message-text :text="getLatestMessage(item.id).content"></message-text>
+                    </span>
                     <div slot="message" v-if="getLatestMessage(item.id).type==='image'">【图片】</div>
                   </user-item>
                 </div>
@@ -61,7 +63,9 @@
               <div class="webChat-session-messages">
                 <div class="webChat-message-list scroll" ref="message-list">
                   <message-item v-for="(item,i) in messages" :is-send="loginUser.id===item.from.id" :setting="setting" :key="i" :message="item">
-                    <div class="message-content-container" v-html="renderExpression(item.content,baseUrl)" slot="message" v-if="item.type==='text'"></div>
+                    <div class="message-content-container" slot="message" v-if="item.type==='text'">
+                      <message-text :text="item.content"></message-text>
+                    </div>
                     <div class="message-image-warp" slot="message" v-if="item.type==='image'" v-html="item.content"></div>
                   </message-item>
                 </div>
@@ -272,7 +276,9 @@
                          :num="getUnReadNum(item.id)"
                          :key="item.id">
                 <div slot="time" v-if="getLatestMessage(item.id).time">{{getLatestMessage(item.id).time | friendlyTime}}</div>
-                <span slot="message" v-if="getLatestMessage(item.id).type==='text'" v-html="renderExpression(getLatestMessage(item.id).content,baseUrl)"></span>
+                <span slot="message" v-if="getLatestMessage(item.id).type==='text'">
+                  <message-text :text="getLatestMessage(item.id).content"></message-text>
+                </span>
                 <div slot="message" v-if="getLatestMessage(item.id).type==='image'">【图片】</div>
               </user-item>
             </div>
@@ -385,7 +391,9 @@
           <div class="iChat-session-container" :class="{'with-panel':isShowTool||isShowExpression}">
             <div class="iChat-message-list scroll" ref="message-list">
               <message-item v-for="(item,i) in messages" :is-send="loginUser.id===item.from.id" :setting="setting" :key="i" :message="item">
-                <div class="message-content-container" v-html="renderExpression(item.content,baseUrl)" slot="message" v-if="item.type==='text'"></div>
+                <div class="message-content-container" slot="message" v-if="item.type==='text'">
+                  <message-text :text="item.content"></message-text>
+                </div>
                 <div class="message-image-warp" slot="message" v-if="item.type==='image'" v-html="item.content"></div>
               </message-item>
             </div>

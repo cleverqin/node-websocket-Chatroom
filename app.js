@@ -93,7 +93,7 @@ io.sockets.on('connection',(socket)=>{
       //删除登录用户信息,并通知所有在线用户
       util.removeUser(socket.user.id);
       socket.broadcast.emit('system', socket.user, 'logout');
-      store.saveUser(user,"logout");
+      store.saveUser(socket.user,"logout");
     }
   });
   let userJson=socket.handshake.query.User;
