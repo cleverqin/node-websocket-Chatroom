@@ -215,6 +215,7 @@ html,body{
     font-size: 14px;
     text-align: left;
     color: #606266;
+    word-break: break-all;
 }
 .message-content-container .expression-img{
     width: 20px;
