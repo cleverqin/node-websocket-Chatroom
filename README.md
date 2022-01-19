@@ -40,22 +40,24 @@ WebChat聊天室是一个基于nodejs+express+socket.io模块构建的
 使用手册
 ---
 1. 下载代码并安装nodejs
-2. 使用’npm install‘安装项目依赖模块
-3. 使用’npm run dev‘启动服务
-4. 最后打开浏览器访问 `http://localhost:3000`
+2. 使用`npm install`安装项目依赖模块
+3. 使用`npm run serve`启动开发服务
+4. 使用`npm run prod`启动后台服务
+5. 最后打开浏览器访问 `http://localhost:8080`
+6. 开发完成后打包前端代码`npm run build`
 
 项目预览截图
 ---
-<img src='./static/images/screenshot/screen_01.png' width='400px'>
+<img src='./public/static/img/screenshot/screen_01.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_02.png' width='400px'>
+<img src='./public/static/img/screenshot/screen_02.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_03.png' width='400px'>
+<img src='./public/static/img/screenshot/screen_03.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_04.png' width='400px'>
+<img src='./public/static/img/screenshot/screen_04.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_pc_01.png' width='400px'>
+<img src='./public/static/img/screenshot/screen_pc_01.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_pc_02.png' width='400px'>
+<img src='./public/static/img/screenshot/screen_pc_02.png' width='400px'>
 
-<img src='./static/images/screenshot/screen_pc_03.png' width='400px'>
+<img src='./public/static/img/screenshot/screen_pc_03.png' width='400px'>
