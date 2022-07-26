@@ -87,7 +87,7 @@
       '20180414165947.jpg',
       '20180414165955.jpg'];
       list=list.map((item) => {
-        return window.location.origin+"/"+BASE_URL+'static/img/avatar/'+item
+        return BASE_URL+'static/img/avatar/'+item
       });
       this.avatarList=list;
       this.randomAvatar();
@@ -310,6 +310,8 @@
     list-style: none;
     margin: 0;
     padding: 10px;
+    max-height: 120px;
+    overflow-y: auto;
   }
   .avatar-list-warp li{
     float: left;

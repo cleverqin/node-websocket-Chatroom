@@ -105,7 +105,7 @@
         let reader = new FileReader();
         reader.readAsDataURL(file); // 读出 base64
         reader.onloadend =()=> {
-          let html="<img src='"+reader.result+"'>";
+          let html=reader.result;
           this.sendMessage(html,'image')
         };
       },

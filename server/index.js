@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
 app.use("/",express.static('dist'));
+app.use("/assets/images",express.static('upload'));
 const PORT=3000;
 io.attach(server);
 //启动服务器

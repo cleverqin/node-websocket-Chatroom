@@ -29,6 +29,8 @@ const util={
         user.time=new Date().getTime();
         this.loginSuccess(user,socket);
         store.saveUser(user,'login')
+        const messages = await store.getMessages();
+        socket.emit("history-message","group_001",messages);
       }else {
         console.log(`登录失败,昵称<${user.name}>已存在!`)
         socket.emit('loginFail','登录失败,昵称已存在!')
@@ -47,8 +49,8 @@ const util={
       }
       if(to.type==='group'){
         socket.broadcast.emit('message', socket.user,to,message,type);
+        store.saveMessage(from,to,message,type)
       }
-      store.saveMessage(from,to,message,type)
     });
     const users=await this.getOnlineUsers();
     socket.user=user;
@@ -101,13 +103,14 @@ io.sockets.on('connection',(socket)=>{
     decode=jwt.decode(token);
   }
   let user=decode?decode.data:{};
-  socket.on("disconnect",()=>{
+  socket.on("disconnect",(reason)=>{
     //判断是否是已登录用户
     if (socket.user&&socket.user.id) {
       //删除登录用户信息,并通知所有在线用户
       socket.broadcast.emit('system', socket.user, 'logout');
       store.saveUser(socket.user,'logout')
     }
+    console.log(reason)
   });
   //判断链接用户是否已经登录
   if(user&&user.id){

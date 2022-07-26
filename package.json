@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "nedb": "^1.8.0",
     "socket.io-client": "^4.4.0",
     "vue": "^2.6.11"
   },

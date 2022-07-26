@@ -36,7 +36,7 @@ function Notice(msg,type) {
         if(this.inter){
           clearTimeout(this.inter)
         }
-        this.$el.remove()
+        this.$el.parentNode.removeChild(this.$el);
       }
     }
   });

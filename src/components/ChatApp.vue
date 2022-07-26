@@ -496,6 +496,9 @@
         _this.socket.io.on("reconnect_failed",()=>{
           console.warn('重新链接失败！')
         });
+        _this.socket.io.on("reconnect",()=>{
+          console.info('重新链接成功！')
+        });
         _this.socket.on("connect",(data)=>{
           this.isConnect=true;
           console.log("链接成功！",data)

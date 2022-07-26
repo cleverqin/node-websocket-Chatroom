@@ -17,7 +17,12 @@
       <div class="chat-bubble-content">
         <div slot="content">
           <UiEmojiText :text="message.content" v-if="message.type==='text'"></UiEmojiText>
-          <div v-if="message.type==='image'" v-html="message.content"></div>
+          <div v-if="message.type==='image'">
+            <template v-if="message.content==='【图片】'">
+              {{message.content}}
+            </template>
+            <img :src="message.content" alt="图片" v-else>
+          </div>
         </div>
       </div>
     </div>

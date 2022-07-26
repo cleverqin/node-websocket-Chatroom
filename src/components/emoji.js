@@ -140,16 +140,25 @@ export const expressions=[
   {title:"[飞机]",url: "/飞机.gif"},
   {title:"[气球]",url: "/气球.gif"}
 ];
+export const highlightKeyword=(reg,str) => {
+  let curIndex = 0, list = [], result = {};
+  while ((result = reg.exec(str))){
+    list.push(str.slice(curIndex,result.index))
+    list.push(result[0])
+    curIndex = result.index + result[0].length
+  }
+  if(str.length > curIndex){
+    list.push(str.slice(curIndex,str.length))
+  }
+  return list
+}
 export const renderEmoji=(text,baseUrl,h)=>{
   let emojiMap={};
   expressions.forEach((item)=>{
     emojiMap[item.title]=item.url;
   });
   const reg=/\[.*?\]/g;
-  let result=text.replace(reg,(word)=>{
-    return "|"+word+"|";
-  });
-  let arr=result.split('|');
+  let arr=highlightKeyword(reg,text);
   return h('div',
     arr.map((item)=>{
       if(reg.test(item)&&emojiMap[item]){

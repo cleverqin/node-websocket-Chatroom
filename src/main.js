@@ -3,16 +3,29 @@ import App from './App.vue'
 import './assets/css/common.less';
 Vue.directive('drag', {
   bind(el) {
-    el.x=0;
-    el.y=0;
-    const pos={
+    let setPos={
+      x:0,
+      y:0
+    }
+    let lastPos={
       x:0,
       y:0
     };
+    function move(curPos){
+      const d={
+        dX:curPos.x-lastPos.x,
+        dY:curPos.y-lastPos.y
+      };
+      setPos.x+=d.dX;
+      setPos.y+=d.dY;
+      el.style.transform=`translate(${setPos.x}px,${setPos.y}px)`;
+      lastPos.x=curPos.x;
+      lastPos.y=curPos.y;
+    }
     el.addEventListener("mousedown",(e)=>{
       e.stopPropagation();
-      pos.x=e.clientX;
-      pos.y=e.clientY;
+      lastPos.x=e.clientX;
+      lastPos.y=e.clientY;
       document.addEventListener('mousemove',mouseMove);
       document.addEventListener('mouseup',mouseUp)
     });
@@ -21,13 +34,7 @@ Vue.directive('drag', {
         x:e.clientX,
         y:e.clientY
       }
-      const d={
-        dX:curPos.x-pos.x,
-        dY:curPos.y-pos.y
-      };
-      const x=el.x+d.dX;
-      const y=el.y+d.dY;
-      el.style.transform=`translate(${x}px,${y}px)`;
+      move(curPos)
     }
     function mouseUp(e) {
       e.stopPropagation();
@@ -35,15 +42,7 @@ Vue.directive('drag', {
         x:e.clientX,
         y:e.clientY
       };
-      const d={
-        dX:curPos.x-pos.x,
-        dY:curPos.y-pos.y
-      };
-      const x=el.x+d.dX;
-      const y=el.y+d.dY;
-      el.style.transform=`translate(${x}px,${y}px)`;
-      el.x=x;
-      el.y=y;
+      move(curPos);
       document.removeEventListener("mousemove",mouseMove);
       document.removeEventListener('mouseup',mouseUp)
     }

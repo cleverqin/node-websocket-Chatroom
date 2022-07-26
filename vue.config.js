@@ -12,6 +12,10 @@ module.exports={
         target: process.env.PROXY_SERVER,
         ws:true
       },
+      '/assets': {
+        target: process.env.PROXY_SERVER,
+        ws:true
+      },
       '/socket.io': {
         target: process.env.PROXY_SERVER,
         ws:true
