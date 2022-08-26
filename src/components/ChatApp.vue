@@ -364,9 +364,9 @@
         about:{
           version:"v1.0",
           license:"MIT",
-          author:"cleverqin",
-          email:"705597001@qq.com",
-          github:"https://github.com/cleverqin/node-websocket-Chatroom"
+          author:"yogiliu",
+          email:"yolliujun@gamil.com",
+          github:"https://github.com/19986492794"
         },
         loginUser:{},
         token:"",
